@@ -11,6 +11,10 @@ window.CROWN = {
   statsApi: "/api/stats/{name}", // reads the D1 table filled by POST /api/stats/sync (see README)
   // Punishments are read from static JSON files published by the GitHub Action (see README). "" = use the API instead.
   punishmentsData: "data/punishments",
+  // Accounts + alerts (Supabase). Fill these two in after following supabase/README steps. Both values are PUBLIC and safe here.
+  // NEVER paste the "service_role" key. Leave both empty to hide sign-in and alerts.
+  supabaseUrl: "",
+  supabaseKey: "",
   topApi: "/api/stats/top?limit=10",
   statusApi: "https://api.mcsrvstat.us/3/play.crownpvp.com",
   // Tebex Headless checkout. Paste your PUBLIC webstore token (Tebex > Headless API). It is safe to expose.

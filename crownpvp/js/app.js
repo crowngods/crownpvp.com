@@ -31,11 +31,21 @@ const pill = p => p.status === "none" ? "" : `<span class="pill ${p.status === "
 const expires = p => p.permanent ? (p.status === "none" ? "&mdash;" : "Never") : date(p.until);
 const CP = window.CP = { $, $$, esc, fmt, toast, api, date, ago, clean, head, ready, loginUrl, MS, pill, expires };
 
+/* ---------- Accounts + alerts (only when Supabase is configured in config.js) ---------- */
+CP.authReady = new Promise(r => { CP._authResolve = r; });
+if (C.supabaseUrl && C.supabaseKey) {
+  const lib = document.createElement("script");
+  lib.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
+  lib.onload = () => { const a = document.createElement("script"); a.src = "js/auth.js"; a.onerror = () => CP._authResolve(null); document.head.append(a); };
+  lib.onerror = () => CP._authResolve(null);
+  document.head.append(lib);
+} else CP._authResolve(null);
+
 /* ---------- Layout ---------- */
 $("#site-header").outerHTML = `<div class="partner-bar"><div class="wrap"><span><i></i> OPEN FOR PARTNERSHIP</span><a href="${esc(C.partnershipUrl || C.discord)}" target="_blank" rel="noopener">Discuss a partnership <b>↗</b></a></div></div>
 <header><div class="wrap"><a class="logo" href="index.html" aria-label="CrownPVP home"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
 <nav id="nav" aria-label="Main">${nav.map(n => `<a href="${n[0]}"${n[2] === page ? ' class="on" aria-current="page"' : ""}>${n[1]}</a>`).join("")}</nav>
-<div class="hr"><button class="ippill" data-copy aria-label="Copy server IP"><i class="dot" id="hdot"></i><code>${C.ip}</code></button><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div></div></header>
+<div class="hr"><button class="ippill" data-copy aria-label="Copy server IP"><i class="dot" id="hdot"></i><code>${C.ip}</code></button><span id="acct-slot"></span><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div></div></header>
 <div id="scrim"></div>
 <aside id="cart" class="drawer" aria-hidden="true" aria-label="Shopping cart"><div class="dh"><h3>Your cart</h3><button class="ib" data-cart-close aria-label="Close cart">&times;</button></div><div class="db" id="cart-items"></div><div class="df" id="cart-foot"></div></aside>`;
 $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a class="logo" href="index.html"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
