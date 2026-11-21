@@ -36,3 +36,9 @@ Optional: **Authentication** > **Sign In / Providers** > **Email**: turn **Confi
    update public.profiles set is_staff = true where lower(username) = lower('YourName');
    ```
 3. Open the **Alerts** page on the site. You now see a **Send an alert** form: send to one username, or leave "To" empty to send to everyone.
+
+## 6. Appeals and reports (optional but recommended)
+1. In **SQL Editor** > **New query**, paste everything from `supabase/appeals-and-reports.sql` and click **Run** ("Success. No rows returned"). It is safe to run again.
+2. `appeals.html` now lets signed-in players send an appeal, and `support.html` lets them send a report. Only the sender and staff can read them. Staff get a **Staff review** tab on both pages to approve/decline appeals and start/resolve/dismiss reports, and the player gets an alert on the bell.
+3. Approving an appeal does not unban anyone in game. Lift the ban or mute yourself.
+

@@ -65,6 +65,19 @@
   type.addEventListener('change', updateType);
   updateType();
 
+  // With accounts set up, reports go to Supabase (readable only by the sender and staff). Otherwise the old route is used.
+  async function submitReport(p) {
+    const auth = await window.CP.authReady;
+    if (!auth) return window.CrownForms.send('reports', p);
+    if (!auth.user) throw new Error('Please sign in first (see the box below the form), then send your report.');
+    const { data, error } = await auth.sb.rpc('submit_report', {
+      p_type: p.type, p_category: p.category, p_target: p.target, p_details: p.details,
+      p_contact: p.contact || '', p_evidence: p.evidence || ''
+    });
+    if (error) throw new Error(/too many/i.test(error.message) ? 'You have sent a lot of reports. Please wait a while and try again.' : 'Could not send your report. Please try again.');
+    return { ok: true, data: { id: data } };
+  }
+
   const clearDraft = window.CrownForms.enhance(f, 'report');
   const msg = document.querySelector('#report-message');
   const box = document.createElement('div');
@@ -83,7 +96,7 @@
 
     const payload = Object.fromEntries(new FormData(f).entries());
     try {
-      const res = await window.CrownForms.send('reports', payload);
+      const res = await submitReport(payload);
       if (res.ok) {
         const refId = `RPT-${res.data.id}`;
         f.reset();
