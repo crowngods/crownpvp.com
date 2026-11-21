@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Private Reports &amp; Player Support | CrownPVP</title>
+  <meta name="description" content="Submit a player, faction, or bug report privately to CrownPVP management.">
+  <meta name="theme-color" content="#07080b">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/crown.css">
+  <link rel="stylesheet" href="css/elite.css">
+  <link rel="stylesheet" href="css/upgrade.css">
+  <link rel="stylesheet" href="css/features.css">
+  <link rel="stylesheet" href="css/hd-overhaul.css">
+</head>
+<body data-page="support">
+  <div id="bg" aria-hidden="true"><div class="grid"></div></div>
+  <div id="site-header"></div>
+  <main>
+    <div class="phead">
+      <div class="wrap split">
+        <div>
+          <div class="eyebrow">ENCRYPTED MANAGEMENT INBOX</div>
+          <h1>Private Reports</h1>
+          <p>Report rule-breakers, illegal cannons, F-Top exploits, or server bugs directly to CrownPVP Ownership.</p>
+        </div>
+        <div class="rate">
+          <b id="api-live-badge">ONLINE</b>
+          <span>Direct Owner Queue</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="tight">
+      <div class="wrap report-layout">
+        <aside class="report-aside">
+          <div class="report-aside-number">01</div>
+          <h2>Confidential &amp; Tracked.</h2>
+          <p>Every report generates a unique reference ID and routes straight to the private management dashboard.</p>
+          <ul>
+            <li><b>Cheating / Clients:</b> Attach YouTube, Medal.tv, or Streamable clips showing reach, velocity, or scaffold.</li>
+            <li><b>Faction / Raid Abuse:</b> Include faction tag, coordinates/realm, and approximate server time.</li>
+            <li><b>Dupe / Critical Bugs:</b> Do not share publicly in global chat—report here for bug bounties.</li>
+            <li><b>Zero Public Leak:</b> Reports are never posted on the public punishment wall.</li>
+          </ul>
+          <a data-discord class="report-discord">Need live urgent help? Open Discord ↗</a>
+        </aside>
+
+        <div class="card report-card">
+          <div class="report-status-pills">
+            <div class="report-pill"><b>1. Select Type</b>Player, Faction, or Bug</div>
+            <div class="report-pill"><b>2. Add Proof</b>Video link &amp; timestamps</div>
+            <div class="report-pill"><b>3. Get Receipt</b>Instant tracking ID</div>
+          </div>
+
+          <div class="eyebrow">NEW SUBMISSION</div>
+          <h2>Submit a Private Report</h2>
+
+          <form id="report-form" class="upgrade-form">
+            <div class="form-two">
+              <label>Report type
+                <select name="type" id="report-type" required>
+                  <option value="">Choose report type</option>
+                  <option value="player">Player Report (Cheating / Chat / Scam)</option>
+                  <option value="faction">Faction Report (Raid / Cannon / F-Top)</option>
+                  <option value="bug">Bug / Exploit / Website Issue</option>
+                </select>
+              </label>
+              <label>Category
+                <select name="category" id="report-category" required>
+                  <option value="">Select report type first</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="form-two">
+              <label id="report-target-wrap">
+                <span id="report-target-label">Player username</span>
+                <input name="target" id="report-target" maxlength="32" placeholder="Exact Minecraft IGN or Faction tag" required>
+              </label>
+              <label>Your Discord or IGN <span class="optional">(for follow-up)</span>
+                <input name="contact" maxlength="64" placeholder="e.g. username or IGN">
+              </label>
+            </div>
+
+            <label>Incident Details &amp; Timestamps
+              <textarea name="details" rows="6" minlength="20" maxlength="3000" required placeholder="Describe exactly what happened, what rules were broken, approximate date/time, and specific timestamps in your video evidence (minimum 20 characters)."></textarea>
+            </label>
+
+            <label>Video or Screenshot Evidence Link <span class="optional">(recommended)</span>
+              <input name="evidence" type="url" maxlength="500" placeholder="https://medal.tv/... or https://youtube.com/... or https://imgur.com/...">
+            </label>
+
+            <p id="report-message" class="form-message" role="status" aria-live="polite"></p>
+            <button class="btn gold" id="report-submit" type="submit">Submit Private Report</button>
+            <small class="privacy-note">Protected submission. Only authorized CrownPVP owners can view report contents.</small>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/forms-core.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/features.js" defer></script>
+</body>
+</html>
