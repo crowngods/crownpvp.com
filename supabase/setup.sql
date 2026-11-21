@@ -34,6 +34,11 @@ create policy "notifications: read own" on public.notifications
   for select to authenticated using (user_id = (select auth.uid()));
 -- No insert/update/delete policies: alerts can only be created by staff through the functions below.
 
+-- ---------- Let signed-in players read their own rows (needed if "Grant API access to new tables automatically" was left unticked) ----------
+grant usage on schema public to anon, authenticated;
+grant select on public.profiles to authenticated;
+grant select on public.notifications to authenticated;
+
 -- ---------- New account: create the profile and a welcome alert ----------
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$

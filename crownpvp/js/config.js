@@ -13,8 +13,8 @@ window.CROWN = {
   punishmentsData: "data/punishments",
   // Accounts + alerts (Supabase). Fill these two in after following supabase/README steps. Both values are PUBLIC and safe here.
   // NEVER paste the "service_role" key. Leave both empty to hide sign-in and alerts.
-  supabaseUrl: "",
-  supabaseKey: "",
+  supabaseUrl: "https://iwhbnmerwgqtpswwehss.supabase.co",
+  supabaseKey: "sb_publishable_JC0T3E13lrD-06j6438PJA_0-Ds0jHS",
   topApi: "/api/stats/top?limit=10",
   statusApi: "https://api.mcsrvstat.us/3/play.crownpvp.com",
   // Tebex Headless checkout. Paste your PUBLIC webstore token (Tebex > Headless API). It is safe to expose.
