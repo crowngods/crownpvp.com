@@ -16,6 +16,10 @@ window.CROWN = {
   // Tebex Headless checkout. Paste your PUBLIC webstore token (Tebex > Headless API). It is safe to expose.
   // When set, the cart builds one real Tebex basket with your player\'s username and sends them to checkout.
   tebexToken: "",
+  // PayPal.me checkout (no Tebex needed). Put your PayPal.Me link or just the name, e.g. "https://www.paypal.com/paypalme/YourName" or "YourName".
+  // Leave "" to turn PayPal checkout off. Payments are confirmed and delivered by staff (see README).
+  paypalMe: "https://www.paypal.com/paypalme/Angelosluijters",
+  paypalCurrency: "USD",
   // Paste each PUBLIC Tebex package URL (https://crownpvp.tebex.io/package/123456).
   tebex: {
     GOLD_2500: "YOUR_TEBEX_PACKAGE_URL",

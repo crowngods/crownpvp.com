@@ -111,3 +111,12 @@ html.rv-on .rv.in{opacity:1;transform:none}
 .play-grid>*{min-width:0;box-sizing:border-box}
 .mc-panel,.mc-window,.mc-input,.mc-btn-wide{box-sizing:border-box;max-width:100%}
 @media(max-width:860px){.play-grid{grid-template-columns:minmax(0,1fr)}.mc-window{margin:0 12px 0 4px}.mc-steps{margin-left:18px}}
+
+/* PayPal checkout panel */
+.ppbox{border:1px solid var(--line,rgba(212,175,55,.22));border-radius:14px;padding:16px;margin:4px 0 14px;text-align:center;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.015))}
+.ppbox small{display:block;color:var(--mut,#a5a5a5);letter-spacing:.12em;font-size:.68rem;font-weight:700}
+.ppbox code{display:block;margin:6px 0 10px;font:700 1.55rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;color:var(--gold2,#f5d76e);user-select:all}
+.ppsum{display:flex;justify-content:space-between;gap:10px;font-size:.88rem;color:var(--mut,#a5a5a5);border-top:1px solid rgba(255,255,255,.08);padding-top:10px}
+.ppsum b{color:#fff}
+.ppsteps{margin:0 0 14px;padding-left:20px;font-size:.88rem;line-height:1.5;color:var(--mut,#a5a5a5)}
+.ppsteps li{margin:6px 0}.ppsteps b{color:#fff}.ppsteps a{text-decoration:underline}

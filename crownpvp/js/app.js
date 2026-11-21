@@ -1,6 +1,8 @@
 (() => {
 const C = window.CROWN, $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const page = document.body.dataset.page;
+/* Show clean addresses: /store instead of /store.html, and / instead of /index.html. The .html pages still work. */
+try { const clean = location.pathname.replace(/(^|\/)index\.html$/, "$1").replace(/\.html$/, ""); if (clean !== location.pathname) history.replaceState(null, "", clean + location.search + location.hash); } catch { /* ignore */ }
 const fmt = n => n.toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nav = [["index.html","Home","home"],["client.html","Client","client"],["store.html","Store","store"],["stats.html","Stats","stats"],["staff.html","Staff","staff"],["rules.html","Rules","rules"],["punishments.html","Punishments","punishments"],["support.html","Support","support"]];
@@ -111,7 +113,7 @@ const faq = [
  ["What is the server IP?",`<b>${C.ip}</b>. <a href="#" data-copy>Copy it</a> and add it in Minecraft Multiplayer.`],
  ["How do I join?",`Open Minecraft, choose Multiplayer, add the server with the IP ${C.ip}, and join. Our <a href="${C.discord}" target="_blank" rel="noopener">Discord</a> has the latest version info.`],
  ["Is CrownPVP pay-to-win?","No. CrownPVP is built on competitive gameplay and fair progression. Gold Coins are the in-game currency you can also earn by playing."],
- ["How do I buy Gold Coins?","Open the <a href='store.html'>Store</a>, add packages to your cart and continue through the configured Tebex package link. Enter your Minecraft username on Tebex."],
+ ["How do I buy Gold Coins?","Open the <a href='store.html'>Store</a>, add packages to your cart, enter your Minecraft username and pay with PayPal. Put the order code in the payment note and share it in store support on Discord. Staff deliver your Gold after confirming the payment."],
  ["Can I link an account here?","No external account sign-in is used on this website."],
  ["How do I appeal a ban or mute?","Contact staff through the <a href='appeals.html'>Appeals page</a> and include your username and punishment details."],
  ["How do FTop rewards work?","Factions compete for the top spots on the Factions Top leaderboard. Weekly, monthly and yearly winners receive the rewards listed on the <a href='index.html#ftop'>homepage</a>."],
@@ -124,7 +126,9 @@ document.addEventListener("click", e => { const a = e.target.closest("a[data-cop
 
 /* ---------- Catalog and cart ---------- */
 const cats = [["gold","Gold Coins"]];
-const pkgId = k => { const u = C.tebex[k]; if (typeof u === "number") return String(u); const m = typeof u === "string" && (u.match(/\/package\/(\d+)/) || u.match(/^(\d+)$/)); return m ? m[1] : null; };
+const PPNAME = (() => { const n = String(C.paypalMe || "").trim().replace(/^(https?:\/\/)?(www\.)?(paypal\.me\/|paypal\.com\/paypalme\/)/i, "").split(/[/?#]/)[0]; return /^[A-Za-z0-9._-]{1,60}$/.test(n) ? n : ""; })();
+const PAY = !C.tebexToken && !!PPNAME;
+const pkgId = k => { const u = C.tebex[k]; if (typeof u === "number") return String(u); const m = typeof u === "string" && (u.match(/\/package\/(\d+)/) || u.match(/^(\d+)$/)); return m ? m[1] : (PAY ? k : null); };
 const pkgUrl = k => { const u = C.tebex[k]; return typeof u === "string" && /^https:\/\//.test(u) ? u : null; };
 const catalog = {};
 cats.forEach(([c]) => (C[c] || []).forEach(p => { catalog[p[0]] = { key: p[0], cat: c, name: p[1], price: p[2], gold: c === "gold" ? Math.round(p[2] * 250) : 0, id: pkgId(p[0]), url: pkgUrl(p[0]) }; }));
@@ -154,11 +158,11 @@ function renderCart() {
   $("#cart-items").innerHTML = ls.length ? ls.map(l => `<div class="ci"><div class="coin sm" aria-hidden="true"></div><div class="cn"><b>${esc(itemName(l))}</b><small>${l.gold ? esc(l.name) + " · " : ""}${money(l.price)} each</small><div class="qty"><button data-q="${l.key}:-1" aria-label="Fewer">&minus;</button><span>${l.qty}</span><button data-q="${l.key}:1" aria-label="More" ${l.qty >= 10 ? "disabled" : ""}>+</button><button class="rm" data-rm="${l.key}">Remove</button></div></div><div class="cp">${money(l.price * l.qty)}</div></div>`).join("") : `<div class="empty"><h3>Your cart is empty</h3><p style="margin-top:8px">Pick a package in the <a href="store.html">Store</a>.</p></div>`;
   if (!ls.length) { $("#cart-foot").innerHTML = ""; return; }
   const links = ls.filter(l => l.url).map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(itemName(l))}</a>`).join(" · ");
-  const live = !!C.tebexToken, saved = (() => { try { return localStorage.getItem("crown_user") || ""; } catch { return ""; } })();
+  const live = !!C.tebexToken || PAY, saved = (() => { try { return localStorage.getItem("crown_user") || ""; } catch { return ""; } })();
   $("#cart-foot").innerHTML = `${gold ? `<div class="tl"><span>Total Gold</span><b>${fmt(gold)}</b></div>` : ""}<div class="tl big"><span>Total</span><b>${money(total)}</b></div>
-  ${live ? `<label class="cu" for="cart-user">Minecraft username</label><div class="cuw"><img id="cart-head" src="${head(saved || "Steve", 32)}" alt="" width="32" height="32"><input id="cart-user" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Your in-game name" value="${esc(saved)}"></div><button class="btn wide" data-checkout>Checkout with Tebex</button><p class="cm" id="cart-msg" aria-live="polite"></p>`
+  ${live ? `<label class="cu" for="cart-user">Minecraft username</label><div class="cuw"><img id="cart-head" src="${head(saved || "Steve", 32)}" alt="" width="32" height="32"><input id="cart-user" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Your in-game name" value="${esc(saved)}"></div><button class="btn wide" data-checkout>${PAY ? "Pay with PayPal" : "Checkout with Tebex"}</button><p class="cm" id="cart-msg" aria-live="polite"></p>`
   : links ? `<p class="cs">Open each package on the official Tebex store and enter your Minecraft username there.</p><div class="cart-links">${links}</div>` : `<p class="cm">Store checkout is not configured yet. The cart is ready, but purchases are currently unavailable.</p>`}
-  <p class="cs">Payments are handled securely by Tebex. Gold is delivered after payment is confirmed.</p>`;
+  ${PAY ? `<p class="cs">Pay with PayPal, then include your order code in the payment note. Staff deliver your Gold after they confirm the payment.</p>` : `<p class="cs">Payments are handled securely by Tebex. Gold is delivered after payment is confirmed.</p>`}`;
 }
 document.addEventListener("input", e => {
   if (e.target.id !== "cart-user") return;
@@ -168,6 +172,7 @@ document.addEventListener("input", e => {
 async function checkout() {
   const ls = lines(), msg = $("#cart-msg"), say = t => { if (msg) msg.textContent = t; else toast(t); };
   if (!ls.length) return say("Your cart is empty.");
+  if (PAY) return payPal(ls, say);
   if (!C.tebexToken) { if (ls.length === 1 && ls[0].url) window.open(ls[0].url, "_blank", "noopener"); else say("Choose a package link in your cart to continue."); return; }
   const name = ($("#cart-user")?.value || "").trim();
   if (!/^\w{3,16}$/.test(name)) return say("Enter your Minecraft username (3-16 letters, numbers or _).");
@@ -194,6 +199,41 @@ async function checkout() {
     say(e.message || "Checkout failed. Please try again or ask on Discord.");
   }
 }
+
+/* PayPal.Me checkout: opens PayPal for the exact total and shows an order code the player puts in the payment note.
+   There is no automatic confirmation: staff check PayPal, then give the Gold. */
+function payPal(ls, say) {
+  const name = ($("#cart-user")?.value || "").trim();
+  if (!/^\w{3,16}$/.test(name)) return say("Enter your Minecraft username (3-16 letters, numbers or _).");
+  try { localStorage.setItem("crown_user", name); } catch { /* storage blocked */ }
+  const total = Math.round(ls.reduce((a, l) => a + l.qty * l.price, 0) * 100) / 100;
+  const gold = ls.reduce((a, l) => a + l.qty * l.gold, 0);
+  const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", code = "CPVP-" + Array.from(crypto.getRandomValues(new Uint8Array(6)), b => A[b % 32]).join("");
+  const cur = /^[A-Z]{3}$/.test(C.paypalCurrency || "") ? C.paypalCurrency : "USD";
+  const url = `https://www.paypal.com/paypalme/${PPNAME}/${total}${cur}`;
+  const items = ls.map(l => `${l.qty} x ${itemName(l)}`).join(", ");
+  const details = `Order: ${code}\nMinecraft username: ${name}\nItems: ${items} (${fmt(gold)} Gold)\nTotal: ${money(total)} ${cur}`;
+  window.open(url, "_blank", "noopener");
+  $("#cart-foot").innerHTML = `<div class="ppbox">
+    <small>YOUR ORDER CODE</small><code>${code}</code>
+    <div class="ppsum"><span>${esc(name)}</span><span>${fmt(gold)} Gold</span><b>${money(total)}</b></div>
+  </div>
+  <ol class="ppsteps">
+    <li><b>Pay on PayPal.</b> A new tab opened with the exact amount. <a href="${esc(url)}" target="_blank" rel="noopener">Open PayPal again</a></li>
+    <li><b>Add a note</b> with <b>${esc(name)}</b> and <b>${code}</b>.</li>
+    <li><b>Tell staff.</b> Copy your order details and send them with a screenshot in <a href="${esc(C.supportChannel)}" target="_blank" rel="noopener">store support on Discord</a>.</li>
+  </ol>
+  <button class="btn wide" data-pp-copy="${esc(details)}">Copy order details</button>
+  <button class="btn ghost wide" data-pp-done style="margin-top:8px">I have paid, clear my cart</button>
+  <button class="btn ghost wide" data-pp-back style="margin-top:8px">Back to cart</button>
+  <p class="cs">Staff deliver your Gold after they confirm the payment. Keep your order code until it arrives.</p>`;
+}
+document.addEventListener("click", e => {
+  const c = e.target.closest("[data-pp-copy]");
+  if (c) { const ok = () => toast("Order details copied"); (navigator.clipboard ? navigator.clipboard.writeText(c.dataset.ppCopy).then(ok, () => toast("Could not copy. Select the text instead.")) : toast("Could not copy. Select the text instead.")); }
+  if (e.target.closest("[data-pp-done]")) CP.cart.clear();
+  if (e.target.closest("[data-pp-back]")) renderCart();
+});
 
 renderCart();
 
