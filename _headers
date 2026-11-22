@@ -1,0 +1,16 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://mc-heads.net https://cdn.discordapp.com; connect-src 'self' https://discord.com https://api.mcsrvstat.us https://mc-heads.net https://headless.tebex.io https://textures.minecraft.net; frame-ancestors 'none'; base-uri 'none'; form-action 'self'
+
+/owner
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+/reports-admin.html
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+
+/api/*
+  Cache-Control: no-store

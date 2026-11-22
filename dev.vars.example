@@ -1,0 +1,9 @@
+SESSION_SECRET=change-me-to-a-long-random-string
+MS_CLIENT_ID=
+MS_CLIENT_SECRET=
+SYNC_TOKEN=change-me-too
+STAFF_UUIDS=
+TEBEX_PUBLIC_TOKEN=
+DISCORD_WEBHOOK=
+REPORT_OWNER_KEY=replace-with-a-long-random-production-secret
+REPORT_OWNER_NAME=Rai
