@@ -155,4 +155,12 @@ if (page === "stats") {
 
 /* ---------- staff: live openings count + deep link ---------- */
 if (location.hash === "#apply") setTimeout(() => $("#apply")?.scrollIntoView({ behavior: "smooth" }), 300);
+/* ---------- cursor spotlight on cards ---------- */
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches && matchMedia("(hover: hover)").matches) {
+  document.querySelectorAll(".mode-card,.cta-card,.tool,.feature,.merch-card,.vote-row,.lcard,.devcard,.link-grid a,.dc-card").forEach(c => {
+    if (getComputedStyle(c).position === "static") c.style.position = "relative";
+    const g = document.createElement("i"); g.className = "spot-glow"; g.setAttribute("aria-hidden", "true"); c.append(g);
+    c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect(); g.style.setProperty("--mx", (e.clientX - r.left) + "px"); g.style.setProperty("--my", (e.clientY - r.top) + "px"); }, { passive: true });
+  });
+}
 })();

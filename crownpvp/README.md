@@ -120,6 +120,10 @@ Crown Client is presented as an upcoming project only. There is no download in t
 - **Staff page**: Owner (MedicalWeed), Co-owner (ksa_70007) and the Developer (Raizukennn, Discord `Rairai.32`) are set in `js/config.js` (`leadership`, `developer`). The "staff online" counter was removed. Other staff still come from the database.
 - **Players page** (`/player`): searching a username shows the 3D skin (walk / run / idle / still, download skin). Total playtime was removed. The old Player stats page now redirects here.
 - **Vote page** (`/vote`): the 4 voting links live in `js/config.js` (`voteSites`). The 24h tracker is a personal reminder stored in the visitor's browser and does not verify votes. A "Top voters" list needs vote data from your server (Votifier), so it is not included.
+- **Discord card** (home page): shows online and member counts from your invite, and member avatars from the Discord server widget. Turn the widget on in Discord > Server Settings > Widget > Enable Server Widget. The server ID is `discordGuildId` in `js/config.js`.
+- **Merchandise** (`/merch`): the product list is `merch` in `js/config.js`. Orders go through a ticket with the topic "Buy merchandise" (re-run `supabase/support-tickets.sql` once so the database accepts that topic).
+- **Ranks**: run `supabase/fix-ranks.sql` once to put MedicalWeed on Owner, ksa_70007 on Co-Owner and Raizukennn on Developer. The Staff page also has an "Add a player to a role" panel for ranks with the manage-staff permission.
+- **Is the new version live?** Scroll to the footer. It should say "Site v4". If it does not, the new files are not published yet (check GitHub > Actions).
 - **Support tickets** (`/tickets`): topics are in `js/config.js` (`ticketTopics`). Run `supabase/support-tickets.sql` once in Supabase > SQL Editor, after `network-upgrade.sql`. Players must be signed in. Staff with report access see an "All tickets" tab and can reply or close tickets.
 
 ## Important launch checklist

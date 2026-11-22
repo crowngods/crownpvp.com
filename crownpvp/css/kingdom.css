@@ -328,3 +328,44 @@ header .wrap{gap:14px}.logo{flex:none}nav{min-width:0;gap:0}
 .tk-staff{display:grid;gap:10px;margin-top:12px}
 @media(max-width:860px){.cta-grid,.vote-layout{grid-template-columns:1fr}.vote-aside{position:static}}
 @media(max-width:560px){.lcard,.devcard{flex-direction:column;text-align:center}.vote-row{flex-wrap:wrap}.vote-go{width:100%;justify-content:center}.pstage{width:100%}.dev-contact{justify-content:center}}
+
+/* Discord card */
+.discord-sec{padding:44px 0}
+.dc-grid{display:grid;grid-template-columns:1.1fr 420px;gap:40px;align-items:center}
+.dc-grid h2{font-size:clamp(1.9rem,4vw,2.8rem);margin:12px 0;color:#fff;letter-spacing:-.04em}.dc-grid h2 span{color:#8c97ff}
+.dc-grid p{color:var(--mut);max-width:50ch;margin-bottom:16px}
+.dc-points{list-style:none;padding:0;display:grid;gap:8px;color:#d9d6cc;font-weight:600}.dc-points li::before{content:"";display:inline-block;width:8px;height:8px;margin-right:10px;border-radius:2px;background:#5865f2}
+.dc-card{padding:26px;border-radius:18px;background:radial-gradient(ellipse at 100% 0,rgba(88,101,242,.28),transparent 60%),linear-gradient(160deg,#10142b,#0a0c1c);border:1px solid rgba(88,101,242,.4);box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.dc-card h3{font-size:1.1rem;color:#fff;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:20px}
+.dc-top{display:flex;gap:16px;align-items:center}.dc-top img{width:64px;height:64px;border-radius:16px;background:#0b0b0e;object-fit:cover}
+.dc-top b{font-size:1.25rem;color:#fff;display:block}.dc-top small{color:var(--mut)}
+.dc-counts{display:flex;gap:8px;color:#a9b0d6;margin-top:4px}.dc-counts b{display:inline;font-size:1rem;color:#fff}.dc-counts b.on{color:#43d68a}
+.dc-avatars{display:flex;align-items:center;margin:20px 0 0}.dc-avatars img{width:36px;height:36px;border-radius:50%;border:2px solid #0a0c1c;margin-left:-8px;background:#1b1f3d}.dc-avatars img:first-child{margin-left:0}
+.dc-avatars span{margin-left:12px;color:#a9b0d6;font-weight:700}
+.dc-join{display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:13px 24px;border-radius:10px;background:#5865f2;color:#fff;font:800 .95rem "Plus Jakarta Sans",sans-serif;text-decoration:none;transition:transform .2s,background .2s}.dc-join:hover{background:#4752c4;transform:translateY(-2px)}
+@media(max-width:860px){.dc-grid{grid-template-columns:1fr}}
+
+/* ===== Merch, ticker, shine, spotlight ===== */
+.ticker{overflow:hidden;border-block:1px solid rgba(212,175,55,.25);background:linear-gradient(90deg,#120f08,#1a1409,#120f08);padding:13px 0}
+.ticker-in{display:flex;gap:46px;width:max-content;animation:tick 38s linear infinite}
+.ticker-in span{font:800 .8rem/1 "Plus Jakarta Sans",sans-serif;letter-spacing:.22em;color:#d4af37;white-space:nowrap}
+.ticker-in span::after{content:"◆";margin-left:46px;color:#7a5c14}
+@keyframes tick{to{transform:translateX(-50%)}}
+.crown-hero h1 span,.gold-t{background:linear-gradient(100deg,#b8902c 20%,#fff1b8 45%,#d4af37 60%,#b8902c 80%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:shine 5s linear infinite}
+@keyframes shine{to{background-position:-220% center}}
+.spot-glow{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(212,175,55,.17),transparent 70%)}
+*:hover>.spot-glow{opacity:1}
+.cta-grid{grid-template-columns:repeat(3,1fr)}
+.cta-merch{background:radial-gradient(ellipse at 90% 0,rgba(88,101,242,.26),transparent 55%),linear-gradient(160deg,#14152a,#0e0e11);border-color:rgba(88,101,242,.4)}
+.merch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.merch-card{display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:28px;border-radius:18px;background:linear-gradient(160deg,#18181e,#0f0f12);border:1px solid var(--line2);transition:transform .25s,border-color .25s,box-shadow .25s}
+.merch-card:hover{transform:translateY(-6px);border-color:rgba(212,175,55,.55);box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.merch-ic{display:grid;place-items:center;width:64px;height:64px;border-radius:16px;font-size:2rem;background:radial-gradient(circle at 30% 20%,rgba(212,175,55,.35),rgba(212,175,55,.06));border:1px solid rgba(212,175,55,.35)}
+.merch-tag{padding:4px 11px;border-radius:999px;font:800 .7rem "Plus Jakarta Sans",sans-serif;letter-spacing:.1em;text-transform:uppercase;background:rgba(95,209,138,.12);color:#5fd18a}
+.merch-card h3{font-size:1.35rem;color:#fff}.merch-card p{color:var(--mut);line-height:1.6;flex:1}
+.merch-side{display:grid;gap:6px;padding:20px 22px;border-radius:14px;text-decoration:none;color:#14110a;background:linear-gradient(135deg,#f5d36b,#d4af37);box-shadow:0 12px 30px rgba(212,175,55,.25);transition:transform .2s}
+.merch-side:hover{transform:translateY(-3px)}.merch-side b{font-size:1.15rem}.merch-side span{font-weight:600;opacity:.8}.merch-side i{font:800 .85rem "Plus Jakarta Sans",sans-serif;font-style:normal}
+.role-form{max-width:760px}.ver{opacity:.55;margin-left:8px}
+@media(max-width:1100px){.cta-grid{grid-template-columns:1fr 1fr}.cta-merch{grid-column:1/-1}}
+@media(max-width:860px){.cta-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.ticker-in,.crown-hero h1 span,.gold-t{animation:none}}

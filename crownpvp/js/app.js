@@ -5,7 +5,7 @@ const page = document.body.dataset.page;
 try { const clean = location.pathname.replace(/(^|\/)index\.html$/, "$1").replace(/\.html$/, ""); if (clean !== location.pathname) history.replaceState(null, "", clean + location.search + location.hash); } catch { /* ignore */ }
 const fmt = n => n.toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const nav = [["index.html","Home","home"],["client.html","Client","client"],["store.html","Store","store"],["vote.html","Vote","vote"],["staff.html","Staff","staff"],["rules.html","Rules","rules"],["punishments.html","Punishments","punishments"],["player.html","Players","player"],["tickets.html","Support","tickets"]];
+const nav = [["index.html","Home","home"],["client.html","Client","client"],["store.html","Store","store"],["merch.html","Merch","merch"],["vote.html","Vote","vote"],["staff.html","Staff","staff"],["rules.html","Rules","rules"],["punishments.html","Punishments","punishments"],["player.html","Players","player"],["tickets.html","Support","tickets"]];
 const MS = "";
 const CART_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="18" cy="20.5" r="1.2"/></svg>`;
 
@@ -53,7 +53,7 @@ $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a
 <div class="ip" style="margin:16px 0 0"><code>${C.ip}</code><button data-copy>Copy IP</button></div></div>
 <div><h3>Explore</h3>${nav.map(n => `<a href="${n[0]}">${n[1]}</a>`).join("")}</div>
 <div><h3>Community</h3><a href="${C.discord}" target="_blank" rel="noopener">Join Discord</a><a href="store.html">Gold Store</a><a href="support.html">Report a player</a><a href="appeals.html">Appeal a punishment</a><a href="player.html">Player lookup</a><a href="faq.html">FAQ</a><a href="staff.html#apply">Staff applications</a><a href="${esc(C.supportChannel || C.discord)}" target="_blank" rel="noopener">Store &amp; community support</a></div></div>
-<div class="copy"><span>&copy; ${new Date().getFullYear()} CrownPVP. All rights reserved.</span><span>Developed by <b>Raizukennn</b> · We are not affiliated with Mojang Studios or Microsoft.</span></div></div></footer><div id="toast" role="status"></div>`;
+<div class="copy"><span>&copy; ${new Date().getFullYear()} CrownPVP. All rights reserved. <small class="ver">${esc(C.siteVersion || "")}</small></span><span>Developed by <b>Raizukennn</b> · We are not affiliated with Mojang Studios or Microsoft.</span></div></div></footer><div id="toast" role="status"></div>`;
 $("#burger").onclick = e => { const o = $("#nav").classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded", o); };
 document.addEventListener("click", async e => {
   const joinCopy = e.target.closest("[data-copy-server]");

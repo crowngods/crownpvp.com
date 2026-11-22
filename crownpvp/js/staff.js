@@ -38,12 +38,31 @@ function render() {
   document.querySelectorAll("[data-apply-role]").forEach(a => a.addEventListener("click", () => { const s = $("#application-role"); if (s) s.value = a.dataset.applyRole; }));
 }
 
+/* Add a player to a role: shown only to ranks with the manage-staff permission. The database enforces who may do what. */
+async function manage(auth) {
+  const box = $("#manage"); if (!box || !auth.user) return;
+  let a = null; try { a = await N.access(auth); } catch { /* not set up */ }
+  if (!N.can(a, "staff_manage")) return;
+  box.hidden = false;
+  $("#role-form").addEventListener("submit", async e => {
+    e.preventDefault(); const f = e.target, m = $("#role-msg"), v = n => f.elements[n].value.trim(), btn = f.querySelector("button[type=submit]");
+    const say = (t, ok) => { m.className = "kmsg " + (ok ? "ok" : "err"); m.textContent = t; };
+    const remove = v("rank") === "__remove"; if (remove && !confirm(`Remove ${v("user")} from staff?`)) return;
+    btn.disabled = true;
+    const { error } = await auth.sb.rpc("set_staff_rank", { p_username: v("user"), p_rank: remove ? null : v("rank"), p_title: v("title") || null });
+    btn.disabled = false;
+    if (error) return say(N.friendly(error, "Could not save the role."));
+    say(remove ? "Removed from staff." : "Role saved. Reloading...", true); setTimeout(() => location.reload(), 900);
+  });
+}
+
 render();
 CP.authReady.then(async auth => {
   if (!auth) { members = false; render(); return; }
   try { const { data, error } = await auth.sb.rpc("public_staff"); if (error) throw error; members = (data || []).filter(m => N.RANKS[m.staff_rank] && !["developer","owner","coowner"].includes(m.staff_rank) && !leaders.has(String(m.username).toLowerCase())); }
   catch (e) { console.error("Team list error (did you run network-upgrade.sql?)", e); members = false; }
   render();
+  manage(auth);
 });
 /* Leadership + developer come from js/config.js so they always show, independent of the database. */
 (() => {

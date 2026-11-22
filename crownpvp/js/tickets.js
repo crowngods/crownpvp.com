@@ -12,8 +12,8 @@ const say = (t, ok) => { const m = $("#tk-msg"); if (m) { m.className = "kmsg " 
 function formHtml() {
   return `<form class="kcard tk-form" id="tk-form" novalidate><div class="tk-warn">Before filling out this form, read the relevant thread on <a data-discord>Discord</a> or the <a href="rules.html">rules</a>.</div>
   <label><span>Minecraft username <em>Required</em></span><input class="fi" name="username" maxlength="16" required autocomplete="off" spellcheck="false" placeholder="Example: Player123" value="${esc(params.get("player") || "")}"><small>What is your Minecraft username?</small></label>
-  <label><span>Title <em>Required</em></span><input class="fi" name="title" maxlength="100" required><small>What is a short explanation of this ticket?</small></label>
-  <label><span>Topic <em>Required</em></span><select class="fi" name="topic" required><option value="">Choose one</option>${TOPICS.map(t => `<option>${esc(t)}</option>`).join("")}</select><small>What is the topic of this ticket?</small></label>
+  <label><span>Title <em>Required</em></span><input class="fi" name="title" maxlength="100" required value="${esc(params.get("item") ? "Buy: " + params.get("item") : "")}"><small>What is a short explanation of this ticket?</small></label>
+  <label><span>Topic <em>Required</em></span><select class="fi" name="topic" required><option value="">Choose one</option>${TOPICS.map(t => `<option${t === params.get("topic") ? " selected" : ""}>${esc(t)}</option>`).join("")}</select><small>What is the topic of this ticket?</small></label>
   <label><span>Description <em>Required</em></span><textarea class="fi" name="description" rows="7" minlength="10" maxlength="3000" required></textarea><small>Give as much detail as you can. Never share passwords.</small></label>
   <p class="kmsg" id="tk-msg" role="status" aria-live="polite"></p>
   <div class="tk-actions"><button class="btn gold" type="submit" id="tk-send">Submit</button><button class="btn ghost" type="button" data-view="list">Cancel</button></div></form>`;

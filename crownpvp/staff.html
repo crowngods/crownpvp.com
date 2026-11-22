@@ -13,12 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/crown.css">
-  <link rel="stylesheet" href="css/elite.css">
-  <link rel="stylesheet" href="css/upgrade.css">
-  <link rel="stylesheet" href="css/features.css">
-  <link rel="stylesheet" href="css/hd-overhaul.css"><link rel="stylesheet" href="css/kingdom.css">
+  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/crown.css?v=4">
+  <link rel="stylesheet" href="css/elite.css?v=4">
+  <link rel="stylesheet" href="css/upgrade.css?v=4">
+  <link rel="stylesheet" href="css/features.css?v=4">
+  <link rel="stylesheet" href="css/hd-overhaul.css?v=4"><link rel="stylesheet" href="css/kingdom.css?v=4">
 </head>
 <body data-page="staff">
   <div id="bg" aria-hidden="true"><div class="grid"></div></div>
@@ -43,6 +43,9 @@
     </div></section>
     <section class="tight"><div class="wrap"><div class="section-head"><div><div class="eyebrow">THE TEAM</div><h2>Staff</h2><p>The people who keep the realm fair and friendly.</p></div></div><div id="staff"></div></div></section>
     <section class="alt"><div class="wrap"><div class="section-head"><div><div class="eyebrow">ROLE RESPONSIBILITIES</div><h2>What each role does</h2><p>Every team member is expected to be respectful, reliable and fair.</p></div></div><div class="roles" id="roles"></div></div></section>
+    <section id="manage" class="alt" hidden><div class="wrap"><div class="section-head"><div><div class="eyebrow">TEAM MANAGEMENT</div><h2>Add a player to a role</h2><p>Only people with the manage-staff permission see this. The player needs a CrownPVP website account.</p></div></div>
+      <form id="role-form" class="kcard kform role-form"><div class="two"><label>Website username<input class="fi" name="user" maxlength="16" required pattern="[A-Za-z0-9_]{3,16}" autocomplete="off" placeholder="Player's username"></label><label>Role<select class="fi" name="rank" required><option value="" disabled selected>Choose a role</option><option value="owner">Owner</option><option value="coowner">Co-Owner</option><option value="manager">Manager</option><option value="admin">Admin</option><option value="developer">Developer</option><option value="moderator">Moderator</option><option value="helper">Helper</option><option value="media">Media</option><option value="__remove">Remove from staff</option></select></label></div>
+      <label>Position title (optional)<input class="fi" name="title" maxlength="40" placeholder="e.g. Head Moderator"></label><p class="kmsg" id="role-msg" role="status"></p><button class="btn gold" type="submit">Save role</button></form></div></section>
     <section id="apply" class="staff-apply-section">
       <div class="wrap">
         <div class="staff-apply-head">
@@ -160,12 +163,12 @@
     </section>
   </main>
   <div id="site-footer"></div>
-  <script src="js/config.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
-  <script src="js/net.js?v=3"></script>
-  <script src="js/staff.js?v=3"></script>
-  <script src="js/forms-core.js"></script>
-  <script src="js/staff-apply.js"></script>
-  <script src="js/features.js" defer></script>
+  <script src="js/config.js?v=4"></script>
+  <script src="js/app.js?v=4"></script>
+  <script src="js/net.js?v=4"></script>
+  <script src="js/staff.js?v=4"></script>
+  <script src="js/forms-core.js?v=4"></script>
+  <script src="js/staff-apply.js?v=4"></script>
+  <script src="js/features.js?v=4" defer></script>
 </body>
 </html>

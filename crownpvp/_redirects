@@ -4,6 +4,7 @@
 /stats.html /player.html 301
 /stats /player.html 301
 /vote.html /vote 301
+/merch.html /merch 301
 /tickets.html /tickets 301
 /staff.html /staff 301
 /rules.html /rules 301
@@ -15,6 +16,7 @@
 /client /client.html 200
 /store /store.html 200
 /vote /vote.html 200
+/merch /merch.html 200
 /tickets /tickets.html 200
 /staff /staff.html 200
 /rules /rules.html 200

@@ -3,6 +3,8 @@ window.CROWN = {
   name: "CrownPVP",
   ip: "play.crownpvp.com",
   discord: "https://discord.gg/nFfnbw844",
+  // Discord server ID (the first number in your channel link). Used by the live Discord card on the home page.
+  discordGuildId: "1560484926283972608",
   partnershipUrl: "https://discord.com/channels/1560484926283972608/1560484931321471038",
   supportChannel: "https://discord.com/channels/1560484926283972608/1560484931321471038",
   currency: "$",
@@ -35,7 +37,16 @@ window.CROWN = {
     { name: "Minecraft-MP",          url: "https://minecraft-mp.com/server/365901/vote/" },
     { name: "MinecraftServers.org",  url: "https://minecraftservers.org/vote/696405" }
   ],
-  ticketTopics: ["About Discord", "Connection issues", "Denied staff application", "Missing prize", "Something else"],
+  ticketTopics: ["About Discord", "Connection issues", "Denied staff application", "Missing prize", "Buy merchandise", "Something else"],
+  siteVersion: "Site v4 · 22 Nov 2026",
+  // Merchandise & services (shown on /merch). Prices are agreed in the ticket.
+  merch: [
+    { icon: "🎨", tag: "1.8 to 26.3", name: "PvP Resource Packs", desc: "Clean, low-fire, FPS-friendly packs made for PvP. Works on every version from 1.8 to 26.3." },
+    { icon: "🧩", tag: "Made to order", name: "Custom Plugins", desc: "Java plugins built for your server: kits, factions features, menus, economy and more." },
+    { icon: "🗺️", tag: "Custom builds", name: "Maps & Builds", desc: "Spawns, arenas, faction maps and custom builds designed for your server." },
+    { icon: "🌐", tag: "Full design", name: "Website Customization", desc: "A website like this one for your own server: store, vote page, staff page, tickets and a live Discord card." },
+    { icon: "✨", tag: "Just ask", name: "Something Custom", desc: "Need something that is not listed? Describe it in a ticket and we will tell you if we can build it." }
+  ],
   topApi: "/api/stats/top?limit=10",
   statusApi: "https://api.mcsrvstat.us/3/play.crownpvp.com",
   // Tebex Headless checkout. Paste your PUBLIC webstore token (Tebex > Headless API). It is safe to expose.

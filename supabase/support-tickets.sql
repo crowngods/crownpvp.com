@@ -4,7 +4,7 @@ create table if not exists public.support_tickets (
   user_id uuid not null references auth.users (id) on delete cascade,
   username text not null check (username ~ '^[A-Za-z0-9_]{3,16}$'),
   title text not null check (char_length(title) between 3 and 100),
-  topic text not null check (topic in ('About Discord','Connection issues','Denied staff application','Missing prize','Something else')),
+  topic text not null check (topic in ('About Discord','Connection issues','Denied staff application','Missing prize','Buy merchandise','Something else')),
   description text not null check (char_length(description) between 10 and 3000),
   status text not null default 'open' check (status in ('open','answered','closed')),
   staff_reply text not null default '' check (char_length(staff_reply) <= 2000),
@@ -12,6 +12,9 @@ create table if not exists public.support_tickets (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+-- Existing installs: allow the new 'Buy merchandise' topic.
+alter table public.support_tickets drop constraint if exists support_tickets_topic_check;
+alter table public.support_tickets add constraint support_tickets_topic_check check (topic in ('About Discord','Connection issues','Denied staff application','Missing prize','Buy merchandise','Something else'));
 create index if not exists support_tickets_user_created on public.support_tickets (user_id, created_at desc);
 create index if not exists support_tickets_status_created on public.support_tickets (status, created_at desc);
 alter table public.support_tickets enable row level security;
@@ -29,7 +32,7 @@ begin
   if auth.uid() is null then raise exception 'Sign in first'; end if;
   if uname !~ '^[A-Za-z0-9_]{3,16}$' then raise exception 'Enter a valid Minecraft username (3-16 letters, numbers or underscores)'; end if;
   if char_length(ttl) < 3 or char_length(ttl) > 100 then raise exception 'The title must be 3 to 100 characters'; end if;
-  if coalesce(p_topic, '') not in ('About Discord','Connection issues','Denied staff application','Missing prize','Something else') then raise exception 'Choose a topic'; end if;
+  if coalesce(p_topic, '') not in ('About Discord','Connection issues','Denied staff application','Missing prize','Buy merchandise','Something else') then raise exception 'Choose a topic'; end if;
   if char_length(des) < 10 or char_length(des) > 3000 then raise exception 'The description must be 10 to 3000 characters'; end if;
   if (select count(*) from public.support_tickets where user_id = auth.uid() and created_at > now() - interval '1 hour') >= 3 then
     raise exception 'Too many tickets. Please wait a while before opening another.';
