@@ -10,6 +10,8 @@ const TEAM = [
   { id: "media",     slots: 3, blurb: "Creates content and spreads the word about CrownPVP." }
 ];
 let members = null;
+/* Owners and the developer have their own sections, so they never repeat in the staff tiers, whatever rank the database gives them. */
+const leaders = new Set([...(window.CROWN.leadership || []).map(m => m.name), window.CROWN.developer?.name].filter(Boolean).map(n => n.toLowerCase()));
 
 function card(m) {
   const r = N.RANKS[m.staff_rank];
@@ -39,7 +41,7 @@ function render() {
 render();
 CP.authReady.then(async auth => {
   if (!auth) { members = false; render(); return; }
-  try { const { data, error } = await auth.sb.rpc("public_staff"); if (error) throw error; members = (data || []).filter(m => N.RANKS[m.staff_rank] && !["developer","owner","coowner"].includes(m.staff_rank)); }
+  try { const { data, error } = await auth.sb.rpc("public_staff"); if (error) throw error; members = (data || []).filter(m => N.RANKS[m.staff_rank] && !["developer","owner","coowner"].includes(m.staff_rank) && !leaders.has(String(m.username).toLowerCase())); }
   catch (e) { console.error("Team list error (did you run network-upgrade.sql?)", e); members = false; }
   render();
 });
