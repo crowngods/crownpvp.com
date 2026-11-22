@@ -18,6 +18,24 @@ window.CROWN = {
   // CrownClient release state. "coming_soon" shows a COMING SOON badge and NO download buttons.
   // When it is really released set status to "released" and paste the https download links (empty link = no button).
   client: { status: "coming_soon", freeDownload: "", premiumUrl: "" },
+  // People shown on the Staff page (leadership). Developer is shown in its own section.
+  leadership: [
+    { rank: "owner",   name: "MedicalWeed", blurb: "Founder of CrownPVP. Leads the network and makes the final decisions." },
+    { rank: "coowner", name: "ksa_70007",   blurb: "Runs the network alongside the Owner and keeps the community running smoothly." }
+  ],
+  developer: {
+    name: "Raizukennn",
+    discord: "Rairai.32",
+    about: "Raizukennn built everything you see on CrownPVP: the Minecraft server and this website. Found a bug, have a technical problem or a website idea? Contact him on Discord."
+  },
+  // Voting sites (shown on /vote).
+  voteSites: [
+    { name: "Minecraft Server List", url: "https://minecraft-server-list.com/server/524423/vote/" },
+    { name: "Minecraft Buzz",        url: "https://minecraft.buzz/vote/crownpvp-25199" },
+    { name: "Minecraft-MP",          url: "https://minecraft-mp.com/server/365901/vote/" },
+    { name: "MinecraftServers.org",  url: "https://minecraftservers.org/vote/696405" }
+  ],
+  ticketTopics: ["About Discord", "Connection issues", "Denied staff application", "Missing prize", "Something else"],
   topApi: "/api/stats/top?limit=10",
   statusApi: "https://api.mcsrvstat.us/3/play.crownpvp.com",
   // Tebex Headless checkout. Paste your PUBLIC webstore token (Tebex > Headless API). It is safe to expose.

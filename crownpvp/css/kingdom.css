@@ -268,3 +268,63 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.55}
 /* header fit: keep the logo clear of the menu */
 header .wrap{gap:14px}.logo{flex:none}nav{min-width:0;gap:0}
 @media(max-width:1180px){nav a{padding:9px 6px;font-size:.74rem}.ippill code{font-size:.72rem}}
+
+/* ===== CrownPVP Plus: leadership, developer, player skin, vote, tickets, home bands ===== */
+.gold-t,.cta-card h2 span{color:var(--gold)}
+.lead-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.lcard,.devcard{position:relative;display:flex;gap:24px;align-items:center;padding:24px 28px;border-radius:18px;background:radial-gradient(ellipse at 15% 0,color-mix(in srgb,var(--rc) 22%,transparent),transparent 60%),linear-gradient(160deg,#17171c,#0f0f12);border:1px solid color-mix(in srgb,var(--rc) 45%,#2a2a32);overflow:hidden;transition:transform .25s,box-shadow .25s}
+.lcard:hover,.devcard:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 0 1px var(--rc)}
+.lbody{width:120px;height:auto;flex:none;filter:drop-shadow(0 12px 14px rgba(0,0,0,.6));image-rendering:pixelated}
+.linfo h3{font-size:1.9rem;margin:10px 0 6px;color:#fff;letter-spacing:-.03em}
+.linfo p{color:var(--mut);line-height:1.6;max-width:56ch}
+.devcard{gap:32px;padding:30px 34px}
+.devcard .linfo p{font-size:1.02rem}
+.dev-contact{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:18px}
+.dev-chip{display:grid;gap:4px;padding:10px 16px;border-radius:10px;background:#0b0b0e;border:1px solid color-mix(in srgb,var(--rc) 50%,#2a2a32)}
+.dev-chip small{font:800 .62rem/1 "Plus Jakarta Sans",sans-serif;letter-spacing:.18em;color:var(--mut)}
+.dev-chip b{font:700 1.15rem "JetBrains Mono",monospace;color:var(--rc)}
+.pskin{display:grid;gap:12px;justify-items:center;flex:none}
+.pstage{width:260px;min-height:340px;display:grid;place-items:center;border-radius:16px;background:radial-gradient(ellipse at 50% 85%,rgba(212,175,55,.2),transparent 62%),#0b0b0e;border:1px solid var(--line2)}
+.pstage canvas{width:260px;height:340px}.pstage img{width:130px;height:auto;image-rendering:pixelated}
+.pskin-ctl{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pskin-ctl button{padding:7px 14px;border-radius:999px;border:1px solid #34343c;background:#111116;color:var(--mut);font:700 .8rem "Plus Jakarta Sans",sans-serif;cursor:pointer}
+.pskin-ctl button.on,.pskin-ctl button:hover{color:#111;background:var(--gold);border-color:var(--gold)}
+.pgrid2{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important}
+.cta-band{padding:34px 0}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.cta-card{position:relative;padding:34px;border-radius:20px;overflow:hidden;border:1px solid var(--line2);background:linear-gradient(160deg,#18181e,#0e0e11)}
+.cta-vote{background:radial-gradient(ellipse at 90% 0,rgba(212,175,55,.2),transparent 55%),linear-gradient(160deg,#1a1812,#0e0e11);border-color:rgba(212,175,55,.35)}
+.cta-help{background:radial-gradient(ellipse at 90% 0,rgba(179,32,47,.28),transparent 55%),linear-gradient(160deg,#1a1215,#0e0e11)}
+.cta-card h2{font-size:clamp(1.7rem,3vw,2.3rem);margin:12px 0 10px;color:#fff;letter-spacing:-.04em}
+.cta-card p{color:var(--mut);max-width:46ch;margin-bottom:16px}
+.vote-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.vote-chips span{padding:6px 12px;border-radius:999px;font:700 .78rem "Plus Jakarta Sans",sans-serif;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#d9d6cc}
+.vote-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:26px;align-items:start}
+.vote-user{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+.vote-user small{display:block;color:var(--mut);margin-top:4px;max-width:36ch}
+.vote-form{display:flex;gap:8px;flex-wrap:wrap}.vote-form .fi{width:190px}
+.vote-prog{display:grid;gap:8px;margin:0 0 16px;color:var(--mut)}.vote-prog b{color:var(--gold);font-size:1.2rem}
+.vote-bar{height:8px;border-radius:99px;background:#1a1a20;overflow:hidden}.vote-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#b8902c,#f5d36b);transition:width .5s}
+.vote-list{display:grid;gap:12px}
+.vote-row{display:flex;align-items:center;gap:18px;padding:16px 20px;border-radius:14px;background:linear-gradient(160deg,#17171c,#101013);border:1px solid var(--line2);transition:transform .2s,border-color .2s}
+.vote-row:hover{transform:translateX(4px);border-color:rgba(212,175,55,.5)}.vote-row.done{opacity:.8}
+.vote-no{display:grid;place-items:center;width:54px;height:54px;border-radius:12px;background:linear-gradient(160deg,#b8902c,#7a5c14);color:#fff;font:800 1.15rem "Space Grotesk",sans-serif;flex:none}
+.vote-info{flex:1;min-width:0}.vote-info h3{font-size:1.1rem;color:#fff}.vote-info small{color:var(--mut)}
+.vote-cool{font:700 .78rem "Plus Jakarta Sans",sans-serif;color:#7ee2a0;white-space:nowrap}
+.vote-go{white-space:nowrap}.vote-note{margin-top:14px}
+.vote-aside{display:grid;gap:16px;position:sticky;top:90px}.vote-help p{color:var(--mut);margin-top:6px}
+.tk-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}.tk-head h2{font-size:clamp(1.6rem,3vw,2.2rem)}
+.ktabs button{cursor:pointer}
+.tk-arch{display:flex;gap:16px;align-items:center;padding:18px 20px;margin:6px 0 18px;border-radius:12px;background:#111316;border:1px solid var(--line2);border-left:4px solid #3fbf8f}
+.tk-arch img{border-radius:10px}.tk-arch small{display:block;color:var(--mut);margin-top:3px}
+.tk-form{display:grid;gap:20px;max-width:760px;margin:0 auto}
+.tk-form label{display:grid;gap:6px;font-weight:700}.tk-form label em{font:700 .72rem "Plus Jakarta Sans",sans-serif;font-style:normal;color:var(--gold);margin-left:8px}
+.tk-form small{color:var(--mut);font-weight:500}
+.tk-warn{padding:12px 16px;border-radius:10px;background:rgba(255,77,94,.1);border:1px solid rgba(255,77,94,.35);color:#ff8a94;font-weight:700}.tk-warn a{color:var(--gold)}
+.tk-actions{display:flex;gap:10px;flex-wrap:wrap}
+.tk-pill{padding:5px 12px;border-radius:999px;font:800 .72rem "Plus Jakarta Sans",sans-serif;letter-spacing:.06em;text-transform:uppercase;background:rgba(245,197,66,.14);color:#f5c542}
+.tk-pill.answered{background:rgba(95,209,138,.14);color:#5fd18a}.tk-pill.closed{background:rgba(160,160,170,.16);color:#a0a0aa}
+.tk-reply{margin-top:12px;padding:12px 16px;border-radius:10px;background:rgba(95,209,138,.08);border-left:3px solid #5fd18a}.tk-reply p{margin-top:4px}
+.tk-staff{display:grid;gap:10px;margin-top:12px}
+@media(max-width:860px){.cta-grid,.vote-layout{grid-template-columns:1fr}.vote-aside{position:static}}
+@media(max-width:560px){.lcard,.devcard{flex-direction:column;text-align:center}.vote-row{flex-wrap:wrap}.vote-go{width:100%;justify-content:center}.pstage{width:100%}.dev-contact{justify-content:center}}

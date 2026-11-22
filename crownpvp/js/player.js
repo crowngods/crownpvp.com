@@ -37,17 +37,15 @@ function view(name, rec, all, site, idx) {
   const cnt = t => all.filter(p => p.type === t).length, st = status(all, now);
   const sorted = [...all].sort((a, b) => b.time - a.time || b.id - a.id);
   const first = rec?.[2] ? day(rec[2]) : null, last = rec?.[3] ? day(rec[3]) : null;
-  const pt = idx.playtime && rec?.[4] != null ? `${Math.floor(rec[4] / 3600).toLocaleString("en-US")} h ${Math.floor((rec[4] % 3600) / 60)} m` : null;
   const lab = Object.fromEntries(TYPES);
   return `<article class="pprof">
-  <header class="pprof-h"><img class="pbody" src="https://mc-heads.net/body/${encodeURIComponent(uuid || display)}/160" alt="${esc(display)}'s skin" width="96" height="160" loading="lazy">
+  <header class="pprof-h"><div class="pskin"><div class="pstage"><canvas id="pskin-cv" width="260" height="340" hidden></canvas><img id="pskin-fb" class="pbody" src="https://mc-heads.net/body/${encodeURIComponent(display)}/260" alt="${esc(display)}'s skin" width="130" height="260" loading="lazy"></div><div class="pskin-ctl" data-skin="${esc(display)}"><button type="button" data-a="walk" class="on">Walk</button><button type="button" data-a="run">Run</button><button type="button" data-a="idle">Idle</button><button type="button" data-a="none">Still</button></div><a class="btn ghost sm" href="https://mc-heads.net/skin/${encodeURIComponent(display)}" download="${esc(display)}.png">Download skin</a></div>
     <div class="pmain"><span class="keyebrow">PLAYER PROFILE</span><h2>${esc(display)}</h2><div class="pst ${st.cls}"><i></i>${esc(st.title)}</div>
     <div class="pact"><a class="btn ghost sm" href="support.html?player=${encodeURIComponent(display)}">Report this player</a>${st.items.map(p => `<a class="btn sm" href="appeals.html?type=${p.type}&id=${p.id}&name=${encodeURIComponent(display)}">Appeal this ${p.type}</a>`).join("")}</div></div></header>
   ${st.items.length ? `<div class="kcard cur">${st.items.map(p => `<div><b>${lab[p.type]} #${p.id}</b> &middot; ${esc(CP.clean(p.reason)) || "<i>No reason given</i>"}<br><small>By ${esc(p.staff)} on ${date(p.time)} &middot; ${p.until <= 0 ? "Permanent" : `Expires ${date(p.until)}`}</small></div>`).join("")}</div>` : ""}
   <div class="pgrid2">
     ${row("First join", first || na(rec ? "Not recorded" : "Not seen yet"))}
     ${row("Last seen", last || na(rec ? "Not recorded" : "Not seen yet"))}
-    ${row("Total playtime", pt || na("Not tracked"))}
     ${row("Website registered", site?.registered_at ? day(Date.parse(site.registered_at)) : na(site === undefined ? "Unavailable" : "No website account"))}
   </div>
   <div class="pcounts">${TYPES.map(([k, l]) => `<div class="pc ${k}"><b>${cnt(k)}</b><span>${k === "warn" ? "Warnings" : l + "s"}</span></div>`).join("")}</div>
@@ -57,6 +55,19 @@ function view(name, rec, all, site, idx) {
     return `<tr><td data-l="Type"><span class="tp ${p.type}">${lab[p.type]}</span>${timed ? `<small class="ps ${live ? "live" : ""}">${p.removed_by ? "Removed" : live ? "Active" : "Expired"}</small>` : ""}</td><td data-l="Reason" class="rs">${esc(CP.clean(p.reason)) || "<i>No reason given</i>"}</td><td data-l="Staff"><span class="u">${p.staff === "CONSOLE" ? "<b>CONSOLE</b>" : `<img src="${esc(head(p.staff, 22))}" alt="" width="22" height="22" loading="lazy"><b>${esc(p.staff)}</b>`}</span></td><td data-l="Date" class="dt">${date(p.time)}</td><td data-l="Duration">${timed ? (p.until <= 0 ? "Permanent" : dur(p.until - p.time)) : "N/A"}</td></tr>`;
   }).join("")}</tbody></table></div>` : `<div class="empty"><h3>Clean record</h3><p style="margin-top:8px">No punishments are recorded for ${esc(display)}.</p></div>`}
   <p class="dmuted src">Data from the CrownPVP server database${idx.updated ? `, updated ${CP.ago(idx.updated)}` : ""}. IP addresses and other private details are never published. Very old records may be missing if the export limit was reached.</p></article>`;
+}
+
+let viewer = null;
+function mountSkin() {
+  const cv = $("#pskin-cv"), fb = $("#pskin-fb"), ctl = document.querySelector("[data-skin]");
+  if (!cv || !ctl || !window.skinview3d) return;
+  if (viewer) { try { viewer.dispose(); } catch { /* ignore */ } viewer = null; }
+  const name = ctl.dataset.skin, anim = m => { if (!viewer) return; ctl.querySelectorAll("[data-a]").forEach(b => b.classList.toggle("on", b.dataset.a === m)); viewer.animation = m === "idle" ? new skinview3d.IdleAnimation() : m === "walk" ? new skinview3d.WalkingAnimation() : m === "run" ? new skinview3d.RunningAnimation() : null; };
+  try {
+    viewer = new skinview3d.SkinViewer({ canvas: cv, width: 260, height: 340 }); viewer.autoRotate = true; viewer.autoRotateSpeed = .5; viewer.zoom = .85; viewer.fov = 40; anim("walk");
+    viewer.loadSkin(`https://mc-heads.net/skin/${encodeURIComponent(name)}`).then(() => { cv.hidden = false; fb.hidden = true; }).catch(() => { cv.hidden = true; fb.hidden = false; });
+    ctl.addEventListener("click", e => { const b = e.target.closest("[data-a]"); if (b) anim(b.dataset.a); });
+  } catch { cv.hidden = true; fb.hidden = false; }
 }
 
 async function search(name) {
@@ -78,7 +89,7 @@ async function search(name) {
       out.innerHTML = `<div class="empty"><h3>No record of ${esc(name)}</h3><p style="margin-top:8px">${idx.ok ? "This player has not joined CrownPVP or has no recorded punishments." : "Player join data is not published yet, and this player has no recorded punishments."} Check the spelling and try again.</p>${site ? `<p style="margin-top:8px">They do have a CrownPVP website account (registered ${day(Date.parse(site.registered_at))}).</p>` : ""}</div>`;
       return;
     }
-    out.innerHTML = view(name, rec, all, site, idx);
+    out.innerHTML = view(name, rec, all, site, idx); mountSkin();
   } catch (e) { if (my === seq) out.innerHTML = `<div class="empty"><h3>Lookup unavailable</h3><p style="margin-top:8px">${esc(e.message || "Please try again in a moment.")}</p></div>`; }
 }
 

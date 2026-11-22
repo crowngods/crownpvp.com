@@ -115,6 +115,13 @@ Set package IDs or public package URLs in the `tebex` map in `js/config.js`. If 
 
 Crown Client is presented as an upcoming project only. There is no download in this website. Java 1.8+ and 1.21+ are target compatibility ranges, not a verified release matrix. The Premium Raid Menu is a planned optional feature. No VPN service, ban bypass or anti-cheat bypass is advertised.
 
+## Staff page, Vote page and Support tickets (latest update)
+
+- **Staff page**: Owner (MedicalWeed), Co-owner (ksa_70007) and the Developer (Raizukennn, Discord `Rairai.32`) are set in `js/config.js` (`leadership`, `developer`). The "staff online" counter was removed. Other staff still come from the database.
+- **Players page** (`/player`): searching a username shows the 3D skin (walk / run / idle / still, download skin). Total playtime was removed. The old Player stats page now redirects here.
+- **Vote page** (`/vote`): the 4 voting links live in `js/config.js` (`voteSites`). The 24h tracker is a personal reminder stored in the visitor's browser and does not verify votes. A "Top voters" list needs vote data from your server (Votifier), so it is not included.
+- **Support tickets** (`/tickets`): topics are in `js/config.js` (`ticketTopics`). Run `supabase/support-tickets.sql` once in Supabase > SQL Editor, after `network-upgrade.sql`. Players must be signed in. Staff with report access see an "All tickets" tab and can reply or close tickets.
+
 ## Important launch checklist
 
 - [ ] Apply `schema.sql` to the production D1 database.
