@@ -61,7 +61,7 @@ function render(d) {
 
 function detail(p) {
   let cta = "";
-  if (appealable(p)) cta = `<a class="btn" href="appeals.html">Contact staff about this ${word[p.type]}</a>`;
+  if (appealable(p)) cta = `<a class="btn" href="appeals.html?type=${p.type}&id=${p.id}&name=${encodeURIComponent(p.name)}">Appeal this ${word[p.type]}</a>`;
   $("#pd").innerHTML = `<div class="dlg"><button class="ib x" data-x aria-label="Close">&times;</button>
     <div class="dtop"><img src="https://mc-heads.net/avatar/${encodeURIComponent(p.uuid)}/72" alt="" width="72" height="72"><div><small>${word[p.type].toUpperCase()}</small><h2>${esc(p.name)}</h2>${pill(p)}</div></div>
     <dl class="kv"><dt>Reason</dt><dd>${esc(clean(p.reason)) || "<i>No reason given</i>"}</dd><dt>Staff</dt><dd><span class="u">${who(p.staff)}</span></dd><dt>Date</dt><dd>${date(p.time)}</dd>${p.type === "ban" || p.type === "mute" ? `<dt>Expires</dt><dd>${expires(p)}</dd>` : ""}</dl>${cta}</div>`;

@@ -42,3 +42,17 @@ Optional: **Authentication** > **Sign In / Providers** > **Email**: turn **Confi
 2. `appeals.html` now lets signed-in players send an appeal, and `support.html` lets them send a report. Only the sender and staff can read them. Staff get a **Staff review** tab on both pages to approve/decline appeals and start/resolve/dismiss reports, and the player gets an alert on the bell.
 3. Approving an appeal does not unban anyone in game. Lift the ban or mute yourself.
 
+
+## 7. Network upgrade: ranks, reports, ban appeals, audit log (run `network-upgrade.sql`)
+1. **SQL Editor > New query**, paste everything from `supabase/network-upgrade.sql`, click **Run**. It is safe to run again and never deletes data. Anyone who was already staff becomes **Admin**; old reports/appeals stay in their old tables (untouched, no longer shown).
+2. Make yourself Owner (your own website username):
+   ```sql
+   update public.profiles set staff_rank = 'owner' where lower(username) = lower('YourName');
+   ```
+   (The old `is_staff = true` trick no longer works: `is_staff` is now derived from `staff_rank`.)
+3. Open **Staff dashboard** (`dashboard.html`). Owner and Co-Owner get a **Staff** tab to assign ranks to people who have a website account. Slots: 1 Owner, 1 Co-Owner, 2 Manager, 3 Admin, 3 Moderator, 3 Helper, 3 Media. `developer` is a permission rank (reviews cases) and is not shown on the public team page.
+4. Who can do what lives in the `rank_permissions` table (Table Editor). Defaults: Owner/Co-Owner everything; Manager reports + appeals + audit log + change decisions; Admin reports + appeals; Developer reports + appeals + audit log; Moderator decide reports, read appeals; Helper read reports and mark them under review; Media nothing. Give one person an extra permission with `update public.profiles set extra_perms = '{appeals_decide}' where lower(username)=lower('Name');`
+5. Evidence uploads use a **private** storage bucket called `evidence` (created by the script; PNG/JPG/WEBP/GIF/MP4/WEBM, 25 MB each, 5 per case).
+
+### LiteBans data for player profiles
+The GitHub Action already runs `sync-litebans.py --export`. It now also writes `players.json` (first join, last seen, latest name; never IPs). LiteBans does not track playtime, so the profile says "Not tracked" unless you set `PLAYTIME_TABLE` in the sync `.env`.

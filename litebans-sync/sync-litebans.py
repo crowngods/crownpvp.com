@@ -168,6 +168,29 @@ def run_once(days, dry=False):
     return total
 
 
+def export_players(cur):
+    """One row per player: [uuid, latest name, first seen ms, last seen ms, playtime seconds or null].
+    Comes from litebans_history (written by LiteBans on every join). IP addresses are never selected.
+    Playtime is not stored by LiteBans. Set PLAYTIME_TABLE, PLAYTIME_UUID_COL and PLAYTIME_SECONDS_COL in .env
+    only if you have a table that really holds it; otherwise playtime is reported as unavailable."""
+    hist = prefix() + "history"
+    cur.execute(f"SELECT h.uuid AS uuid, h.name AS name, UNIX_TIMESTAMP(m.first) * 1000 AS first, UNIX_TIMESTAMP(m.last) * 1000 AS last "
+                f"FROM {hist} h JOIN (SELECT uuid, MIN(date) AS first, MAX(date) AS last FROM {hist} GROUP BY uuid) m "
+                f"ON h.uuid = m.uuid AND h.date = m.last WHERE h.uuid IS NOT NULL AND h.uuid NOT LIKE '#%' GROUP BY h.uuid, h.name, m.first, m.last")
+    rows = cur.fetchall()
+    play, table = {}, cfg("PLAYTIME_TABLE")
+    if table:
+        ucol, scol = cfg("PLAYTIME_UUID_COL", "uuid"), cfg("PLAYTIME_SECONDS_COL", "seconds")
+        for ident in (table, ucol, scol):
+            if not re.fullmatch(r"[A-Za-z0-9_]+", ident or ""):
+                sys.exit("PLAYTIME_* settings may only contain letters, digits and underscores.")
+        cur.execute(f"SELECT {ucol} AS u, {scol} AS s FROM {table}")
+        play = {str(r["u"]): int(r["s"] or 0) for r in cur.fetchall()}
+    players = sorted(([r["uuid"], r["name"] or str(r["uuid"])[:8], int(r["first"] or 0) or None, int(r["last"] or 0) or None,
+                       play.get(str(r["uuid"]))] for r in rows), key=lambda p: str(p[1]).lower())
+    return {"updated": int(time.time() * 1000), "playtime": bool(table), "players": players}
+
+
 def export(outdir, limit):
     """Write static JSON files (one per punishment type) for hosting on GitHub Pages. Sends nothing anywhere."""
     out = Path(outdir)
@@ -182,10 +205,14 @@ def export(outdir, limit):
                 counts[kind] = len(recs)
                 data = [{k: r[k] for k in keys} for r in recs[:limit]]
                 (out / f"{kind}.json").write_text(json.dumps(data, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+        with db.cursor() as cur:
+            players = export_players(cur)
+        (out / "players.json").write_text(json.dumps(players, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+        counts["players"] = len(players["players"])
     finally:
         db.close()
     (out / "meta.json").write_text(json.dumps({"updated": int(time.time() * 1000), "counts": counts, "limit": limit}), encoding="utf-8")
-    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] exported to {out}: " + ", ".join(f"{v} {k}s" for k, v in counts.items()))
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] exported to {out}: " + ", ".join(f"{v} {k if k == 'players' else k + 's'}" for k, v in counts.items()))
 
 
 def check():

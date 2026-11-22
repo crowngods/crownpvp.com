@@ -12,7 +12,7 @@ const auth = { sb, user: null, profile: null, safeLink, on: fn => listeners.push
 async function loadProfile() {
   auth.profile = null;
   if (!auth.user) return;
-  try { const { data } = await sb.from("profiles").select("username,is_staff").eq("id", auth.user.id).maybeSingle(); auth.profile = data || null; } catch { /* offline */ }
+  try { const { data } = await sb.from("profiles").select("username,is_staff,staff_rank").eq("id", auth.user.id).maybeSingle(); auth.profile = data || null; } catch { /* offline */ }
 }
 auth.alerts = async (limit = 30) => {
   const { data, error } = await sb.from("notifications").select("id,title,body,link,read,created_at").order("created_at", { ascending: false }).limit(limit);
@@ -40,7 +40,7 @@ function render() {
   s.innerHTML = `<div class="acct"><button type="button" class="ib" id="al-btn" aria-label="Alerts" aria-expanded="false">${BELL}<span id="al-n" class="bd" hidden>0</span></button>
   <button type="button" class="ib av" id="av-btn" aria-label="Account menu" aria-expanded="false"><img src="${esc(CP.head(name, 32))}" alt="" width="28" height="28"></button>
   <div class="alp" id="al-panel" hidden></div>
-  <div class="avm" id="av-menu" hidden><div class="avn"><small>Signed in as</small><b>${esc(name)}</b></div><a href="alerts.html">Alerts${auth.profile?.is_staff ? " &amp; staff tools" : ""}</a><button type="button" data-signout>Sign out</button></div></div>`;
+  <div class="avm" id="av-menu" hidden><div class="avn"><small>Signed in as</small><b>${esc(name)}</b></div><a href="alerts.html">Alerts${auth.profile?.is_staff ? " &amp; staff tools" : ""}</a>${auth.profile?.staff_rank ? `<a href="dashboard.html">Staff dashboard</a>` : ""}<a href="support.html?tab=mine">My reports</a><a href="appeals.html?tab=mine">My appeals</a><button type="button" data-signout>Sign out</button></div></div>`;
   refreshCount();
 }
 function closeMenus() { ["al-panel", "av-menu"].forEach(id => { const e = $("#" + id); if (e) e.hidden = true; }); ["al-btn", "av-btn"].forEach(id => $("#" + id)?.setAttribute("aria-expanded", "false")); }

@@ -138,3 +138,6 @@ The updated project was smoke-tested locally on 21 November 2026:
 - The local report API accepted a test report, returned it to the owner inbox, and accepted a status change and private reply.
 
 These local tests do not configure your live Cloudflare account. For live report delivery, deploy the `crownpvp/` folder to Cloudflare Pages, bind the D1 database as `DB`, apply `schema.sql`, and set the production `REPORT_OWNER_KEY` and `SYNC_TOKEN` secrets as described above. The local preview database is temporary and is not your live database.
+
+## Network upgrade (reports, appeals, staff dashboard, team, player profiles, CrownClient)
+These pages run on GitHub Pages + Supabase (not the Cloudflare functions): `support.html` (reports), `appeals.html`, `dashboard.html` (staff only), `staff.html`, `player.html`, `client.html`. Setup: `supabase/network-upgrade.sql` (see `supabase/README.md`, section 7). CrownClient shows COMING SOON until you set `CROWN.client.status = "released"` and real https links in `js/config.js`. Theme: `css/kingdom.css`.

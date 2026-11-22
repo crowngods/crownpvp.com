@@ -1,29 +1,51 @@
+/* CrownPVP staff team page. The team comes from the website database (public_staff function), never from a hard-coded list.
+   Developer is not a public rank. Empty slots are shown as open positions linking to the application form. */
 (() => {
-const { $, esc } = CP;
-const RANKS = [
-  { id: "owner", name: "Owner", color: "#f5d76e", blurb: "Leads the network and makes final decisions.", people: ["MedicalWeed"] },
-  { id: "dev", name: "Developer", color: "#7dd3fc", blurb: "Builds and maintains the website, plugins and server systems.", people: ["Raizukennn"] },
-  { id: "admin", name: "Admin", color: "#fb7185", blurb: "Oversees staff, reviews serious cases and maintains fair enforcement.", slots: 3 },
-  { id: "moderator", name: "Moderator", color: "#c4a1ff", blurb: "Investigates reports, moderates chat and handles rule violations.", slots: 2 },
-  { id: "helper", name: "Helper", color: "#6ee7a0", blurb: "Welcomes players, answers questions and assists the community.", slots: 3 },
-  { id: "trial", name: "Trial Staff", color: "#fdba74", blurb: "Learns team procedures while working with experienced staff.", slots: 5 }
+const { $, esc } = CP, N = CP.net;
+const TEAM = [
+  { id: "owner",     slots: 1, blurb: "Leads the network and makes the final decisions." },
+  { id: "coowner",   slots: 1, blurb: "Runs the network alongside the Owner with near-full administrative access." },
+  { id: "manager",   slots: 2, blurb: "Oversees staff operations, reports and appeals." },
+  { id: "admin",     slots: 3, blurb: "Reviews serious cases and keeps enforcement fair and consistent." },
+  { id: "moderator", slots: 3, blurb: "Investigates reports, moderates chat and handles rule violations." },
+  { id: "helper",    slots: 3, blurb: "Welcomes players, answers questions and supports the community." },
+  { id: "media",     slots: 3, blurb: "Creates content and spreads the word about CrownPVP." }
 ];
-let openings = Object.fromEntries(RANKS.filter(r => r.slots).map(r => [r.id, { total: r.slots, available: r.slots }]));
-function render() {
-  $("#staff").innerHTML = RANKS.map(r => {
-    const o = openings[r.id] || { available: r.slots || 0, total: r.slots || 0, members: [] };
-    const people = [...new Set([...(r.people || []), ...(o.members || [])])].map(n => `<article class="scard" data-n="${esc(n.toLowerCase())}"><img src="https://mc-heads.net/body/${encodeURIComponent(n)}/180" alt="${esc(n)} skin" width="90" height="160" loading="lazy"><div><h3>${esc(n)}</h3><span class="rtag">${r.name}</span><span class="on-tag" hidden><i class="live-dot"></i> Online now</span></div></article>`).join("");
-    const vacancies = r.slots ? (o.available > 0 ? Array.from({length:o.available},(_,i)=>`<article class="scard open"><div class="ph-av" aria-hidden="true">+</div><div><h3>Open position ${i+1}</h3><span class="rtag">${r.name}</span><a href="#apply" data-apply-role="${r.id}">Apply for this role ↗</a></div></article>`).join("") : `<article class="scard open"><div class="ph-av" aria-hidden="true">—</div><div><h3>Applications closed</h3><span class="rtag">${r.name}</span><small>All available places are filled.</small></div></article>`) : "";
-    return `<div class="rank" style="--rc:${r.color}"><div class="rank-h"><div><h2>${r.name}</h2><p>${esc(r.blurb)}</p></div><span>${r.slots ? `${o.available} / ${r.slots} open` : `${(r.people || []).length} member`}</span></div><div class="staff-grid">${people}${vacancies}</div></div>`;
-  }).join("");
-  $("#roles").innerHTML = RANKS.filter(r => r.id !== "owner" && r.id !== "dev").map(r => `<article class="role" style="--rc:${r.color}"><b>${r.name}</b><p>${esc(r.blurb)}</p></article>`).join("");
-  const select = $("#application-role");
-  if (select) [...select.options].forEach(o => { if (!o.value) return; const x = openings[o.value]; o.disabled = !!x && x.available < 1; o.textContent = `${rTitle(o.value)} · ${x?.available ?? 0} available`; });
-  document.querySelectorAll("[data-apply-role]").forEach(a => a.addEventListener("click", () => { const sel = $("#application-role"); if (sel) sel.value = a.dataset.applyRole; }));
+let members = null, online = null;
+
+function card(m) {
+  const r = N.RANKS[m.staff_rank], on = online?.has(m.username.toLowerCase());
+  return `<article class="pcard${on ? " is-on" : ""}" style="--rc:${r.color}" data-n="${esc(m.username.toLowerCase())}">
+    <img class="pface" src="https://mc-heads.net/avatar/${encodeURIComponent(m.username)}/96" alt="${esc(m.username)}'s Minecraft head" width="64" height="64" loading="lazy">
+    <div class="pinfo"><h3>${esc(m.username)}</h3>${N.badge(m.staff_rank)}<span class="ptitle">${esc(m.position_title || "") || esc(r.name)}</span>
+    <span class="psub">${on ? `<i class="live-dot"></i> Online now` : m.staff_since ? `On the team since ${new Date(m.staff_since).toLocaleDateString("en-US", { month: "short", year: "numeric" })}` : ""}</span></div></article>`;
 }
-function rTitle(id) { return ({admin:"Admin",moderator:"Moderator",helper:"Helper",trial:"Trial Staff"})[id] || id; }
+function open(rank, n) {
+  return `<a class="pcard popen" style="--rc:${N.RANKS[rank].color}" href="#apply" data-apply-role="${rank}"><span class="pface plus" aria-hidden="true">+</span><div class="pinfo"><h3>Open position${n > 1 ? "s" : ""}</h3><span class="ptitle">${n} ${esc(N.RANKS[rank].name)} slot${n > 1 ? "s" : ""} available</span><span class="psub">Apply for this role &rarr;</span></div></a>`;
+}
+function render() {
+  const root = $("#staff");
+  if (members === null) { root.innerHTML = `<div class="skel"><i></i><i></i><i></i></div>`; return; }
+  if (members === false) { root.innerHTML = `<div class="empty"><h3>The team list is unavailable right now</h3><p style="margin-top:8px">Please try again in a moment.</p></div>`; return; }
+  root.innerHTML = `<div class="tiers">${TEAM.map((t, i) => {
+    const r = N.RANKS[t.id], list = members.filter(m => m.staff_rank === t.id), free = Math.max(0, t.slots - list.length);
+    return `<section class="tier" style="--rc:${r.color}"><div class="tier-h"><div><span class="tno">${String(i + 1).padStart(2, "0")}</span><h2>${esc(r.name)}</h2><p>${esc(t.blurb)}</p></div><span class="tcount">${list.length} / ${t.slots}</span></div>
+    <div class="pgrid">${list.map(card).join("")}${free ? open(t.id, free) : ""}</div></section>`;
+  }).join("")}</div>`;
+  const select = $("#application-role");
+  if (select) [...select.options].forEach(o => { if (!o.value) return; const t = TEAM.find(x => x.id === o.value); if (!t) return; const free = Math.max(0, t.slots - members.filter(m => m.staff_rank === t.id).length); o.disabled = free < 1; o.textContent = `${N.RANKS[t.id].name} · ${free} open`; });
+  $("#roles").innerHTML = TEAM.slice(2).map(t => `<article class="role" style="--rc:${N.RANKS[t.id].color}"><b>${esc(N.RANKS[t.id].name)}</b><p>${esc(t.blurb)}</p></article>`).join("");
+  document.querySelectorAll("[data-apply-role]").forEach(a => a.addEventListener("click", () => { const s = $("#application-role"); if (s) s.value = a.dataset.applyRole; }));
+  $("#staff-on").textContent = online ? root.querySelectorAll(".pcard.is-on").length : "n/a";
+}
+
 render();
-fetch("/api/applications/openings").then(r => r.json()).then(d => { if (d.roles) { openings = d.roles; render(); } }).catch(() => {});
+CP.authReady.then(async auth => {
+  if (!auth) { members = false; render(); return; }
+  try { const { data, error } = await auth.sb.rpc("public_staff"); if (error) throw error; members = (data || []).filter(m => N.RANKS[m.staff_rank] && m.staff_rank !== "developer"); }
+  catch (e) { console.error("Team list error (did you run network-upgrade.sql?)", e); members = false; }
+  render();
+  CP.status.then(d => { if (d?.players?.list) { online = new Set(d.players.list.map(p => p.name.toLowerCase())); render(); } });
+});
 document.querySelectorAll("[data-discord]").forEach(a => { a.href = window.CROWN.discord; a.target = "_blank"; a.rel = "noopener"; });
-CP.status.then(d => { const on = new Set((d?.players?.list || []).map(p => p.name.toLowerCase())); let n = 0; document.querySelectorAll(".scard[data-n]").forEach(c => { if (on.has(c.dataset.n)) { n++; c.classList.add("is-on"); c.querySelector(".on-tag").hidden = false; } }); $("#staff-on").textContent = !d ? "n/a" : d.players?.list ? n : "n/a"; });
 })();

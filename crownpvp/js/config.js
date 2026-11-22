@@ -15,6 +15,9 @@ window.CROWN = {
   // NEVER paste the "service_role" key. Leave both empty to hide sign-in and alerts.
   supabaseUrl: "https://iwhbnmerwgqtpswwehss.supabase.co",
   supabaseKey: "sb_publishable_JC0T3E13lrD-06j6438PJA_0-Ds0jHS",
+  // CrownClient release state. "coming_soon" shows a COMING SOON badge and NO download buttons.
+  // When it is really released set status to "released" and paste the https download links (empty link = no button).
+  client: { status: "coming_soon", freeDownload: "", premiumUrl: "" },
   topApi: "/api/stats/top?limit=10",
   statusApi: "https://api.mcsrvstat.us/3/play.crownpvp.com",
   // Tebex Headless checkout. Paste your PUBLIC webstore token (Tebex > Headless API). It is safe to expose.
