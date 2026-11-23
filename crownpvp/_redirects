@@ -26,3 +26,7 @@
 /account /account.html 200
 /faq /faq.html 200
 /owner /reports-admin.html 200
+
+/help /help.html 200
+/gamemodes /gamemodes.html 200
+/opfactions /opfactions.html 200

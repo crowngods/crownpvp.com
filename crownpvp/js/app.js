@@ -5,7 +5,7 @@ const page = document.body.dataset.page;
 try { const clean = location.pathname.replace(/(^|\/)index\.html$/, "$1").replace(/\.html$/, ""); if (clean !== location.pathname) history.replaceState(null, "", clean + location.search + location.hash); } catch { /* ignore */ }
 const fmt = n => n.toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const nav = [["index.html","Home","home"],["client.html","Client","client"],["store.html","Store","store"],["merch.html","Merch","merch"],["vote.html","Vote","vote"],["staff.html","Staff","staff"],["rules.html","Rules","rules"],["punishments.html","Punishments","punishments"],["player.html","Players","player"],["tickets.html","Support","tickets"]];
+const nav = [["index.html","Home","home"],["gamemodes.html","Gamemodes","gamemodes"],["client.html","Client","client"],["store.html","Store","store"],["merch.html","Merch","merch"],["vote.html","Vote","vote"],["staff.html","Staff","staff"],["rules.html","Rules","rules"],["punishments.html","Punishments","punishments"],["player.html","Players","player"],["help.html","Support","help"]];
 const MS = "";
 const CART_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="18" cy="20.5" r="1.2"/></svg>`;
 
@@ -49,7 +49,7 @@ $("#site-header").outerHTML = `<div class="partner-bar"><div class="wrap"><span>
 <div id="scrim"></div>
 <aside id="cart" class="drawer" aria-hidden="true" aria-label="Shopping cart"><div class="dh"><h3>Your cart</h3><button class="ib" data-cart-close aria-label="Close cart">&times;</button></div><div class="db" id="cart-items"></div><div class="df" id="cart-foot"></div></aside>`;
 $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a class="logo" href="index.html"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
-<p style="margin-top:12px">Semi-OP Factions. Build your base, back your team and fight for the top.</p>
+<p style="margin-top:12px">The official website of CrownPVP — news, community updates, player support and everything happening across the network.</p>
 <div class="ip" style="margin:16px 0 0"><code>${C.ip}</code><button data-copy>Copy IP</button></div></div>
 <div><h3>Explore</h3>${nav.map(n => `<a href="${n[0]}">${n[1]}</a>`).join("")}</div>
 <div><h3>Community</h3><a href="${C.discord}" target="_blank" rel="noopener">Join Discord</a><a href="store.html">Gold Store</a><a href="support.html">Report a player</a><a href="appeals.html">Appeal a punishment</a><a href="player.html">Player lookup</a><a href="faq.html">FAQ</a><a href="staff.html#apply">Staff applications</a><a href="${esc(C.supportChannel || C.discord)}" target="_blank" rel="noopener">Store &amp; community support</a></div></div>

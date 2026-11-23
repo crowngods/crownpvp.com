@@ -19,8 +19,23 @@ simple('discord-rules',[
  ['Safety and privacy',['Never share passwords, login codes, private messages or another person’s personal information.','Do not post suspicious downloads, phishing links, malware or scam links.','Do not impersonate CrownPVP staff, partners or other community members.']],
  ['Promotion and support',['Do not advertise other Minecraft servers, Discord servers, stores or services without permission.','Do not sell accounts, ranks or items through unauthorized channels.','Use support and report channels for issues. Do not create duplicate tickets or publicly expose private reports.']]
 ]);
+
+const MODES=[
+['lifesteal','LifestealSMP',['Hearts: killing a player steals one heart. Do not trade kills with friends or alternate accounts to farm hearts.','No combat logging. Leaving during a fight counts as a death.','No spawn camping or trapping new players at spawn.','Do not use bugs to keep or duplicate hearts.']],
+['skyblock','Skyblock',['Do not grief or enter islands you have not been invited to.','AFK farms must not lag the server. Staff may remove farms that do.','Do not manipulate the auction house or shop prices with alternate accounts.','Do not exploit generators, minions or island upgrades.']],
+['survival','Survival',['Claim your builds. Unclaimed builds may not be restored after griefing.','No x-ray, ore finders or freecam. Texture packs that reveal ores are not allowed.','Respect spawn and other players\u2019 builds. No lag machines.','Do not use duplication glitches.']],
+['prison','Prison',['Do not use macros or autoclickers to mine. Auto-mine features are only those we provide.','Do not exploit rank-up, sell or crate bugs.','Do not scam players in trades or plots.','Keep plots free of lag machines and offensive builds.']],
+['kitpvp','KitPvP',['No hacked clients, reach, autoclickers or kill aura.','No kill boosting or trading kills for stats.','Do not abuse spawn protection to hit players safely.','Do not exploit kit or ability bugs. Report them instead.']]
+];
+const common=['Network rules also apply: respect, no cheating, no scamming, no punishment evasion.','Mode rules may be updated when the mode is released. Staff decide on cases not covered here.'];
+const tabBar=document.querySelector('[data-rule-tab="discord"]');
+MODES.forEach(m=>{const b=document.createElement('button');b.type='button';b.setAttribute('data-rule-tab',m[0]);b.textContent=m[1]+' rules';tabBar.before(b);
+const p=document.createElement('div');p.className='rule-panel';p.dataset.rulePanel=m[0];p.hidden=true;p.innerHTML=`<div class="rules-toolbar"><div><h2>${e(m[1])}</h2><p>Rules for ${e(m[1])} only.</p></div><span class="rule-draft-label">DRAFT RULES</span></div><div id="r-${m[0]}" class="simple-rules"></div>`;document.querySelector('[data-rule-panel="discord"]').before(p);
+simple('r-'+m[0],[['Gameplay',m[2]],['General',common]]);});
+tabBar.style.marginLeft='18px';
+const want=new URLSearchParams(location.search).get('mode');
 const tabs=[...document.querySelectorAll('[data-rule-tab]')],panels=[...document.querySelectorAll('[data-rule-panel]')];
-tabs.forEach(b=>b.addEventListener('click',()=>{tabs.forEach(x=>x.classList.toggle('on',x===b));panels.forEach(p=>p.hidden=p.dataset.rulePanel!==b.dataset.ruleTab);}));
+const show=b=>{tabs.forEach(x=>x.classList.toggle('on',x===b));panels.forEach(p=>p.hidden=p.dataset.rulePanel!==b.dataset.ruleTab);};tabs.forEach(b=>b.addEventListener('click',()=>show(b)));if(want){const w=tabs.find(t=>t.dataset.ruleTab===want);if(w)show(w);}
 const q=document.getElementById('rq'),none=document.getElementById('none');q.addEventListener('input',()=>{const v=q.value.trim().toLowerCase();let any=false;root.querySelectorAll('details').forEach(d=>{let hit=!v;d.querySelectorAll('.rule').forEach(r=>{const m=!v||r.textContent.toLowerCase().includes(v);r.classList.toggle('hide',!m);hit=hit||m;});d.querySelectorAll('.sg2').forEach(g=>g.classList.toggle('hide',![...g.querySelectorAll('.rule')].some(r=>!r.classList.contains('hide'))));d.classList.toggle('hide',!hit);if(v&&hit)d.open=true;any=any||hit;});none.hidden=any;});
 document.getElementById('ex').onclick=()=>root.querySelectorAll('details:not(.hide)').forEach(d=>d.open=true);document.getElementById('co').onclick=()=>root.querySelectorAll('details').forEach(d=>d.open=false);addEventListener('hashchange',()=>{const d=document.querySelector(location.hash);if(d&&d.tagName==='DETAILS')d.open=true;});
 })();

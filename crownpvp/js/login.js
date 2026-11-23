@@ -14,6 +14,9 @@ const nice = e => {
   if (/database error/i.test(m)) return "That username could not be used. Pick another one.";
   return "Something went wrong. Please try again.";
 };
+const GG='<svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7A14.500 14.500 0 0 1 9.500 24c0-1.600.3-3.200.8-4.700l-7.900-6.100A24 24 0 0 0 0 24c0 3.900.9 7.500 2.600 10.800l7.900-6.100z"/><path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.500-5.800c-2.100 1.400-4.800 2.300-8.400 2.300-6.300 0-11.600-4.100-13.500-9.800l-7.900 6.100C6.500 42.600 14.600 48 24 48z"/></svg>';
+const DC='<svg viewBox="0 0 24 24" fill="#fff"><path d="M20.3 4.4A19.800 19.800 0 0 0 15.400 3l-.2.5a18 18 0 0 0-6.400 0L8.600 3a19.700 19.700 0 0 0-4.900 1.400C.600 9 0 13.500.300 18a19.900 19.900 0 0 0 6 3l1.300-2.100-2-1 .5-.4a14 14 0 0 0 12 0l.5.400-2 1 1.300 2.100a19.900 19.900 0 0 0 6-3c.4-5.200-.7-9.700-3.600-13.600zM8.500 15.300c-1.200 0-2.100-1.100-2.100-2.400s.9-2.400 2.100-2.400 2.100 1.100 2.100 2.400-.9 2.400-2.100 2.400zm7 0c-1.200 0-2.100-1.100-2.100-2.400s.9-2.400 2.100-2.400 2.100 1.100 2.100 2.400-.9 2.400-2.100 2.400z"/></svg>';
+const oauthBlock = `<div class="hx-oauth"><button type="button" class="hx-oa dc" data-oauth="discord">${DC} Continue with Discord</button><button type="button" class="hx-oa gg" data-oauth="google">${GG} Continue with Google</button></div><div class="hx-or">or use email</div>`;
 const busy = (f, on, label) => { const b = $("button[type=submit]", f); b.disabled = on; if (label) b.textContent = on ? "Please wait..." : label; };
 
 CP.authReady.then(auth => {
@@ -21,7 +24,7 @@ CP.authReady.then(auth => {
   const signedIn = () => { box.innerHTML = `<div class="card gate"><h3>You are signed in</h3><p>Signed in as <b>${esc(auth.profile?.username || auth.user.email)}</b>.</p><p style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn" style="width:auto" href="alerts.html">Open alerts</a><button class="btn ghost" style="width:auto" data-signout>Sign out</button></p></div>`; };
   const forms = tab => {
     box.innerHTML = `<div class="card gate authbox"><div class="ptabs" role="tablist"><button type="button" role="tab" data-tab="in" class="${tab === "in" ? "on" : ""}">Sign in</button><button type="button" role="tab" data-tab="up" class="${tab === "up" ? "on" : ""}">Create account</button></div>
-    ${tab === "in" ? `<form id="f-in" autocomplete="on">${field("email", "Email", "email", 'autocomplete="email"')}${field("password", "Password", "password", 'autocomplete="current-password"')}<button class="btn wide" type="submit">Sign in</button><p class="cs"><a href="#" data-forgot>Forgot your password?</a></p></form>`
+    ${oauthBlock}${tab === "in" ? `<form id="f-in" autocomplete="on">${field("email", "Email", "email", 'autocomplete="email"')}${field("password", "Password", "password", 'autocomplete="current-password"')}<button class="btn wide" type="submit">Sign in</button><p class="cs"><a href="#" data-forgot>Forgot your password?</a></p></form>`
     : `<form id="f-up" autocomplete="on">${field("username", "Minecraft username", "text", 'maxlength="16" pattern="\\w{3,16}" autocomplete="username" spellcheck="false"')}${field("email", "Email", "email", 'autocomplete="email"')}${field("password", "Password (8+ characters)", "password", 'minlength="8" autocomplete="new-password"')}<button class="btn wide" type="submit">Create account</button><p class="cs">Your username is not checked against Minecraft. Staff alerts are sent to your account.</p></form>`}
     <p id="lg-msg" class="cm" aria-live="polite"></p></div>`;
   };
@@ -31,6 +34,8 @@ CP.authReady.then(auth => {
   if (/type=recovery/.test(location.hash + location.search)) recovery(); else if (auth.user) signedIn(); else forms("in");
 
   box.addEventListener("click", async e => {
+    const o = e.target.closest("[data-oauth]");
+    if (o) { const { error } = await auth.sb.auth.signInWithOAuth({ provider: o.dataset.oauth, options: { redirectTo: here("login.html?next=" + nextPage), scopes: o.dataset.oauth === "discord" ? "identify email" : undefined } }); if (error) msg("Could not start " + o.dataset.oauth + " sign in. Ask the owner to enable it in Supabase."); return; }
     const t = e.target.closest("[data-tab]"); if (t) return forms(t.dataset.tab);
     if (e.target.closest("[data-forgot]")) {
       e.preventDefault();

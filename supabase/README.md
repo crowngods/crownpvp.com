@@ -56,3 +56,6 @@ Optional: **Authentication** > **Sign In / Providers** > **Email**: turn **Confi
 
 ### LiteBans data for player profiles
 The GitHub Action already runs `sync-litebans.py --export`. It now also writes `players.json` (first join, last seen, latest name; never IPs). LiteBans does not track playtime, so the profile says "Not tracked" unless you set `PLAYTIME_TABLE` in the sync `.env`.
+
+## News comments and reactions
+Run `supabase/news-social.sql` once in the SQL Editor. Players must be signed in to comment or react.
