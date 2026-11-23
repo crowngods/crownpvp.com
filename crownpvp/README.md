@@ -156,3 +156,7 @@ These local tests do not configure your live Cloudflare account. For live report
 
 ## Network upgrade (reports, appeals, staff dashboard, team, player profiles, CrownClient)
 These pages run on GitHub Pages + Supabase (not the Cloudflare functions): `support.html` (reports), `appeals.html`, `dashboard.html` (staff only), `staff.html`, `player.html`, `client.html`. Setup: `supabase/network-upgrade.sql` (see `supabase/README.md`, section 7). CrownClient shows COMING SOON until you set `CROWN.client.status = "released"` and real https links in `js/config.js`. Theme: `css/kingdom.css`.
+
+
+## 2026 Realm UI redesign
+The visual redesign is loaded from `css/realm-redesign.css` and `js/realm-polish.js`. It is a progressive visual layer and does not change Supabase, SQL, authentication, API routes, or backend behavior.
