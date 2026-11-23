@@ -37,8 +37,14 @@ window.CROWN = {
     { name: "Minecraft-MP",          url: "https://minecraft-mp.com/server/365901/vote/" },
     { name: "MinecraftServers.org",  url: "https://minecraftservers.org/vote/696405" }
   ],
-  ticketTopics: ["About Discord", "Connection issues", "Denied staff application", "Missing prize", "Buy merchandise", "Something else"],
-  siteVersion: "Site v4 · 22 Nov 2026",
+  ticketTopics: ["About Discord", "Connection issues", "Denied staff application", "Missing prize", "Buy merchandise", "Partnership", "Something else"],
+  // News feed on the home page. Newest first. date = YYYY-MM-DD.
+  news: [
+    { date: "2026-11-23", tag: "Website", author: "Raizukennn", title: "The new CrownPVP website is live", body: "Vote on four server lists, open support tickets from the site, search players with 3D skins and browse merchandise: PvP resource packs, plugins, maps and website design.", link: "vote.html", cta: "Vote now" },
+    { date: "2026-11-23", tag: "Support", author: "CrownPVP Team", title: "Support tickets are open", body: "Connection issues, a missing prize, a denied staff application, a partnership or a purchase: open a ticket and staff reply to you on the website.", link: "tickets.html?new=1", cta: "Open a ticket" },
+    { date: "2026-11-23", tag: "Staff", author: "CrownPVP Team", title: "Join the staff team", body: "Fill in the application on the Staff page. Every application is reviewed privately by management.", link: "staff.html#apply", cta: "Apply now" }
+  ],
+  siteVersion: "Site v7 · 23 Nov 2026",
   // Merchandise & services (shown on /merch). Prices are agreed in the ticket.
   merch: [
     { icon: "🎨", tag: "1.8 to 26.3", name: "PvP Resource Packs", desc: "Clean, low-fire, FPS-friendly packs made for PvP. Works on every version from 1.8 to 26.3." },

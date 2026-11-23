@@ -42,7 +42,7 @@ if (C.supabaseUrl && C.supabaseKey) {
 } else CP._authResolve(null);
 
 /* ---------- Layout ---------- */
-$("#site-header").outerHTML = `<div class="partner-bar"><div class="wrap"><span><i></i> OPEN FOR PARTNERSHIP</span><a href="${esc(C.partnershipUrl || C.discord)}" target="_blank" rel="noopener">Discuss a partnership <b>↗</b></a></div></div>
+$("#site-header").outerHTML = `<div class="partner-bar"><div class="wrap"><span><i></i> OPEN FOR PARTNERSHIP</span><a href="tickets.html?new=1&amp;topic=Partnership&amp;title=Partnership%20request">Discuss a partnership <b>↗</b></a></div></div>
 <header><div class="wrap"><a class="logo" href="index.html" aria-label="CrownPVP home"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
 <nav id="nav" aria-label="Main">${nav.map(n => `<a href="${n[0]}"${n[2] === page ? ' class="on" aria-current="page"' : ""}>${n[1]}</a>`).join("")}</nav>
 <div class="hr"><button class="ippill" data-copy aria-label="Copy server IP"><i class="dot" id="hdot"></i><code>${C.ip}</code></button><span id="acct-slot"></span><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div></div></header>

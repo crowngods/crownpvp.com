@@ -19,6 +19,7 @@ Promise.allSettled([
     if (total != null) $("dc-total").textContent = fmt(total); else { $("dc-total").parentElement.hidden = true; document.querySelector("#dc-counts .sep").hidden = true; }
     $("dc-counts").hidden = false; $("dc-fallback").hidden = true;
   }
+  const lp = $("lp-dc"); if (lp && total != null) { lp.textContent = fmt(total); lp.hidden = false; }
   const people = (w?.members || []).filter(m => safeImg(m.avatar_url)).slice(0, 8);
   if (people.length) {
     const more = Math.max(0, (online ?? w.presence_count ?? people.length) - people.length), box = $("dc-avatars");
