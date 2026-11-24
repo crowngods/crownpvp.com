@@ -82,6 +82,6 @@ Friends and direct messages require a CrownPVP website account. Each player need
 Run `supabase/comment-avatars.sql` once (after `profiles-upgrade.sql`). It adds `get_news_comment_authors`, which lets the news feed show each commenter's profile picture. Until it is run, comments fall back to the letter circle.
 
 
-## Staff application "You do not have permission" fix
+## Staff application "You do not have permission" fix (v2)
 
-Run `supabase/fix-staff-applications.sql` once. It lets the decision history accept applications and makes `submit_staff_application` work for any signed-in player, even if the history log or staff alerts hit a problem.
+Run `supabase/fix-staff-applications.sql` once in the Supabase SQL Editor (the whole file; safe to re-run). It is a complete replacement for `staff-applications.sql`, so you do not need to run that one first. It: lets the decision history accept applications, lets any signed-in player file their own application (function and direct-insert backup), moves the history log and staff alerts into a trigger that can never block an application, removes old copies of the submit function, and ends with a self-check that must show OK on all three rows.

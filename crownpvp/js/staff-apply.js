@@ -154,10 +154,24 @@
 
       try {
         if (auth?.user) {
-          const { data: appId, error } = await auth.sb.rpc("submit_staff_application", {
+          const args = {
             p_mc_username: raw.name.trim(), p_discord: raw.discord.trim(), p_role: raw.role, p_age_band: raw.ageBand,
             p_timezone: raw.timezone.trim(), p_availability: raw.availability, p_experience: compiledExperience, p_motivation: compiledMotivation
-          });
+          };
+          let { data: appId, error } = await auth.sb.rpc("submit_staff_application", args);
+          /* Real answers like "You already have an open application" use code P0001 and must be shown as-is.
+             Anything else (permission / schema / policy problems) gets one more try straight into the table,
+             which every signed-in player is allowed to do once supabase/fix-staff-applications.sql has been run. */
+          if (error && error.code !== "P0001") {
+            console.warn("submit_staff_application failed, trying direct insert:", error);
+            const direct = await auth.sb.from("staff_applications").insert({
+              user_id: auth.user.id, account_name: auth.profile?.username || args.p_mc_username,
+              mc_username: args.p_mc_username, discord: args.p_discord, role: args.p_role, age_band: args.p_age_band,
+              timezone: args.p_timezone, availability: args.p_availability, experience: args.p_experience, motivation: args.p_motivation
+            }).select("id").single();
+            if (!direct.error && direct.data?.id) { appId = direct.data.id; error = null; }
+            else error.directError = direct.error;
+          }
           if (error) throw error;
           const role = raw.role;
           form.reset(); clearDraft(); progress();
@@ -179,11 +193,22 @@
           }
         }
       } catch (error) {
-        console.error("Staff application failed:", error);
+        console.error("Staff application failed:", error, error?.directError);
         const detail = String(error?.message || "");
-        message.textContent = /check constraint|case_events|notifications_/i.test(detail)
-          ? "Applications need a one-time database fix. Owner: run supabase/fix-staff-applications.sql in Supabase, then try again."
-          : N.friendly(error, error.message);
+        const code = error?.code ? ` [${error.code}]` : "";
+        if (error?.code === "P0001" || /Sign in first|JWT|Failed to fetch|NetworkError/i.test(detail)) {
+          message.textContent = N.friendly(error, detail);
+        } else {
+          /* Database problem on our side: tell the applicant plainly, show the real reason, and never lose their answers. */
+          message.textContent = `We could not save your application on the website right now${code}. Your answers are kept below: copy them into a Discord ticket so you can still apply. The owner has been given the exact reason in the browser console.`;
+          const payload = { name: raw.name.trim(), discord: raw.discord.trim(), role: raw.role, ageBand: raw.ageBand, timezone: raw.timezone.trim(), availability: raw.availability, experience: compiledExperience, motivation: compiledMotivation };
+          try { window.CrownForms.keep("applications", payload); window.CrownForms.offlinePanel(box, "applications", payload, () => { message.textContent = ""; }); } catch {}
+          const why = document.createElement("small");
+          why.className = "dmuted";
+          why.style.cssText = "display:block;margin-top:8px;opacity:.75;word-break:break-word";
+          why.textContent = `Owner info: ${detail}${error?.directError?.message ? " | direct: " + error.directError.message : ""} — run supabase/fix-staff-applications.sql in Supabase.`;
+          box.appendChild(why);
+        }
         message.classList.remove("success");
       } finally {
         button.disabled = !!openApp;
