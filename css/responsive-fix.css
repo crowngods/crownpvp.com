@@ -1,0 +1,91 @@
+/* CrownPVP responsive fix: mobile / small-window menu + Community (messages) panel.
+   Loaded last by js/app.js so it wins over the older stylesheets. */
+
+/* ---------- Menu: phones, tablets and small desktop windows ---------- */
+@media (max-width: 1180px) {
+  header { z-index: 3000 !important; }
+  header .wrap { position: relative !important; flex-wrap: nowrap !important; justify-content: space-between !important; }
+  header .hr { margin-left: auto !important; flex: none; }
+
+  #burger {
+    display: inline-grid !important; place-items: center;
+    width: 42px; height: 42px; padding: 0; flex: none;
+    font-size: 1.25rem; line-height: 1; cursor: pointer;
+  }
+
+  /* hidden until the burger opens it (older rules forced it to always show) */
+  header nav#nav {
+    display: none !important;
+    position: absolute !important; top: calc(100% + 8px) !important; left: 0 !important; right: 0 !important;
+    z-index: 3001; flex-direction: column; gap: 6px !important;
+    max-height: calc(100vh - 150px); max-height: calc(100dvh - 150px); overflow-y: auto; overscroll-behavior: contain;
+    padding: 10px !important; margin: 0;
+    background: rgba(10, 13, 19, .985) !important;
+    border: 1px solid rgba(216, 180, 108, .28) !important; border-radius: 16px !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .65) !important;
+  }
+  header nav#nav.open { display: grid !important; grid-template-columns: 1fr; }
+
+  header nav#nav a {
+    display: flex; align-items: center; justify-content: flex-start; width: 100%; min-height: 46px;
+    padding: 12px 16px !important; margin: 0;
+    font: 800 .86rem/1.2 "Space Grotesk", system-ui, sans-serif !important; letter-spacing: .02em;
+    text-transform: none; white-space: normal;
+    color: #e8dcc0 !important; text-shadow: none !important; transform: none !important;
+    background: rgba(255, 255, 255, .045) !important;
+    border: 1px solid rgba(216, 180, 108, .16) !important; border-radius: 11px !important;
+    box-shadow: none !important;
+  }
+  header nav#nav a:hover, header nav#nav a:focus-visible {
+    background: rgba(216, 180, 108, .14) !important; color: #f6dfa6 !important; border-color: rgba(216, 180, 108, .4) !important;
+  }
+  header nav#nav a.on {
+    background: linear-gradient(135deg, #e4c98f, #ba8d4d) !important; color: #1a150c !important; border-color: #f0d49b !important;
+  }
+  header nav#nav a.merch-in { display: flex !important; }
+
+  /* floating Community button must never cover the open menu */
+  body.nav-open .cph-launch { opacity: 0; pointer-events: none; }
+}
+@media (min-width: 620px) and (max-width: 1180px) {
+  header nav#nav.open { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 380px) {
+  header .wrap { gap: 8px !important; }
+  header .logo b { font-size: .98rem !important; }
+}
+
+/* ---------- Community / Messages panel ---------- */
+#cph-widget { z-index: 4000 !important; }
+.cph-launch { z-index: 4001 !important; }
+.cph-panel { z-index: 4002 !important; }
+
+/* short windows used to push the panel's top (and its close button) off-screen */
+.cph-panel {
+  min-height: 0 !important;
+  max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px);
+  height: min(660px, calc(100vh - 110px)); height: min(660px, calc(100dvh - 110px));
+}
+.cph-panel-body { min-height: 0; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+
+/* a conversation fills the panel: list scrolls, composer stays pinned at the bottom */
+.cph-panel-body:has(.cph-thread-head) { display: flex; flex-direction: column; }
+.cph-panel-body:has(.cph-thread-head) .cph-message-list { flex: 1 1 auto; min-height: 0; }
+.cph-panel-body:has(.cph-thread-head) .cph-compose { flex: none; position: sticky; bottom: 0; background: #11161d; padding-bottom: 2px; }
+.cph-compose textarea { font-size: 16px !important; } /* stops iOS zooming the page when typing */
+.cph-add-form input { font-size: 16px !important; }
+
+@media (max-width: 850px) {
+  .cph-panel { right: 10px !important; bottom: 72px !important; width: min(420px, calc(100vw - 20px)) !important;
+    height: min(680px, calc(100vh - 92px)); height: min(680px, calc(100dvh - 92px)); }
+}
+@media (max-width: 560px), (max-height: 520px) {
+  /* bottom sheet that always fits the screen */
+  .cph-panel { left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100% !important; border-radius: 17px 17px 0 0 !important;
+    height: 88vh; height: 88dvh; max-height: 100vh; max-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .cph-message { max-width: 90%; }
+}
+@media (max-width: 560px) {
+  .cph-launch { right: 12px !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important; }
+}
