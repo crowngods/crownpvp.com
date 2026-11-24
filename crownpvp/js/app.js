@@ -36,6 +36,10 @@ const socialStyles = document.createElement("link");
 socialStyles.rel = "stylesheet";
 socialStyles.href = "css/social-hub.css?v=20261124-social";
 document.head.append(socialStyles);
+const v3Styles = document.createElement("link");
+v3Styles.rel = "stylesheet";
+v3Styles.href = "css/crown-v3.css?v=20261127-merged";
+document.head.append(v3Styles);
 
 /* ---------- Accounts + alerts (only when Supabase is configured in config.js) ---------- */
 CP.authReady = new Promise(r => { CP._authResolve = r; });
@@ -50,14 +54,14 @@ if (C.supabaseUrl && C.supabaseKey) {
 /* ---------- Social Hub: loaded after the shared Supabase session resolves ---------- */
 CP.authReady.then(() => {
   const social = document.createElement("script");
-  social.src = "js/social-hub.js?v=20261124";
+  social.src = "js/social-hub.js?v=20261127-merged";
   social.onerror = () => console.warn("CrownPVP Social Hub could not be loaded.");
   document.body.append(social);
 });
 
 /* ---------- Layout ---------- */
 $("#site-header").outerHTML = `<div class="partner-bar"><div class="wrap"><span><i></i> OPEN FOR PARTNERSHIP</span><a href="tickets.html?new=1&amp;topic=Partnership&amp;title=Partnership%20request">Discuss a partnership <b>↗</b></a></div></div>
-<header><a class="merch-float${page === "merch" ? " on" : ""}" href="merch.html"><span aria-hidden="true">&#128717;</span> MERCHANDISE</a><div class="wrap"><a class="logo" href="index.html" aria-label="CrownPVP home"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
+<header><div class="wrap"><a class="logo" href="index.html" aria-label="CrownPVP home"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
 <nav id="nav" aria-label="Main">${nav.map(n => `<a href="${n[0]}" class="${n[2] === "merch" ? "merch-in " : ""}${n[2] === page ? "on" : ""}"${n[2] === page ? ' aria-current="page"' : ""}>${n[1]}</a>`).join("")}</nav>
 <div class="hr"><button class="ippill" data-copy aria-label="Copy server IP"><i class="dot" id="hdot"></i><code>${C.ip}</code></button><span id="acct-slot"></span><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div></div></header>
 <div id="scrim"></div>
@@ -68,7 +72,22 @@ $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a
 <div><h3>Explore</h3>${nav.map(n => `<a href="${n[0]}">${n[1]}</a>`).join("")}</div>
 <div><h3>Community</h3><a href="${C.discord}" target="_blank" rel="noopener">Join Discord</a><a href="store.html">Gold Store</a><a href="support.html">Report a player</a><a href="appeals.html">Appeal a punishment</a><a href="player.html">Player lookup</a><a href="faq.html">FAQ</a><a href="staff.html#apply">Staff applications</a><a href="${esc(C.supportChannel || C.discord)}" target="_blank" rel="noopener">Store &amp; community support</a></div></div>
 <div class="copy"><span>&copy; ${new Date().getFullYear()} CrownPVP. All rights reserved. <small class="ver">${esc(C.siteVersion || "")}</small></span><span>Developed by <b>Raizukennn</b> · We are not affiliated with Mojang Studios or Microsoft.</span></div></div></footer><div id="toast" role="status"></div>`;
-$("#burger").onclick = e => { const o = $("#nav").classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded", o); };
+{
+  const navEl = $("#nav"), burger = $("#burger");
+  const setNav = o => {
+    navEl.classList.toggle("open", o);
+    document.body.classList.toggle("nav-open", o);
+    burger.setAttribute("aria-expanded", String(o));
+    burger.setAttribute("aria-label", o ? "Close menu" : "Open menu");
+    burger.innerHTML = o ? "&#10005;" : "&#9776;";
+    if (o) window.CrownSocial?.close?.();
+  };
+  burger.onclick = e => { e.stopPropagation(); setNav(!navEl.classList.contains("open")); };
+  navEl.addEventListener("click", e => { if (e.target.closest("a")) setNav(false); });
+  document.addEventListener("click", e => { if (navEl.classList.contains("open") && !e.target.closest("#nav,#burger")) setNav(false); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && navEl.classList.contains("open")) setNav(false); });
+  window.matchMedia?.("(min-width:1241px)").addEventListener?.("change", e => { if (e.matches) setNav(false); });
+}
 document.addEventListener("click", async e => {
   const joinCopy = e.target.closest("[data-copy-server]");
   if (joinCopy) {

@@ -130,9 +130,6 @@ Crown Client is presented as an upcoming project only. There is no download in t
 - **Is the new version live?** Scroll to the footer. It should say "Site v8". If it does not, the new files are not published yet (check GitHub > Actions).
 - **Support tickets** (`/tickets`): topics are in `js/config.js` (`ticketTopics`). Run `supabase/support-tickets.sql` once in Supabase > SQL Editor, after `network-upgrade.sql`. Players must be signed in. Staff with report access see an "All tickets" tab and can reply or close tickets.
 
-## Staff applications on the staff dashboard (Supabase)
-On the live site (GitHub Pages + Supabase) staff applications no longer need the Cloudflare inbox. Run `supabase/staff-applications.sql` once (see `supabase/README.md`). Applications then appear on `dashboard.html` > Applications with the status Reviewing, and staff accept or deny them there. Applicants must be signed in and follow their status on the Staff page. The Cloudflare `/api/applications` route and `/owner` inbox are unchanged and are only used if you deploy that backend.
-
 ## Important launch checklist
 
 - [ ] Apply `schema.sql` to the production D1 database.
@@ -157,8 +154,11 @@ The updated project was smoke-tested locally on 21 November 2026:
 
 These local tests do not configure your live Cloudflare account. For live report delivery, deploy the `crownpvp/` folder to Cloudflare Pages, bind the D1 database as `DB`, apply `schema.sql`, and set the production `REPORT_OWNER_KEY` and `SYNC_TOKEN` secrets as described above. The local preview database is temporary and is not your live database.
 
+## 2026 v3 visual and responsive update
+The shared shell now loads `css/crown-v3.css` last, giving the pages a consistent dark-and-gold network theme and fixing the mobile navigation open/close behavior. The Social Hub keeps its floating friends/messages panel and homepage community card. The player profile page now includes a four-part profile stats strip and a persisted Like profile button; signed-in players can like another account once, unlike it later, and see the public total. Self-likes are blocked.
+
 ## Social Hub (friends, private messages and live presence)
-Apply `supabase/social-hub.sql` after `setup.sql`, `network-upgrade.sql`, `news-social.sql` and `profiles-upgrade.sql`. It adds friend requests, accepted friendships, one-to-one private messages, friend online/offline status and the active website visitor count. The floating Community control appears on every page; the homepage also has a Community Hub card in the right sidebar. Player names in news comments now open their public profiles, where visitors can send friend requests or message existing friends.
+Apply `supabase/social-hub.sql` after `setup.sql`, `network-upgrade.sql`, `news-social.sql` and `profiles-upgrade.sql`. It adds friend requests, accepted friendships, one-to-one private messages, friend online/offline status, the active website visitor count, and persisted profile likes. Each signed-in account can like another player's profile once and can remove that like; profile owners cannot like themselves. Re-run this same SQL file on an existing installation to add the likes migration safely. The floating Community control appears on every page; the homepage also has a Community Hub card in the right sidebar. Player names in news comments now open their public profiles, where visitors can send friend requests or message existing friends.
 
 The active count measures browser sessions with a recent heartbeat (three-minute window), not verified Minecraft server connections. Friend presence is for signed-in website accounts only. Direct messages are limited to accepted friends.
 

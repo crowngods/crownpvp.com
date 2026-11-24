@@ -308,3 +308,60 @@ revoke all on function public.get_direct_messages(text) from public, anon;
 grant execute on function public.get_direct_messages(text) to authenticated;
 
 -- Keep access limited to the functions above; no client can read another player's private messages.
+
+-- Public profile likes. A player can like each profile once and can remove their own like.
+-- Direct table access is denied; clients use the two scoped RPC functions below.
+create table if not exists public.profile_likes (
+  profile_id uuid not null references public.profiles(id) on delete cascade,
+  liker_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (profile_id, liker_id),
+  constraint profile_likes_not_self check (profile_id <> liker_id)
+);
+create index if not exists profile_likes_liker_idx on public.profile_likes(liker_id);
+alter table public.profile_likes enable row level security;
+revoke all on public.profile_likes from public, anon, authenticated;
+
+create or replace function public.get_profile_likes(p_username text)
+returns table(like_count bigint, liked_by_me boolean)
+language sql security definer stable set search_path = public as $$
+  select count(pl.liker_id)::bigint,
+    coalesce(bool_or(pl.liker_id = auth.uid()), false)
+  from public.profiles p
+  left join public.profile_likes pl on pl.profile_id = p.id
+  where lower(p.username) = lower(btrim(p_username))
+  group by p.id;
+$$;
+revoke all on function public.get_profile_likes(text) from public;
+grant execute on function public.get_profile_likes(text) to anon, authenticated;
+
+create or replace function public.toggle_profile_like(p_username text)
+returns table(like_count bigint, liked_by_me boolean)
+language plpgsql security definer set search_path = public as $$
+declare target_id uuid;
+begin
+  if auth.uid() is null then raise exception 'Sign in to like a profile'; end if;
+  select p.id into target_id
+    from public.profiles p
+    where lower(p.username) = lower(btrim(p_username))
+    limit 1;
+  if target_id is null then raise exception 'Player profile not found'; end if;
+  if target_id = auth.uid() then raise exception 'You cannot like your own profile'; end if;
+
+  if exists (select 1 from public.profile_likes pl where pl.profile_id = target_id and pl.liker_id = auth.uid()) then
+    delete from public.profile_likes pl where pl.profile_id = target_id and pl.liker_id = auth.uid();
+  else
+    insert into public.profile_likes(profile_id, liker_id)
+      values (target_id, auth.uid())
+      on conflict (profile_id, liker_id) do nothing;
+  end if;
+
+  return query
+    select count(*)::bigint,
+      exists (select 1 from public.profile_likes pl where pl.profile_id = target_id and pl.liker_id = auth.uid())
+    from public.profile_likes pl
+    where pl.profile_id = target_id;
+end $$;
+revoke all on function public.toggle_profile_like(text) from public, anon;
+grant execute on function public.toggle_profile_like(text) to authenticated;
+

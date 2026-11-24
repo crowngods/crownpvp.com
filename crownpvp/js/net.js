@@ -20,23 +20,20 @@ const badge = r => RANKS[r] ? `<span class="rbadge" style="--rc:${RANKS[r].color
 
 const STATUS = {
   pending: ["Pending", "st-pending"], under_review: ["Under review", "st-review"],
-  approved: ["Approved", "st-ok"], denied: ["Denied", "st-no"],
-  reviewing: ["Reviewing", "st-review"], accepted: ["Accepted", "st-ok"] /* staff applications */
+  approved: ["Approved", "st-ok"], denied: ["Denied", "st-no"]
 };
-const DONE = ["approved", "accepted", "denied"], REVIEW = ["under_review", "reviewing"];
 const pill = s => `<span class="spill ${(STATUS[s] || ["", ""])[1]}">${esc((STATUS[s] || [s])[0])}</span>`;
 const statusName = s => (STATUS[s] || [s])[0];
 
-/* The staff decision block. Reports use [Rank Name], appeals use <Rank Name> and a Status line.
-   Staff applications use [Rank Name] and a Status line. */
+/* The staff decision block. Reports use [Rank Name], appeals use <Rank Name> and a Status line. */
 function decision(kind, e) {
-  if (!e.handled_by_name || ![...DONE, ...REVIEW].includes(e.status)) return "";
+  if (!e.handled_by_name || !["approved", "denied", "under_review"].includes(e.status)) return "";
   const who = `${rankName(e.handled_by_rank)} ${e.handled_by_name}`.trim();
   const tag = kind === "appeal" ? `&lt;${esc(who)}&gt;` : `[${esc(who)}]`;
   const color = RANKS[e.handled_by_rank]?.color || "var(--gold)";
-  const done = DONE.includes(e.status);
+  const done = e.status === "approved" || e.status === "denied";
   return `<div class="decision ${e.status}"><div class="dline"><b class="dwho" style="color:${color}">${tag}</b>${e.decided_at ? `<time>${date(Date.parse(e.decided_at))}</time>` : ""}</div>
-  ${(kind === "appeal" || kind === "application") && done ? `<div><span class="dk">Status:</span> <b class="dstat ${e.status}">${esc(e.status.toUpperCase())}</b></div>` : ""}
+  ${kind === "appeal" && done ? `<div><span class="dk">Status:</span> <b class="dstat ${e.status}">${esc(e.status.toUpperCase())}</b></div>` : ""}
   ${done ? `<div><span class="dk">Reason:</span> <span class="dreason">${esc(e.decision_reason)}</span></div>` : `<div class="dmuted">Being reviewed by this staff member.</div>`}</div>`;
 }
 
@@ -56,7 +53,7 @@ function friendly(err, fallback = "Something went wrong. Please try again.") {
   if (/Failed to fetch|NetworkError|network/i.test(m)) return "Could not reach the server. Check your connection and try again.";
   if (/JWT|not authenticated|Sign in first/i.test(m)) return "Your session expired. Please sign in again.";
   if (/permission denied|row-level security|violates/i.test(m) && !/Write a reason/i.test(m)) return "You do not have permission to do that.";
-  if (/function .* does not exist|schema cache|relation .* does not exist/i.test(m)) return "This feature is not set up yet. Ask the owner to run the SQL scripts in the supabase folder (network-upgrade.sql, then staff-applications.sql).";
+  if (/function .* does not exist|schema cache|relation .* does not exist/i.test(m)) return "This feature is not set up yet. Ask the owner to run supabase/network-upgrade.sql.";
   return m && m.length < 200 && !/[{}]|SQLSTATE|pg_|public\./.test(m) ? m : fallback;
 }
 
@@ -133,25 +130,13 @@ function punishmentHtml(p) {
   return `<dl class="kv"><dt>Player</dt><dd>${esc(p.name)}</dd><dt>Type</dt><dd>${esc(p.type)} #${p.id}</dd><dt>Reason</dt><dd>${esc(CP.clean(p.reason)) || "<i>No reason given</i>"}</dd><dt>Staff</dt><dd>${esc(p.staff)}</dd><dt>Date</dt><dd>${date(p.time)}</dd><dt>Expires</dt><dd>${perm ? "Never (permanent)" : date(p.until)}</dd><dt>Status</dt><dd>${p.removed_by ? `Removed by ${esc(p.removed_by)}` : live ? "Active" : "Expired"}</dd></dl>`;
 }
 
-/* Decision history for one case (report, appeal or staff application). */
-async function history(sb, kind, row) {
-  const tl = await sb.from("case_events").select("actor_name,actor_rank,from_status,to_status,reason,created_at").eq("kind", kind).eq("case_id", row.id).order("created_at", { ascending: true });
-  return `<h4 class="xh">History</h4>${tl.error ? `<p class="dmuted">History is unavailable.</p>` : timeline(tl.data) || `<p class="dmuted">No history yet.</p>`}`;
-}
 /* Evidence + decision history for one case, loaded when a card is opened. */
 async function extras(sb, kind, row) {
-  const [ev, hist] = await Promise.all([evidenceHtml(sb, row), history(sb, kind, row)]);
-  return `<h4 class="xh">Evidence</h4>${ev}${hist}`;
-}
-
-/* ---------- staff applications ---------- */
-const ROLE_NAMES = { helper: "Helper", moderator: "Moderator", admin: "Admin", media: "Media" };
-const roleName = r => ROLE_NAMES[r] || (r ? String(r) : "");
-/* Every answer of an application, shown to staff in the dashboard and to the applicant on the staff page. */
-function applicationHtml(r) {
-  const q = (title, text) => `<div class="qa"><h4 class="xh">${esc(title)}</h4><p class="pre">${esc(text) || "<i>No answer</i>"}</p></div>`;
-  return `<dl class="kv"><dt>Minecraft</dt><dd>${esc(r.mc_username)}</dd><dt>Discord</dt><dd>${esc(r.discord)}</dd><dt>Position</dt><dd>${esc(roleName(r.role))}</dd><dt>Age range</dt><dd>${esc(r.age_band)}</dd><dt>Time zone</dt><dd>${esc(r.timezone)}</dd><dt>Weekly hours</dt><dd>${esc(r.availability)}</dd><dt>Microphone</dt><dd>${esc(r.mic_status)}</dd><dt>Can record</dt><dd>${esc(r.can_record)}</dd><dt>Punishments</dt><dd>${esc(r.punishment_history)}</dd></dl>
-  ${q("Previous staff experience and plugins", r.experience)}${q("1 · Hacked clients and anticheat", r.q_cheats)}${q("2 · OpFactions and raid disputes", r.q_factions)}${q("3 · Staff integrity and friends", r.q_integrity)}${q("4 · Why CrownPVP", r.motivation)}`;
+  const [ev, tl] = await Promise.all([
+    evidenceHtml(sb, row),
+    sb.from("case_events").select("actor_name,actor_rank,from_status,to_status,reason,created_at").eq("kind", kind).eq("case_id", row.id).order("created_at", { ascending: true })
+  ]);
+  return `<h4 class="xh">Evidence</h4>${ev}<h4 class="xh">History</h4>${tl.error ? `<p class="dmuted">History is unavailable.</p>` : timeline(tl.data) || `<p class="dmuted">No history yet.</p>`}`;
 }
 
 /* ---------- access info for the signed-in person ---------- */
@@ -166,5 +151,5 @@ const can = (a, p) => !!a?.perms?.includes(p);
 const gate = (title, text, next) => `<div class="card gate"><h3>${esc(title)}</h3><p>${esc(text)}</p><p style="margin-top:18px"><a class="btn" style="width:auto" href="login.html?next=${esc(next)}">Sign in or create an account</a></p></div>`;
 const unavailable = `<div class="card gate"><h3>This feature is not available right now</h3><p>Accounts are not connected yet. Please contact staff on Discord instead.</p><p style="margin-top:18px"><a class="btn" style="width:auto" data-discord>Open Discord</a></p></div>`;
 
-CP.net = { RANKS, SHIELD, rankName, badge, pill, statusName, decision, timeline, friendly, checkFiles, parseLinks, uploadFiles, evidenceHtml, extras, history, roleName, applicationHtml, findPunishment, punishmentHtml, access, can, gate, unavailable, MAX_FILES };
+CP.net = { RANKS, SHIELD, rankName, badge, pill, statusName, decision, timeline, friendly, checkFiles, parseLinks, uploadFiles, evidenceHtml, extras, findPunishment, punishmentHtml, access, can, gate, unavailable, MAX_FILES };
 })();

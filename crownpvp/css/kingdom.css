@@ -138,9 +138,8 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.55}
 .st-no{color:var(--no);border-color:rgba(239,106,115,.45);background:rgba(239,106,115,.08)}
 .decision{padding:12px 14px;border-radius:10px;border:1px solid var(--line2);background:rgba(255,255,255,.03);display:grid;gap:4px;font-size:.93rem}
 .decision.approved{border-left:3px solid var(--ok)}.decision.denied{border-left:3px solid var(--no)}.decision.under_review{border-left:3px solid var(--rev)}
-.decision.accepted{border-left:3px solid var(--ok)}.decision.reviewing{border-left:3px solid var(--rev)}
 .dline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.dline time{color:var(--mut);font-size:.8rem}
-.dk{color:var(--mut);font-weight:700}.dstat{letter-spacing:.06em}.dstat.approved,.dstat.accepted{color:var(--ok)}.dstat.denied{color:var(--no)}
+.dk{color:var(--mut);font-weight:700}.dstat{letter-spacing:.06em}.dstat.approved{color:var(--ok)}.dstat.denied{color:var(--no)}
 .dreason{overflow-wrap:anywhere}
 .rbadge{display:inline-flex;align-items:center;gap:5px;font:800 .68rem/1 "Plus Jakarta Sans";letter-spacing:.08em;text-transform:uppercase;color:var(--rc);padding:4px 9px 4px 7px;border-radius:7px;border:1px solid color-mix(in srgb,var(--rc) 50%,transparent);background:color-mix(in srgb,var(--rc) 13%,transparent);vertical-align:middle}
 .ktl{list-style:none;padding:0;display:grid;gap:12px;justify-content:stretch;color:var(--tx);border-left:2px solid var(--line2);margin-left:6px}
@@ -370,9 +369,3 @@ header .wrap{gap:14px}.logo{flex:none}nav{min-width:0;gap:0}
 @media(max-width:1100px){.cta-grid{grid-template-columns:1fr 1fr}.cta-merch{grid-column:1/-1}}
 @media(max-width:860px){.cta-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.ticker-in,.crown-hero h1 span,.gold-t{animation:none}}
-
-/* staff applications */
-.qa .xh{margin-top:12px}.qa .pre{margin:4px 0 0}
-.myapp-wrap{display:grid;gap:12px;margin-bottom:26px}.myapp-wrap>.xh{margin:0;color:var(--gold2)}
-.apply-gate{margin:0 auto 26px}
-.apply-reviewing{color:#7db7f0}

@@ -43,6 +43,7 @@
   const toast = message => CP?.toast ? CP.toast(message) : window.alert(message);
 
   function setOpen(open) {
+    if (open && document.getElementById("nav")?.classList.contains("open")) document.getElementById("burger")?.click();
     widget.classList.toggle("is-open", !!open);
     document.getElementById("cph-launch")?.setAttribute("aria-expanded", String(!!open));
     panel()?.setAttribute("aria-hidden", String(!open));
@@ -243,6 +244,8 @@
     if (target.dataset.cphChat) return openChat(target.dataset.cphChat);
     if (target.dataset.cphChatBack) { state.chatUser = ""; state.tab = "messages"; renderPanel(); return; }
   });
+
+  document.addEventListener("keydown", event => { if (event.key === "Escape" && isOpen()) setOpen(false); });
 
   document.addEventListener("click", async event => {
     const open = event.target.closest("[data-cph-open]");

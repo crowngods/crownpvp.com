@@ -26,6 +26,16 @@
     const p = data?.[0];
     if (!p) return note("No player found with that name.");
 
+    // Profile likes are stored in Supabase and are unique per signed-in account.
+    // A likes migration/network error should never prevent the rest of the profile from loading.
+    let likeData = null, likeError = null;
+    try { ({ data: likeData, error: likeError } = await auth.sb.rpc("get_profile_likes", { p_username: p.username })); }
+    catch (error) { likeError = error; }
+    const likeRow = Array.isArray(likeData) ? likeData[0] : likeData;
+    const likesEnabled = !likeError && !!likeRow;
+    let likeCount = likesEnabled ? Number(likeRow.like_count || 0) : 0;
+    let likedByMe = likesEnabled && !!likeRow.liked_by_me;
+
     const own = !!auth.user && auth.profile?.username?.toLowerCase() === p.username.toLowerCase();
     const pic = AV_OK.test(p.avatar_url || "") ? p.avatar_url : CP.head(p.username, 256);
     const joinedDate = new Date(p.created_at);
@@ -46,16 +56,54 @@
       actions = `<button type="button" class="hx-btn sm" data-social-friend="${esc(p.username)}">＋ Add friend</button><a class="hx-btn sm dark" href="support.html">Report</a>`;
     }
 
+    let likeControl = "";
+    if (own) {
+      likeControl = `<span class="pf-like-own" title="You cannot like your own profile">♥ Your profile</span>`;
+    } else if (!likesEnabled) {
+      likeControl = `<button type="button" class="pf-like-btn is-disabled" disabled title="The profile-likes database update has not been applied">♥ Likes unavailable</button>`;
+    } else if (!auth.user) {
+      likeControl = `<a class="pf-like-btn" href="login.html?next=${encodeURIComponent("profile.html?u=" + p.username)}">♥ Like profile</a>`;
+    } else {
+      likeControl = `<button type="button" class="pf-like-btn${likedByMe ? " is-liked" : ""}" data-profile-like aria-pressed="${likedByMe}"><span aria-hidden="true">♥</span>${likedByMe ? "Liked" : "Like profile"}</button>`;
+    }
+
     document.title = p.username + " | CrownPVP";
     root.innerHTML = `<div class="pf-head"><div class="pf-av"><img src="${esc(pic)}" alt="${esc(p.username)}'s picture" width="170" height="170">${own ? `<label for="pf-file">Change picture</label><input id="pf-file" type="file" accept="image/*" hidden>` : ""}</div>
       <div class="pf-info"><h1>${esc(p.username)}${p.staff_rank && RANKS[p.staff_rank] ? `<span class="pf-rank">${RANKS[p.staff_rank]}</span>` : ""}</h1>${presence}<p><b>Joined:</b> ${esc(joined)}</p>
       <p class="pf-bio${p.bio ? "" : " empty"}">${p.bio ? esc(p.bio) : own ? "You have not written a bio yet." : "This player has not written a bio yet."}</p></div>
-      <div class="pf-act">${actions}</div></div>
-      <div class="pf-stats"><div><b>${Number(p.comments || 0).toLocaleString()}</b><span>Comments</span></div><div><b>${Number(p.reactions || 0).toLocaleString()}</b><span>Reactions</span></div><div><b>${esc(joined === "Unknown" ? "—" : joined.split(",")[1].trim())}</b><span>Member since</span></div></div>
+      <div class="pf-act">${actions}${likeControl}</div></div>
+      <div class="pf-stats"><div><b>${Number(p.comments || 0).toLocaleString()}</b><span>Comments</span></div><div><b>${Number(p.reactions || 0).toLocaleString()}</b><span>Reactions</span></div><div class="pf-likes-stat"><b data-profile-likes>${likesEnabled ? likeCount.toLocaleString() : "—"}</b><span>Profile likes</span></div><div><b>${esc(joined === "Unknown" ? "—" : joined.split(",")[1].trim())}</b><span>Member since</span></div></div>
       ${own ? `<div class="pf-edit" id="pf-edit" hidden>
         <section><h2>Bio</h2><textarea id="pf-bio" maxlength="300" aria-label="Bio" placeholder="Tell players about yourself">${esc(p.bio || "")}</textarea><div class="row"><button class="hx-btn sm" id="pf-save" type="button">Save bio</button><small id="pf-count"></small></div><p class="pf-msg" id="pf-m1" aria-live="polite"></p></section>
         <section><h2>Profile picture</h2><p class="hx-note">Pick a square-ish image. It is cropped to a square and shrunk for you.</p><div class="row"><label class="hx-btn sm dark" for="pf-file">Upload picture</label><button class="hx-btn sm dark" id="pf-clear" type="button">Use Minecraft head</button></div><p class="pf-msg" id="pf-m2" aria-live="polite"></p></section>
         <section><h2>Username</h2><p class="hx-note">${auth.profile?.username_changed ? "You have already used your one username change." : "You can change your username only once. Choose carefully."}</p><input type="text" id="pf-name" value="${esc(p.username)}" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" aria-label="New username" ${auth.profile?.username_changed ? "disabled" : ""}><div class="row"><button class="hx-btn sm" id="pf-rename" type="button" ${auth.profile?.username_changed ? "disabled" : ""}>Change username</button></div><p class="pf-msg" id="pf-m3" aria-live="polite"></p></section></div>` : ""}`;
+
+    if (!own && auth.user && likesEnabled) {
+      const likeButton = root.querySelector("[data-profile-like]");
+      likeButton?.addEventListener("click", async () => {
+        if (likeButton.disabled) return;
+        likeButton.disabled = true;
+        likeButton.classList.add("is-loading");
+        const { data: updatedData, error: updateError } = await auth.sb.rpc("toggle_profile_like", { p_username: p.username });
+        const updated = Array.isArray(updatedData) ? updatedData[0] : updatedData;
+        if (updateError || !updated) {
+          likeButton.disabled = false;
+          likeButton.classList.remove("is-loading");
+          CP.toast(updateError?.message || "Could not update this profile like. Please try again.");
+          return;
+        }
+        likeCount = Number(updated.like_count || 0);
+        likedByMe = !!updated.liked_by_me;
+        const count = root.querySelector("[data-profile-likes]");
+        if (count) count.textContent = likeCount.toLocaleString();
+        likeButton.classList.toggle("is-liked", likedByMe);
+        likeButton.setAttribute("aria-pressed", String(likedByMe));
+        likeButton.innerHTML = `<span aria-hidden="true">♥</span>${likedByMe ? "Liked" : "Like profile"}`;
+        likeButton.disabled = false;
+        likeButton.classList.remove("is-loading");
+        CP.toast(likedByMe ? `You liked ${p.username}'s profile.` : `You removed your like from ${p.username}'s profile.`);
+      });
+    }
 
     if (!own) return;
     const $ = id => document.getElementById(id);
