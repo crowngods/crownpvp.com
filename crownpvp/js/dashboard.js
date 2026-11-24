@@ -1,34 +1,40 @@
-/* CrownPVP staff dashboard: reports, ban appeals, audit log and staff management.
-   SECURITY: this file only decides what to show. Every read is filtered by row-level security and every change goes through a
-   database function that checks the staff member's rank (supabase/network-upgrade.sql). Hiding a button here is never the protection. */
+/* CrownPVP staff dashboard: reports, ban appeals, staff applications, audit log and staff management. */
 (() => {
 const { $, $$, esc, date } = CP, N = CP.net, box = $("#dash");
 const PER = 20;
 const GAMEMODES = ["Factions", "SkyBlock", "Survival", "KitPvP", "Other"];
 const CATEGORIES = ["Hacking / Cheating", "Abusing Bugs", "Scamming", "Inappropriate Behaviour", "Exploiting", "Other"];
+const ROLES = ["helper", "moderator", "admin", "media"];
 const S = {
   tab: "", access: null,
   reports: { q: "", status: "open", gamemode: "", category: "", page: 0 },
   appeals: { q: "", status: "open", ptype: "", page: 0 },
+  applications: { q: "", status: "open", role: "", page: 0 },
   audit: { q: "", action: "", page: 0 }
 };
 const safeQ = s => String(s || "").replace(/[^A-Za-z0-9_]/g, "").slice(0, 16);
 const sel = (name, cur, items) => `<select class="fi" data-f="${name}" aria-label="${name}">${items.map(([v, l]) => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
-const STATUS_ITEMS = [["open", "Open (pending + review)"], ["all", "All statuses"], ["pending", "Pending"], ["under_review", "Under review"], ["approved", "Approved"], ["denied", "Denied"]];
+const STATUS_ITEMS = [["open", "Open (pending + review)"], ["all", "All statuses"], ["pending", "Pending"], ["under_review", "Under review"], ["approved", "Accepted / Approved"], ["denied", "Denied"]];
 const pager = (page, total) => { const pages = Math.max(1, Math.ceil(total / PER)); return `<nav class="pager" aria-label="Pages"><button data-pg="-1" ${page <= 0 ? "disabled" : ""}>&larr; Previous</button><span>Page ${page + 1} of ${pages} &middot; ${total.toLocaleString("en-US")} total</span><button data-pg="1" ${page + 1 >= pages ? "disabled" : ""}>Next &rarr;</button></nav>`; };
 const av = n => `<img class="mh" src="${esc(CP.head(n, 28))}" alt="" width="28" height="28" loading="lazy">`;
 
 /* ---------- action box shown under a case ---------- */
 function actions(kind, row, a) {
-  const decideP = kind === "report" ? "reports_decide" : "appeals_decide", reviewP = kind === "report" ? "reports_review" : "appeals_decide";
+  const decideP = kind === "report" ? "reports_decide" : kind === "appeal" ? "appeals_decide" : "applications_decide";
+  const reviewP = kind === "report" ? "reports_review" : kind === "appeal" ? "appeals_decide" : "applications_view";
   const canDecide = N.can(a, decideP), canReview = N.can(a, reviewP) || canDecide;
   const closed = row.status === "approved" || row.status === "denied";
   if (!canReview) return `<p class="dmuted">Your rank can read this ${kind} but not act on it.</p>`;
   if (closed && !N.can(a, "cases_reopen")) return `<p class="dmuted">This ${kind} was decided. Only a Manager or above can change a decision.</p>`;
+
+  const okLabel = kind === "application" ? "ACCEPT" : "Approve";
+  const noLabel = kind === "application" ? "DENY" : "Deny";
+  const revLabel = kind === "application" ? "REVIEW" : "Mark under review";
+
   const b = (st, label, cls = "ghost") => row.status === st ? "" : `<button type="button" class="btn ${cls} sm" data-set="${st}">${label}</button>`;
-  return `<div class="act"><label>Reason<small>${canDecide ? "Required to approve or deny. The player sees it with your name and rank." : "Optional note for the history."}</small>
-    <textarea class="fi" rows="3" maxlength="1000" placeholder="Write your own reason&hellip;"></textarea></label>
-    <div class="kactions">${canDecide ? b("approved", "Approve", "ok") + b("denied", "Deny", "no") : ""}${b("under_review", "Mark under review")}${closed || row.status === "under_review" ? b("pending", "Back to pending") : ""}</div>
+  return `<div class="act"><label>${kind === "application" ? "Staff Description / Decision Note" : "Reason"}<small>${canDecide ? "Required to accept/approve or deny. The applicant sees it with your name and rank." : "Optional note for the history."}</small>
+    <textarea class="fi" rows="3" maxlength="1000" placeholder="${kind === "application" ? "Add staff description, interview instructions, or denial reason…" : "Write your own reason…"}">${esc(row.decision_reason || "")}</textarea></label>
+    <div class="kactions">${canDecide ? b("approved", okLabel, "ok") + b("denied", noLabel, "no") : ""}${b("under_review", revLabel)}${closed || row.status === "under_review" ? b("pending", "Back to pending") : ""}</div>
     <p class="kmsg err amsg" aria-live="polite"></p></div>`;
 }
 
@@ -49,25 +55,54 @@ function appealCard(r, a) {
     <div class="xbody"><p class="dmuted">Loading&hellip;</p></div></details>
   ${actions("appeal", r, a)}</article>`;
 }
+function applicationCard(r, a) {
+  return `<article class="kcase" data-kind="application" data-id="${r.id}">
+    <header>
+      <div class="who">${av(r.mc_username)}<div><b>APP-${r.id} &middot; ${esc(r.mc_username)}</b><small>Applying for <b>${esc(r.role.toUpperCase())}</b> &middot; Discord: ${esc(r.discord)}</small></div></div>
+      ${N.pill(r.status)}
+    </header>
+    <p class="meta">Age: <b>${esc(r.age_band)}</b> &middot; TZ: <b>${esc(r.timezone)}</b> &middot; Availability: <b>${esc(r.availability)} hrs/wk</b> &middot; submitted ${date(Date.parse(r.created_at))}</p>
+    ${N.decision("appeal", r)}
+    <details open>
+      <summary>Application Answers &amp; Experience</summary>
+      <dl class="kv">
+        <dt>Experience &amp; Details</dt><dd class="pre">${esc(r.experience)}</dd>
+        <dt>Scenario Answers &amp; Motivation</dt><dd class="pre">${esc(r.motivation)}</dd>
+      </dl>
+    </details>
+    ${actions("application", r, a)}
+  </article>`;
+}
 
 async function casesView(kind, a, auth) {
-  const isR = kind === "report", st = S[isR ? "reports" : "appeals"], table = isR ? "player_reports" : "ban_appeals";
+  const isR = kind === "report", isApp = kind === "application";
+  const st = S[isR ? "reports" : isApp ? "applications" : "appeals"];
+  const table = isR ? "player_reports" : isApp ? "staff_applications" : "ban_appeals";
   let q = auth.sb.from(table).select("*", { count: "exact" }).order("created_at", { ascending: false }).range(st.page * PER, st.page * PER + PER - 1);
   if (st.status === "open") q = q.in("status", ["pending", "under_review"]); else if (st.status !== "all") q = q.eq("status", st.status);
   const s = safeQ(st.q);
+
   if (isR) {
     if (st.gamemode) q = q.eq("gamemode", st.gamemode);
     if (st.category) q = q.eq("category", st.category);
     if (s) q = q.or(`reported_player.ilike.%${s}%,reporter.ilike.%${s}%`);
+  } else if (isApp) {
+    if (st.role) q = q.eq("role", st.role);
+    if (s) q = q.or(`mc_username.ilike.%${s}%,discord.ilike.%${s}%`);
   } else {
     if (st.ptype) q = q.eq("punishment_type", st.ptype);
     if (s) q = /^\d+$/.test(s) ? q.or(`punishment_id.eq.${Number(s)},mc_username.ilike.%${s}%`) : q.or(`mc_username.ilike.%${s}%,account_name.ilike.%${s}%`);
   }
   const { data, error, count } = await q; if (error) throw error;
+
   const filters = isR
-    ? `<input class="fi" type="search" data-f="q" maxlength="16" placeholder="Search player username&hellip;" value="${esc(st.q)}" aria-label="Search by player username">${sel("gamemode", st.gamemode, [["", "All gamemodes"], ...GAMEMODES.map(g => [g, g])])}${sel("category", st.category, [["", "All categories"], ...CATEGORIES.map(g => [g, g])])}${sel("status", st.status, STATUS_ITEMS)}`
-    : `<input class="fi" type="search" data-f="q" maxlength="16" placeholder="Search username or punishment ID&hellip;" value="${esc(st.q)}" aria-label="Search by username or punishment ID">${sel("ptype", st.ptype, [["", "All types"], ["ban", "Bans"], ["mute", "Mutes"], ["other", "Other"]])}${sel("status", st.status, STATUS_ITEMS)}`;
-  return `<div class="filters">${filters}</div>${data.length ? `<div class="clist">${data.map(r => (isR ? reportCard : appealCard)(r, a)).join("")}</div>${pager(st.page, count || 0)}` : `<div class="empty"><h3>Nothing here</h3><p style="margin-top:8px">No ${isR ? "reports" : "appeals"} match these filters.</p></div>`}`;
+    ? `<input class="fi" type="search" data-f="q" maxlength="16" placeholder="Search player username&hellip;" value="${esc(st.q)}">${sel("gamemode", st.gamemode, [["", "All gamemodes"], ...GAMEMODES.map(g => [g, g])])}${sel("category", st.category, [["", "All categories"], ...CATEGORIES.map(g => [g, g])])}${sel("status", st.status, STATUS_ITEMS)}`
+    : isApp
+    ? `<input class="fi" type="search" data-f="q" maxlength="16" placeholder="Search applicant IGN&hellip;" value="${esc(st.q)}">${sel("role", st.role, [["", "All roles"], ...ROLES.map(r => [r, r.toUpperCase()])])}${sel("status", st.status, STATUS_ITEMS)}`
+    : `<input class="fi" type="search" data-f="q" maxlength="16" placeholder="Search username or punishment ID&hellip;" value="${esc(st.q)}">${sel("ptype", st.ptype, [["", "All types"], ["ban", "Bans"], ["mute", "Mutes"], ["other", "Other"]])}${sel("status", st.status, STATUS_ITEMS)}`;
+
+  const cardFn = isR ? reportCard : isApp ? applicationCard : appealCard;
+  return `<div class="filters">${filters}</div>${data.length ? `<div class="clist">${data.map(r => cardFn(r, a)).join("")}</div>${pager(st.page, count || 0)}` : `<div class="empty"><h3>Nothing here</h3><p style="margin-top:8px">No ${isR ? "reports" : isApp ? "applications" : "appeals"} match these filters.</p></div>`}`;
 }
 
 /* ---------- audit log ---------- */
@@ -78,11 +113,16 @@ async function auditView(auth) {
   if (s) q = q.or(`actor_name.ilike.%${s}%,target_label.ilike.%${s}%`);
   if (st.action) q = q.like("action", st.action + "%");
   const { data, error, count } = await q; if (error) throw error;
-  const label = r => r.target_kind === "staff" ? `Staff: ${esc(r.target_label)}` : `${r.target_kind === "report" ? "RPT" : "APL"}-${r.target_id} &middot; ${esc(r.target_label)}`;
-  const act = r => ({ "report.approved": "Approved report", "report.denied": "Denied report", "report.under_review": "Reviewing report", "report.pending": "Reset report", "appeal.approved": "Approved appeal", "appeal.denied": "Denied appeal", "appeal.under_review": "Reviewing appeal", "appeal.pending": "Reset appeal", "staff.rank": "Changed rank" })[r.action] || r.action;
+  const label = r => r.target_kind === "staff" ? `Staff: ${esc(r.target_label)}` : `${r.target_kind === "report" ? "RPT" : r.target_kind === "application" ? "APP" : "APL"}-${r.target_id} &middot; ${esc(r.target_label)}`;
+  const act = r => ({
+    "report.approved": "Approved report", "report.denied": "Denied report", "report.under_review": "Reviewing report", "report.pending": "Reset report",
+    "appeal.approved": "Approved appeal", "appeal.denied": "Denied appeal", "appeal.under_review": "Reviewing appeal", "appeal.pending": "Reset appeal",
+    "application.approved": "Accepted application", "application.denied": "Denied application", "application.under_review": "Reviewing application", "application.pending": "Reset application",
+    "staff.rank": "Changed rank"
+  })[r.action] || r.action;
   const chg = r => r.target_kind === "staff" ? `${esc(N.rankName(r.from_status) || "None")} &rarr; ${esc(N.rankName(r.to_status) || "None")}` : `${esc(N.statusName(r.from_status))} &rarr; ${esc(N.statusName(r.to_status))}`;
-  return `<div class="filters"><input class="fi" type="search" data-f="q" maxlength="16" placeholder="Search staff or target&hellip;" value="${esc(st.q)}" aria-label="Search the audit log">${sel("action", st.action, [["", "All actions"], ["report.", "Reports"], ["appeal.", "Appeals"], ["staff.", "Staff changes"]])}</div>
-  ${data.length ? `<div class="tbw"><table class="kt"><thead><tr><th>When</th><th>Staff</th><th>Action</th><th>Target</th><th>Status change</th><th>Reason</th></tr></thead><tbody>${data.map(r => `<tr><td data-l="When">${new Date(r.created_at).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}</td><td data-l="Staff">${esc(r.actor_name)} ${N.badge(r.actor_rank)}</td><td data-l="Action">${esc(act(r))}</td><td data-l="Target">${label(r)}</td><td data-l="Change">${chg(r)}</td><td data-l="Reason" class="rs">${esc(r.reason) || "<i>-</i>"}</td></tr>`).join("")}</tbody></table></div>${pager(st.page, count || 0)}` : `<div class="empty"><h3>No entries</h3><p style="margin-top:8px">Nothing has been logged yet.</p></div>`}`;
+  return `<div class="filters"><input class="fi" type="search" data-f="q" maxlength="16" placeholder="Search staff or target&hellip;" value="${esc(st.q)}">${sel("action", st.action, [["", "All actions"], ["report.", "Reports"], ["appeal.", "Appeals"], ["application.", "Applications"], ["staff.", "Staff changes"]])}</div>
+  ${data.length ? `<div class="tbw"><table class="kt"><thead><tr><th>When</th><th>Staff</th><th>Action</th><th>Target</th><th>Status change</th><th>Reason / Description</th></tr></thead><tbody>${data.map(r => `<tr><td data-l="When">${new Date(r.created_at).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}</td><td data-l="Staff">${esc(r.actor_name)} ${N.badge(r.actor_rank)}</td><td data-l="Action">${esc(act(r))}</td><td data-l="Target">${label(r)}</td><td data-l="Change">${chg(r)}</td><td data-l="Reason" class="rs">${esc(r.reason) || "<i>-</i>"}</td></tr>`).join("")}</tbody></table></div>${pager(st.page, count || 0)}` : `<div class="empty"><h3>No entries</h3><p style="margin-top:8px">Nothing has been logged yet.</p></div>`}`;
 }
 
 /* ---------- staff management ---------- */
@@ -91,7 +131,7 @@ async function staffView(a, auth) {
   const myLv = N.RANKS[a.rank]?.lv || 99;
   const ranks = Object.entries(N.RANKS).filter(([, v]) => a.rank === "owner" || v.lv > myLv);
   return `<div class="duo2"><div><h3 class="ksub">Team</h3><div class="tbw"><table class="kt"><thead><tr><th>Member</th><th>Rank</th><th>Position title</th><th>Public</th></tr></thead><tbody>${data.map(m => `<tr><td data-l="Member">${av(m.username)} <b>${esc(m.username)}</b></td><td data-l="Rank">${N.badge(m.staff_rank)}</td><td data-l="Title">${esc(m.position_title || "") || "<i>-</i>"}</td><td data-l="Public">${m.public_listed ? "Yes" : "Hidden"}</td></tr>`).join("") || `<tr><td colspan="4"><i>No staff yet.</i></td></tr>`}</tbody></table></div></div>
-  <form class="kcard kform" id="sf" novalidate><h3 class="ksub">Set a rank</h3><p class="dmuted">The person needs a CrownPVP website account first. You can only manage ranks below your own. Slots: 1 Owner, 1 Co-Owner, 2 Manager, 3 Admin, 3 Moderator, 3 Helper, 3 Media.</p>
+  <form class="kcard kform" id="sf" novalidate><h3 class="ksub">Set a rank</h3><p class="dmuted">The person needs a CrownPVP website account first. You can only manage ranks below your own.</p>
   <label>Website username<input class="fi" name="user" maxlength="16" required autocomplete="off"></label>
   <label>Rank<select class="fi" name="rank"><option value="">Remove from staff</option>${ranks.map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("")}</select></label>
   <label>Position title<small>Optional, shown on the team page (e.g. Lead Builder)</small><input class="fi" name="title" maxlength="40"></label>
@@ -101,7 +141,13 @@ async function staffView(a, auth) {
 /* ---------- shell ---------- */
 CP.authReady.then(auth => {
   if (!auth) { box.innerHTML = N.unavailable; return; }
-  const TABS = [["reports", "Reports", "reports_view"], ["appeals", "Appeals", "appeals_view"], ["audit", "Audit log", "audit_view"], ["staff", "Staff", "staff_manage"]];
+  const TABS = [
+    ["reports", "Reports", "reports_view"],
+    ["appeals", "Appeals", "appeals_view"],
+    ["applications", "Applications", "applications_view"],
+    ["audit", "Audit log", "audit_view"],
+    ["staff", "Staff", "staff_manage"]
+  ];
   let counts = {};
 
   async function loadCounts(a) {
@@ -109,6 +155,7 @@ CP.authReady.then(auth => {
     counts = {};
     if (N.can(a, "reports_view")) counts.reports = await c("player_reports", ["pending", "under_review"]);
     if (N.can(a, "appeals_view")) counts.appeals = await c("ban_appeals", ["pending", "under_review"]);
+    if (N.can(a, "applications_view")) counts.applications = await c("staff_applications", ["pending", "under_review"]);
   }
   async function draw() {
     if (!auth.user) { box.innerHTML = N.gate("Staff sign in", "Sign in with your staff account to open the dashboard.", "dashboard.html"); return; }
@@ -120,7 +167,7 @@ CP.authReady.then(auth => {
     const h = location.hash.slice(1); if (!S.tab || !tabs.some(t => t[0] === S.tab)) S.tab = tabs.some(t => t[0] === h) ? h : tabs[0][0];
     await loadCounts(a);
     box.innerHTML = `<div class="dwho2"><span class="av">${av(a.username)}</span><div><b>${esc(a.username)}</b> ${N.badge(a.rank)}</div></div>
-    <div class="kpi">${counts.reports != null ? `<div><b>${counts.reports}</b><span>Open reports</span></div>` : ""}${counts.appeals != null ? `<div><b>${counts.appeals}</b><span>Open appeals</span></div>` : ""}</div>
+    <div class="kpi">${counts.reports != null ? `<div><b>${counts.reports}</b><span>Open reports</span></div>` : ""}${counts.appeals != null ? `<div><b>${counts.appeals}</b><span>Open appeals</span></div>` : ""}${counts.applications != null ? `<div><b>${counts.applications}</b><span>Open applications</span></div>` : ""}</div>
     <div class="ktabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${S.tab === k}" class="${S.tab === k ? "on" : ""}">${l}${counts[k] ? ` <i class="cn">${counts[k]}</i>` : ""}</button>`).join("")}</div><div id="d-body"><div class="skel"><i></i><i></i><i></i></div></div>`;
     await body();
   }
@@ -129,7 +176,11 @@ CP.authReady.then(auth => {
     const my = ++seq, a = S.access, el = $("#d-body"); if (!el) return;
     const focus = keepFocus ? document.activeElement?.dataset?.f : null, pos = keepFocus ? document.activeElement?.selectionStart : null;
     try {
-      const html = S.tab === "reports" ? await casesView("report", a, auth) : S.tab === "appeals" ? await casesView("appeal", a, auth) : S.tab === "audit" ? await auditView(auth) : await staffView(a, auth);
+      const html = S.tab === "reports" ? await casesView("report", a, auth)
+                 : S.tab === "appeals" ? await casesView("appeal", a, auth)
+                 : S.tab === "applications" ? await casesView("application", a, auth)
+                 : S.tab === "audit" ? await auditView(auth)
+                 : await staffView(a, auth);
       if (my !== seq) return; el.innerHTML = html;
       if (focus) { const f = $(`[data-f="${focus}"]`, el); if (f) { f.focus(); try { f.setSelectionRange(pos, pos); } catch { /* select */ } } }
     } catch (e) { if (my !== seq) return; console.error("Dashboard error", e); el.innerHTML = `<div class="empty"><h3>Could not load this tab</h3><p style="margin-top:8px">${esc(N.friendly(e, "Please try again in a moment."))}</p></div>`; }
@@ -160,12 +211,16 @@ CP.authReady.then(auth => {
     const b = e.target.closest("[data-set]"); if (!b) return;
     const card = b.closest(".kcase"), kind = card.dataset.kind, status = b.dataset.set, msg = card.querySelector(".amsg"), reason = card.querySelector(".act textarea").value.trim();
     const decided = status === "approved" || status === "denied";
-    if (decided && reason.length < 5) { msg.textContent = "Write your own reason first (at least 5 characters)."; card.querySelector(".act textarea").focus(); return; }
-    if (decided && !confirm(`${status === "approved" ? "Approve" : "Deny"} ${kind === "report" ? "report RPT" : "appeal APL"}-${card.dataset.id}? The player will see your name, rank and reason.`)) return;
+    if (decided && reason.length < 5) { msg.textContent = "Write your own description/reason first (at least 5 characters)."; card.querySelector(".act textarea").focus(); return; }
+    const prefix = kind === "report" ? "report RPT" : kind === "appeal" ? "appeal APL" : "application APP";
+    const verb = kind === "application" ? (status === "approved" ? "ACCEPT" : "DENY") : (status === "approved" ? "Approve" : "Deny");
+    if (decided && !confirm(`${verb} ${prefix}-${card.dataset.id}? The player will see your name, rank and description.`)) return;
     msg.textContent = ""; const btns = $$(".act button", card); btns.forEach(x => x.disabled = true);
-    const { error } = await auth.sb.rpc(kind === "report" ? "set_report_status" : "set_appeal_status", { p_id: Number(card.dataset.id), p_status: status, p_reason: reason });
+
+    const rpc = kind === "report" ? "set_report_status" : kind === "appeal" ? "set_appeal_status" : "set_application_status";
+    const { error } = await auth.sb.rpc(rpc, { p_id: Number(card.dataset.id), p_status: status, p_reason: reason });
     if (error) { btns.forEach(x => x.disabled = false); msg.textContent = N.friendly(error, "Could not save. Nothing was changed."); return; }
-    CP.toast(decided ? `${kind === "report" ? "Report" : "Appeal"} ${status}. The player was alerted.` : "Status updated.");
+    CP.toast(decided ? `${kind === "report" ? "Report" : kind === "appeal" ? "Appeal" : "Application"} ${status}. The player was alerted.` : "Status updated.");
     await loadCounts(S.access); await draw();
   });
 

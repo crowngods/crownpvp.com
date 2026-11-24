@@ -383,3 +383,74 @@ body[data-page="home"] .hx-frame { margin-top: 8px !important; }
 
 /* Inner pages start their own banner right under the nav. */
 body:not([data-page="home"]) > header.crown-nav:not(#_) { margin-bottom: 0 !important; }
+
+
+/* ==========================================================================
+   AQW-STYLE GLOBAL GRAY BACKGROUND + SIDE-TO-SIDE BLACK VIGNETTE (ALL PAGES)
+   ========================================================================== */
+html, body {
+  background-color: #1c1f24 !important;
+  color: #f3f4f6 !important;
+}
+
+body {
+  background: #1c1f24 !important;
+}
+
+/* Global gray backdrop + your folder artwork + faded black side-to-side edges */
+body::before {
+  content: "" !important;
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    /* Faded black side-to-side like AQW */
+    linear-gradient(90deg, rgba(0, 0, 0, 0.94) 0%, rgba(12, 14, 17, 0.45) 14%, rgba(28, 31, 36, 0.15) 50%, rgba(12, 14, 17, 0.45) 86%, rgba(0, 0, 0, 0.94) 100%),
+    /* Gray tint overlay over your folder background */
+    linear-gradient(180deg, rgba(22, 24, 29, 0.78) 0%, rgba(32, 35, 41, 0.86) 45%, rgba(24, 27, 32, 0.92) 100%),
+    url("../assets/crown-voxel-battle.webp") center 32% / cover no-repeat !important;
+  filter: grayscale(0.45) contrast(1.04) !important;
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+}
+
+/* Make Store, Merch, Dashboard & Inner Section Wrappers transparent so the gray backdrop shows through */
+body[data-page="store"] main,
+body[data-page="store"] .phead,
+body[data-page="store"] section,
+body[data-page="merch"] main,
+body[data-page="merch"] .phead,
+body[data-page="merch"] section,
+.phead,
+.khero,
+section.alt,
+section.tight {
+  background: transparent !important;
+}
+
+/* ==========================================================================
+   AQW-STYLE TOP BANNER HEADER WITH YOUR BATTLE ARTWORK & SIDE BLACK FADES
+   ========================================================================== */
+.crown-banner {
+  max-width: 1480px !important;
+  min-height: clamp(320px, 28vw, 440px) !important;
+  margin: 0 auto !important;
+  border-bottom: 4px solid #0b0c0e !important;
+  background: #0d0f12 url("../assets/crown-voxel-battle.webp") center 36% / cover no-repeat !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Side-to-side black fade inside the header banner just like AQW */
+.crown-banner::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, #060709 0%, rgba(6, 7, 9, 0.78) 8%, rgba(6, 7, 9, 0.08) 25%, rgba(6, 7, 9, 0.08) 75%, rgba(6, 7, 9, 0.78) 92%, #060709 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.05) 35%, rgba(0, 0, 0, 0.15) 70%, rgba(8, 9, 11, 0.92) 100%) !important;
+}
