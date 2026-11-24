@@ -1,7 +1,7 @@
 (() => {
 const { $, esc } = CP, box = $("#lg");
 const here = file => new URL(file, location.href).href;
-const nextPage = (() => { const n = new URLSearchParams(location.search).get("next") || ""; return /^[a-z0-9_-]+(\.html)?$/i.test(n) ? n : "alerts.html"; })();
+const nextPage = (() => { const n = new URLSearchParams(location.search).get("next") || ""; return /^[a-z0-9_-]+(\.html)?(\?[a-z0-9_=&.-]*)?(#[a-z0-9_-]+)?$/i.test(n) ? n : "alerts.html"; })();
 const field = (id, label, type, extra = "") => `<label class="cu" for="${id}">${label}</label><input class="fi" id="${id}" name="${id}" type="${type}" ${extra} required>`;
 const msg = (t, ok) => { const m = $("#lg-msg"); if (!m) return; m.className = "cm " + (ok ? "okm" : "errm"); m.textContent = t; };
 const nice = e => {
@@ -35,7 +35,7 @@ CP.authReady.then(auth => {
 
   box.addEventListener("click", async e => {
     const o = e.target.closest("[data-oauth]");
-    if (o) { const { error } = await auth.sb.auth.signInWithOAuth({ provider: o.dataset.oauth, options: { redirectTo: here("login.html?next=" + nextPage), scopes: o.dataset.oauth === "discord" ? "identify email" : undefined } }); if (error) msg("Could not start " + o.dataset.oauth + " sign in. Ask the owner to enable it in Supabase."); return; }
+    if (o) { const { error } = await auth.sb.auth.signInWithOAuth({ provider: o.dataset.oauth, options: { redirectTo: here("login.html?next=" + encodeURIComponent(nextPage)), scopes: o.dataset.oauth === "discord" ? "identify email" : undefined } }); if (error) msg("Could not start " + o.dataset.oauth + " sign in. Ask the owner to enable it in Supabase."); return; }
     const t = e.target.closest("[data-tab]"); if (t) return forms(t.dataset.tab);
     if (e.target.closest("[data-forgot]")) {
       e.preventDefault();

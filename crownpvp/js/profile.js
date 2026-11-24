@@ -58,7 +58,7 @@
 
     let likeControl = "";
     if (own) {
-      likeControl = `<span class="pf-like-own" title="You cannot like your own profile">♥ Your profile</span>`;
+      likeControl = `<span class="pf-like-own" title="Other players can like your profile. You cannot like your own.">♥ ${likesEnabled ? likeCount.toLocaleString() + (likeCount === 1 ? " player likes" : " players like") + " you" : "Your profile"}</span>`;
     } else if (!likesEnabled) {
       likeControl = `<button type="button" class="pf-like-btn is-disabled" disabled title="The profile-likes database update has not been applied">♥ Likes unavailable</button>`;
     } else if (!auth.user) {
@@ -69,7 +69,7 @@
 
     document.title = p.username + " | CrownPVP";
     root.innerHTML = `<div class="pf-head"><div class="pf-av"><img src="${esc(pic)}" alt="${esc(p.username)}'s picture" width="170" height="170">${own ? `<label for="pf-file">Change picture</label><input id="pf-file" type="file" accept="image/*" hidden>` : ""}</div>
-      <div class="pf-info"><h1>${esc(p.username)}${p.staff_rank && RANKS[p.staff_rank] ? `<span class="pf-rank">${RANKS[p.staff_rank]}</span>` : ""}</h1>${presence}<p><b>Joined:</b> ${esc(joined)}</p>
+      <div class="pf-info"><h1>${esc(p.username)}${p.staff_rank && RANKS[p.staff_rank] ? `<span class="pf-rank">${RANKS[p.staff_rank]}</span>` : ""}</h1>${presence}<span class="pf-likepill${likesEnabled ? "" : " off"}" title="Profile likes from other players"><span class="pf-heart" aria-hidden="true">♥</span><b data-profile-likes-pill>${likesEnabled ? likeCount.toLocaleString() : "—"}</b><em>${likesEnabled && likeCount === 1 ? "like" : "likes"}</em></span><p><b>Joined:</b> ${esc(joined)}</p>
       <p class="pf-bio${p.bio ? "" : " empty"}">${p.bio ? esc(p.bio) : own ? "You have not written a bio yet." : "This player has not written a bio yet."}</p></div>
       <div class="pf-act">${actions}${likeControl}</div></div>
       <div class="pf-stats"><div><b>${Number(p.comments || 0).toLocaleString()}</b><span>Comments</span></div><div><b>${Number(p.reactions || 0).toLocaleString()}</b><span>Reactions</span></div><div class="pf-likes-stat"><b data-profile-likes>${likesEnabled ? likeCount.toLocaleString() : "—"}</b><span>Profile likes</span></div><div><b>${esc(joined === "Unknown" ? "—" : joined.split(",")[1].trim())}</b><span>Member since</span></div></div>
@@ -77,6 +77,19 @@
         <section><h2>Bio</h2><textarea id="pf-bio" maxlength="300" aria-label="Bio" placeholder="Tell players about yourself">${esc(p.bio || "")}</textarea><div class="row"><button class="hx-btn sm" id="pf-save" type="button">Save bio</button><small id="pf-count"></small></div><p class="pf-msg" id="pf-m1" aria-live="polite"></p></section>
         <section><h2>Profile picture</h2><p class="hx-note">Pick a square-ish image. It is cropped to a square and shrunk for you.</p><div class="row"><label class="hx-btn sm dark" for="pf-file">Upload picture</label><button class="hx-btn sm dark" id="pf-clear" type="button">Use Minecraft head</button></div><p class="pf-msg" id="pf-m2" aria-live="polite"></p></section>
         <section><h2>Username</h2><p class="hx-note">${auth.profile?.username_changed ? "You have already used your one username change." : "You can change your username only once. Choose carefully."}</p><input type="text" id="pf-name" value="${esc(p.username)}" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" aria-label="New username" ${auth.profile?.username_changed ? "disabled" : ""}><div class="row"><button class="hx-btn sm" id="pf-rename" type="button" ${auth.profile?.username_changed ? "disabled" : ""}>Change username</button></div><p class="pf-msg" id="pf-m3" aria-live="polite"></p></section></div>` : ""}`;
+
+    /* "Most liked players": shown when supabase/likes-leaderboard.sql has been run; silently skipped otherwise. */
+    (async () => {
+      try {
+        const { data: top, error: topError } = await auth.sb.rpc("get_top_liked_profiles", { p_limit: 10 });
+        if (topError || !Array.isArray(top) || !top.length) return;
+        const sec = document.createElement("section");
+        sec.className = "pf-top"; sec.id = "top";
+        sec.innerHTML = `<div class="pf-top-head"><span class="pf-heart" aria-hidden="true">♥</span><div><h2>Most liked players</h2><p>Players are ranked by profile likes from the community.</p></div></div>
+          <ol>${top.map((t, i) => `<li class="${t.username.toLowerCase() === p.username.toLowerCase() ? "me" : ""}"><span class="rk">${i + 1}</span><img src="${esc(AV_OK.test(t.avatar_url || "") ? t.avatar_url : CP.head(t.username, 64))}" alt="" width="36" height="36" loading="lazy"><a href="profile.html?u=${encodeURIComponent(t.username)}">${esc(t.username)}${t.staff_rank && RANKS[t.staff_rank] ? `<em>${RANKS[t.staff_rank]}</em>` : ""}</a><b>♥ ${Number(t.like_count || 0).toLocaleString()}</b></li>`).join("")}</ol>`;
+        root.append(sec);
+      } catch { /* leaderboard not set up */ }
+    })();
 
     if (!own && auth.user && likesEnabled) {
       const likeButton = root.querySelector("[data-profile-like]");
@@ -96,6 +109,12 @@
         likedByMe = !!updated.liked_by_me;
         const count = root.querySelector("[data-profile-likes]");
         if (count) count.textContent = likeCount.toLocaleString();
+        const pill = root.querySelector(".pf-likepill");
+        if (pill) {
+          pill.querySelector("[data-profile-likes-pill]").textContent = likeCount.toLocaleString();
+          pill.querySelector("em").textContent = likeCount === 1 ? "like" : "likes";
+          pill.classList.remove("pop"); void pill.offsetWidth; if (likedByMe) pill.classList.add("pop");
+        }
         likeButton.classList.toggle("is-liked", likedByMe);
         likeButton.setAttribute("aria-pressed", String(likedByMe));
         likeButton.innerHTML = `<span aria-hidden="true">♥</span>${likedByMe ? "Liked" : "Like profile"}`;

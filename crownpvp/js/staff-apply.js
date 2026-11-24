@@ -1,5 +1,9 @@
+/* Staff application page.
+   Signed-in players submit through Supabase (submit_staff_application) and the application lands in the
+   Staff Dashboard > Applications tab, where staff press ACCEPT / DENY / REVIEW and write a description.
+   Visitors who are not signed in are asked to sign in first, so every application can be handled in the dashboard. */
 (() => {
-  const { $, esc, date } = CP, N = CP.net;
+  const { esc, date } = CP, N = CP.net;
   const form = document.querySelector("#staff-application");
   if (!form) return;
 
@@ -10,54 +14,124 @@
   const box = document.createElement("div");
   message.after(box);
 
+  /* ---------- progress bar ---------- */
+  const bar = document.createElement("div");
+  bar.className = "apply-progress";
+  bar.innerHTML = `<div class="ap-top"><b>Application progress</b><span id="ap-count">0 / 0 required</span></div><div class="ap-track"><i id="ap-fill"></i></div>`;
+  form.prepend(bar);
+  const required = () => [...form.querySelectorAll("[required]")];
+  function progress() {
+    const list = required();
+    let done = 0;
+    const seen = new Set();
+    for (const el of list) {
+      if (el.type === "checkbox") { if (el.checked) done++; continue; }
+      if (el.name && seen.has(el.name)) continue;
+      if (el.name) seen.add(el.name);
+      const v = (el.value || "").trim();
+      const min = Number(el.getAttribute("minlength")) || 1;
+      if (v.length >= min) done++;
+    }
+    const total = list.length;
+    bar.querySelector("#ap-count").textContent = `${done} / ${total} required`;
+    bar.querySelector("#ap-fill").style.width = Math.round((done / Math.max(1, total)) * 100) + "%";
+    bar.classList.toggle("full", done >= total);
+  }
+  form.addEventListener("input", progress);
+  form.addEventListener("change", progress);
+  progress();
+
+  /* ---------- status tracker ---------- */
+  function tracker(status) {
+    const reviewed = status === "under_review" || status === "approved" || status === "denied";
+    const decided = status === "approved" || status === "denied";
+    const end = status === "approved" ? "ok" : status === "denied" ? "no" : "";
+    const label = status === "approved" ? "Accepted" : status === "denied" ? "Denied" : "Decision";
+    return `<ol class="atrack" aria-label="Application progress">
+      <li class="done"><i>✓</i><span>Submitted</span></li>
+      <li class="${reviewed ? "done" : "now"}"><i>${reviewed ? "✓" : "2"}</i><span>Staff review</span></li>
+      <li class="${decided ? "done " + end : status === "under_review" ? "now" : ""}"><i>${decided ? (status === "approved" ? "✓" : "✕") : "3"}</i><span>${label}</span></li>
+    </ol>`;
+  }
+
+  function appCard(r) {
+    return `<article class="kcase apply-card ${esc(r.status)}">
+      <header>
+        <div><b>APP-${r.id} &middot; ${esc(r.mc_username)}</b><small>Role: ${esc(r.role.toUpperCase())} &middot; Submitted ${date(Date.parse(r.created_at))}</small></div>
+        ${N.pill(r.status)}
+      </header>
+      ${tracker(r.status)}
+      ${N.decision("appeal", r)}
+      ${r.status === "pending" ? `<p class="dmuted">Waiting in the Staff Dashboard. You will get an alert on the bell when a staff member picks it up.</p>` : ""}
+    </article>`;
+  }
+
+  let openApp = null;
+
   async function renderMyApplications(auth) {
     if (!myAppsBox || !auth?.user) return;
-    const { data, error } = await auth.sb
-      .from("staff_applications")
-      .select("*")
-      .eq("user_id", auth.user.id)
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    if (error || !data?.length) {
-      myAppsBox.innerHTML = "";
-      return;
-    }
-
+    const { data, error } = await auth.sb.from("staff_applications").select("*").eq("user_id", auth.user.id).order("created_at", { ascending: false }).limit(10);
+    openApp = null;
+    if (error || !data?.length) { myAppsBox.innerHTML = ""; setLocked(null); return; }
+    openApp = data.find(r => r.status === "pending" || r.status === "under_review") || null;
+    setLocked(openApp);
     myAppsBox.innerHTML = `
       <div class="section-head" style="margin-bottom:14px;">
         <div><div class="eyebrow">APPLICATION STATUS</div><h3>Your Submitted Applications</h3></div>
       </div>
-      <div class="clist">
-        ${data.map(r => `
-          <article class="kcase">
-            <header>
-              <div>
-                <b>APP-${r.id} &middot; ${esc(r.mc_username)}</b>
-                <small>Role: ${esc(r.role.toUpperCase())} &middot; Submitted ${date(Date.parse(r.created_at))}</small>
-              </div>
-              ${N.pill(r.status)}
-            </header>
-            ${N.decision("appeal", r)}
-          </article>
-        `).join("")}
-      </div>
-    `;
+      <div class="clist">${data.map(appCard).join("")}</div>`;
+  }
+
+  function setLocked(app) {
+    form.classList.toggle("is-locked", !!app);
+    let note = form.parentElement.querySelector(".apply-locked");
+    if (app) {
+      if (!note) { note = document.createElement("div"); note.className = "apply-locked"; form.before(note); }
+      note.innerHTML = `<b>You already have an open application (APP-${app.id}).</b><span>Staff are working through it. You can apply again once it is accepted or denied.</span>`;
+    } else if (note) note.remove();
+    button.disabled = !!app;
+  }
+
+  /* ---------- sign-in gate (applications must reach the dashboard) ---------- */
+  let gate = null;
+  function showGate(on) {
+    if (on && !gate) {
+      gate = document.createElement("div");
+      gate.className = "apply-gate";
+      gate.innerHTML = `<div class="ag-ico" aria-hidden="true">🛡️</div><h3>Sign in to apply</h3>
+        <p>Your application is sent straight to the <b>CrownPVP Staff Dashboard</b>, where management can ACCEPT, DENY or REVIEW it and leave you a note. You need a free website account so we can alert you when it is handled.</p>
+        <div class="ag-btns"><a class="aq-btn aq-btn-red" href="login.html?tab=up&next=${encodeURIComponent("staff.html#apply")}"><span>Create account</span><small>Free · 1 minute</small></a><a class="aq-btn aq-btn-gold" href="login.html?next=${encodeURIComponent("staff.html#apply")}"><span>Log in</span><small>Already have one</small></a></div>`;
+      form.before(gate);
+    } else if (!on && gate) { gate.remove(); gate = null; }
+    form.hidden = on;
+  }
+
+  function receipt(id, role) {
+    const el = document.createElement("div");
+    el.className = "apply-receipt";
+    el.innerHTML = `<div class="ar-badge">✓</div><div><span class="eyebrow">APPLICATION SENT</span><h3>APP-${id} is in the Staff Dashboard</h3>
+      <p>Role: <b>${esc(String(role || "").toUpperCase())}</b>. Staff will mark it <b>Under review</b>, then <b>Accepted</b> or <b>Denied</b> with a written note. You get a bell alert at every step.</p>${tracker("pending")}</div>`;
+    return el;
   }
 
   CP.authReady.then(auth => {
-    if (auth?.user && auth.profile?.username && !form.elements.name.value) {
-      form.elements.name.value = auth.profile.username;
-    }
+    const signedIn = !!auth?.user;
+    if (auth && !signedIn) showGate(true);
+
+    if (signedIn && auth.profile?.username && !form.elements.name.value) form.elements.name.value = auth.profile.username;
     renderMyApplications(auth);
+    auth?.on?.((evt, a) => {
+      const now = !!a.user;
+      showGate(!now);
+      if (now) { if (a.profile?.username && !form.elements.name.value) form.elements.name.value = a.profile.username; renderMyApplications(a); }
+      else { if (myAppsBox) myAppsBox.innerHTML = ""; setLocked(null); }
+    });
 
     form.addEventListener("submit", async event => {
       event.preventDefault();
       if (!form.reportValidity()) return;
-      if (!form.elements.confirm.checked) {
-        message.textContent = "Please confirm the application details.";
-        return;
-      }
+      if (!form.elements.confirm.checked) { message.textContent = "Please confirm the application details."; return; }
+      if (openApp) { message.textContent = `You already have APP-${openApp.id} waiting for review.`; return; }
 
       button.disabled = true;
       button.textContent = "SUBMITTING APPLICATION…";
@@ -66,13 +140,11 @@
       box.innerHTML = "";
 
       const raw = Object.fromEntries(new FormData(form).entries());
-
       const compiledExperience = [
         `[Mic: ${raw.micStatus} | Recording: ${raw.canRecord}]`,
         `[Punishment History: ${raw.punishmentHistory}]`,
         raw.experience ? `Prior Staff/Plugins: ${raw.experience.trim()}` : "Prior Staff/Plugins: None listed"
       ].join("\n").slice(0, 1200);
-
       const compiledMotivation = [
         `[Why CrownPVP]\n${raw.motivation.trim()}`,
         `[Q1 · Hacked Clients & Anticheat]\n${raw.qCheats.trim()}`,
@@ -83,55 +155,34 @@
       try {
         if (auth?.user) {
           const { data: appId, error } = await auth.sb.rpc("submit_staff_application", {
-            p_mc_username: raw.name.trim(),
-            p_discord: raw.discord.trim(),
-            p_role: raw.role,
-            p_age_band: raw.ageBand,
-            p_timezone: raw.timezone.trim(),
-            p_availability: raw.availability,
-            p_experience: compiledExperience,
-            p_motivation: compiledMotivation
+            p_mc_username: raw.name.trim(), p_discord: raw.discord.trim(), p_role: raw.role, p_age_band: raw.ageBand,
+            p_timezone: raw.timezone.trim(), p_availability: raw.availability, p_experience: compiledExperience, p_motivation: compiledMotivation
           });
           if (error) throw error;
-          form.reset();
-          clearDraft();
-          message.textContent = `Application APP-${appId} submitted! Track its status below or on your alerts.`;
-          message.classList.add("success");
-          CP.toast(`Application APP-${appId} sent to Staff Dashboard!`);
+          const role = raw.role;
+          form.reset(); clearDraft(); progress();
+          message.textContent = "";
+          const r = receipt(appId, role);
+          form.before(r);
+          r.scrollIntoView({ behavior: "smooth", block: "center" });
+          CP.toast(`Application APP-${appId} sent to the Staff Dashboard!`);
           await renderMyApplications(auth);
         } else {
-          const payload = {
-            name: raw.name.trim(),
-            discord: raw.discord.trim(),
-            role: raw.role,
-            ageBand: raw.ageBand,
-            timezone: raw.timezone.trim(),
-            availability: raw.availability,
-            experience: compiledExperience,
-            motivation: compiledMotivation
-          };
+          /* Supabase accounts are not available on this deployment: keep the older private-inbox path. */
+          const payload = { name: raw.name.trim(), discord: raw.discord.trim(), role: raw.role, ageBand: raw.ageBand, timezone: raw.timezone.trim(), availability: raw.availability, experience: compiledExperience, motivation: compiledMotivation };
           const res = await window.CrownForms.send("applications", payload);
-          if (res.ok) {
-            form.reset();
-            clearDraft();
-            message.textContent = `Application #${res.data.id} submitted!`;
-            message.classList.add("success");
-          } else {
-            window.CrownForms.keep("applications", payload);
-            form.reset();
-            clearDraft();
-            message.textContent = "Application saved. Copy and send it in a Discord ticket below.";
-            message.classList.add("success");
-            window.CrownForms.offlinePanel(box, "applications", payload, () => {
-              message.textContent = "";
-            });
+          if (res.ok) { form.reset(); clearDraft(); progress(); message.textContent = `Application #${res.data.id} submitted!`; message.classList.add("success"); }
+          else {
+            window.CrownForms.keep("applications", payload); form.reset(); clearDraft(); progress();
+            message.textContent = "Application saved. Copy and send it in a Discord ticket below."; message.classList.add("success");
+            window.CrownForms.offlinePanel(box, "applications", payload, () => { message.textContent = ""; });
           }
         }
       } catch (error) {
         message.textContent = N.friendly(error, error.message);
         message.classList.remove("success");
       } finally {
-        button.disabled = false;
+        button.disabled = !!openApp;
         button.textContent = "SUBMIT APPLICATION";
       }
     });

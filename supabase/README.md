@@ -70,3 +70,8 @@ Run `supabase/social-hub.sql` after `setup.sql`, `network-upgrade.sql` and `news
 The site shows a floating Community button on every page and a Community Hub card in the homepage sidebar. Signed-in players can add another website username, accept or cancel requests, see friends as online/offline, open a profile from a news comment and start a private conversation with an accepted friend. A visitor is considered active for three minutes after the latest page heartbeat. The visitor counter stores only a random browser token and timestamp, not IP addresses or account details.
 
 Friends and direct messages require a CrownPVP website account. Each player needs to use their CrownPVP website username; a Minecraft username that has not registered on the website cannot be added yet.
+
+## Staff applications, likes leaderboard (latest update)
+1. Run `supabase/staff-applications.sql` once (Applications tab, ACCEPT / DENY / REVIEW with a written note).
+2. Run `supabase/likes-leaderboard.sql` once to show "Most liked players" on profile pages (needs `social-hub.sql` first).
+3. Applicants must be signed in so every application reaches the Staff Dashboard and they get bell alerts.

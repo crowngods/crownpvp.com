@@ -6,14 +6,21 @@ try { const clean = location.pathname.replace(/(^|\/)index\.html$/, "$1").replac
 const fmt = n => n.toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nav = [
-  ["index.html", "Home", "home"],
-  ["gamemodes.html", "Games", "gamemodes"],
-  ["player.html", "Players", "player"],
-  ["index.html#feed", "Community", "community"],
-  ["rules.html", "Rules & Policies", "rules"],
-  ["staff.html#apply", "Staff Applications", "staff"],
-  ["help.html", "Support", "help"],
-  ["store.html", "Store", "store"]
+  { label: "Home", href: "index.html", key: "home" },
+  { label: "Game", keys: ["gamemodes", "vote", "client", "punishments"], items: [
+    ["gamemodes.html", "Gamemodes", "Pick how you play"], ["vote.html", "Vote", "Free daily rewards"],
+    ["client.html", "Crown Client", "Coming soon"], ["punishments.html", "Punishments", "Public ban list"]] },
+  { label: "Players", href: "player.html", key: "player" },
+  { label: "Community", keys: ["community"], items: [
+    ["index.html#feed", "News feed", "Latest from the team"], ["profile.html", "My profile", "Likes, bio and friends"],
+    [C.discord, "Discord", "Join the community", true], ["staff.html", "Staff team", "Meet the people"]] },
+  { label: "Rules", href: "rules.html", key: "rules" },
+  { label: "Staff Applications", href: "staff.html#apply", key: "staff", cls: "aq-hot" },
+  { label: "Support", keys: ["help", "support", "appeals", "tickets", "faq"], items: [
+    ["help.html", "Help center", "Start here"], ["tickets.html?new=1", "Open a ticket", "Talk to staff"],
+    ["support.html", "Report a player", "Cheating or abuse"], ["appeals.html", "Appeal a punishment", "Ban and mute appeals"], ["faq.html", "FAQ", "Quick answers"]] },
+  { label: "Merch", href: "merch.html", key: "merch", cls: "aq-new" },
+  { label: "Store", href: "store.html", key: "store" }
 ];
 const footerNav = [
   ["index.html", "Home"], ["gamemodes.html", "Gamemodes"], ["client.html", "Client"],
@@ -22,6 +29,10 @@ const footerNav = [
   ["punishments.html", "Punishments"], ["player.html", "Players"], ["help.html", "Support"]
 ];
 const navActive = key => key === page || (key === "community" && page === "home" && location.hash === "#feed");
+const navGroupOn = g => g.key ? navActive(g.key) : (g.keys || []).some(navActive);
+const navHtml = () => nav.map(g => g.items
+  ? `<div class="aq-dd${navGroupOn(g) ? " on" : ""}"><button type="button" class="aq-dd-btn" aria-haspopup="true" aria-expanded="false">${g.label}<i aria-hidden="true"></i></button><div class="aq-menu">${g.items.map(i => `<a href="${esc(i[0])}"${i[3] ? ' target="_blank" rel="noopener"' : ""}><b>${i[1]}</b><small>${i[2] || ""}</small></a>`).join("")}</div></div>`
+  : `<a href="${g.href}" class="${g.cls || ""} ${navGroupOn(g) ? "on" : ""}"${navGroupOn(g) ? ' aria-current="page"' : ""}>${g.label}</a>`).join("");
 const MS = "";
 const CART_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="18" cy="20.5" r="1.2"/></svg>`;
 
@@ -60,10 +71,10 @@ const visualStyles = document.createElement("link");
 visualStyles.rel = "stylesheet";
 visualStyles.href = "css/visual-restored.css?v=20261124-server-banner-v2";
 document.head.append(visualStyles);
-const headerStyles = document.createElement("link");
-headerStyles.rel = "stylesheet";
-headerStyles.href = "css/network-header.css?v=20261125-header";
-document.head.append(headerStyles);
+const finalStyles = document.createElement("link");
+finalStyles.rel = "stylesheet";
+finalStyles.href = "css/crown-final.css?v=20261128-aqw";
+document.head.append(finalStyles);
 
 /* ---------- Accounts + alerts (only when Supabase is configured in config.js) ---------- */
 CP.authReady = new Promise(r => { CP._authResolve = r; });
@@ -84,23 +95,26 @@ CP.authReady.then(() => {
 });
 
 /* ---------- Layout ---------- */
-$("#site-header").outerHTML = `<section class="crown-banner" aria-label="CrownPVP network banner">
-  <div class="crown-banner-inner">
-    <a class="crown-banner-crest" href="index.html" aria-label="CrownPVP home">
-      <img src="assets/logo.svg" alt="">
-      <span><b>CrownPVP</b><small>OP FACTIONS · JAVA EDITION</small></span>
+$("#site-header").outerHTML = `<div class="aq-top" role="banner"><div class="aq-top-in">
+  <a class="aq-brand" href="index.html" aria-label="CrownPVP home"><img src="assets/logo.svg" alt=""><b>CROWN<em>PVP</em></b></a>
+  <nav id="nav" aria-label="Main">${navHtml()}</nav>
+  <div class="hr"><span id="acct-slot"></span><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div>
+</div></div>
+<section class="aq-hero" aria-label="CrownPVP">
+  <div class="aq-hero-in">
+    <a class="aq-logo" href="index.html" aria-label="CrownPVP home">
+      <img class="aq-logo-crown" src="assets/logo.svg" alt="">
+      <b>CROWN<em>PVP</em></b>
+      <small>OP FACTIONS · JAVA EDITION</small>
     </a>
-    <div class="crown-banner-cta">
-      <div class="crown-banner-kicker">Your next adventure starts here</div>
-      <a class="crown-banner-play" href="gamemodes.html">PLAY NOW</a>
-      <button class="crown-banner-ip" type="button" data-copy title="Click to copy the server IP"><span>Server IP</span><b>${C.ip}</b></button>
+    <div class="aq-cta">
+      <a class="aq-btn aq-btn-red" href="staff.html#apply"><span>Become Staff</span><small>Applications open</small></a>
+      <button class="aq-btn aq-btn-play" type="button" data-copy title="Click to copy the server IP"><span>PLAY NOW</span><small>${C.ip}</small></button>
+      <a class="aq-btn aq-btn-gold" href="merch.html"><span>Shop Merch</span><small>Packs · plugins · sites</small></a>
     </div>
+    <div class="aq-online"><i class="live-dot"></i><b data-online>…</b> players online · <button type="button" data-copy>${C.ip}</button></div>
   </div>
 </section>
-<header class="crown-nav"><div class="crown-nav-shell">
-  <nav id="nav" aria-label="Main">${nav.map(n => `<a href="${n[0]}" class="${n[2] === "staff" ? "nav-staff " : ""}${navActive(n[2]) ? "on" : ""}"${navActive(n[2]) ? ' aria-current="page"' : ""}>${n[1]}</a>`).join("")}</nav>
-  <div class="hr"><span id="acct-slot"></span><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div>
-</div></header>
 <div id="scrim"></div>
 <aside id="cart" class="drawer" aria-hidden="true" aria-label="Shopping cart"><div class="dh"><h3>Your cart</h3><button class="ib" data-cart-close aria-label="Close cart">&times;</button></div><div class="db" id="cart-items"></div><div class="df" id="cart-foot"></div></aside>`;
 $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a class="logo" href="index.html"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
@@ -125,6 +139,43 @@ $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a
   document.addEventListener("keydown", e => { if (e.key === "Escape" && navEl.classList.contains("open")) setNav(false); });
   window.matchMedia?.("(min-width:1241px)").addEventListener?.("change", e => { if (e.matches) setNav(false); });
 }
+/* ---------- AQW-style dropdown menus (hover on desktop, tap on touch) ---------- */
+{
+  const closeDd = except => $$(".aq-dd.open").forEach(d => { if (d !== except) { d.classList.remove("open"); d.querySelector(".aq-dd-btn")?.setAttribute("aria-expanded", "false"); } });
+  document.addEventListener("click", e => {
+    const btn = e.target.closest(".aq-dd-btn");
+    if (!btn) { if (!e.target.closest(".aq-menu")) closeDd(); return; }
+    const dd = btn.parentElement, o = !dd.classList.contains("open");
+    closeDd(dd); dd.classList.toggle("open", o); btn.setAttribute("aria-expanded", String(o));
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeDd(); });
+}
+
+/* ---------- Home page: promo tiles under the banner + merchandise showcase ---------- */
+if (page === "home") {
+  const main = $("main");
+  const tiles = [
+    ["store.html", "assets/crownpvp-header.webp", "50% 30%", "Gold Store", "Get 250 gold for every $1", "red"],
+    ["merch.html", "assets/header-bg-1280.webp", "28% 30%", "Merch & Services", "Packs, plugins, maps & websites", "gold"],
+    ["vote.html", "assets/crown-voxel-battle.webp", "50% 40%", "Vote for rewards", "4 vote sites, daily prizes", "blue"],
+    ["staff.html#apply", "assets/header-bg-1280.webp", "88% 40%", "Join the Staff Team", "Applications are open now", "red"]
+  ];
+  const strip = document.createElement("section");
+  strip.className = "aq-tiles";
+  strip.setAttribute("aria-label", "Featured");
+  strip.innerHTML = `<div class="aq-tiles-in">${tiles.map(t => `<a class="aq-tile aq-${t[5]}" href="${t[0]}" ><span class="aq-tile-art" style="background-image:url('${t[1]}');background-position:${t[2]}"></span><span class="aq-tile-txt"><b>${t[3]}</b><small>${t[4]}</small></span></a>`).join("")}</div>`;
+  main.prepend(strip);
+
+  const items = Array.isArray(C.merch) ? C.merch : [];
+  if (items.length) {
+    const sec = document.createElement("section");
+    sec.className = "aq-merch"; sec.id = "merch";
+    sec.innerHTML = `<div class="aq-merch-in"><div class="aq-sec-head"><div><span class="aq-eyebrow">CROWNPVP MERCH</span><h2>Merchandise &amp; Services</h2><p>Built by the CrownPVP team for other servers. Tell us what you need in a ticket and we send a price.</p></div><a class="aq-btn aq-btn-gold aq-btn-sm" href="merch.html"><span>See everything</span></a></div>
+      <div class="aq-merch-grid">${items.map(m => `<a class="aq-merch-card" href="tickets.html?new=1"><span class="aq-merch-ico" aria-hidden="true">${m.icon || "✦"}</span><span class="aq-merch-tag">${esc(m.tag || "")}</span><b>${esc(m.name)}</b><small>${esc(m.desc)}</small><em>Order in a ticket →</em></a>`).join("")}</div></div>`;
+    main.append(sec);
+  }
+}
+
 document.addEventListener("click", async e => {
   const joinCopy = e.target.closest("[data-copy-server]");
   if (joinCopy) {

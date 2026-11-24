@@ -12,6 +12,12 @@ const S = {
   applications: { q: "", status: "open", role: "", page: 0 },
   audit: { q: "", action: "", page: 0 }
 };
+const QUICK = [
+  ["Accept", "Congratulations, you are accepted! Join our Discord and open a ticket so we can set up your staff interview."],
+  ["Interview", "Your application looks good. Please open a ticket on Discord so we can schedule a short voice interview."],
+  ["Need more", "Your answers were too short. Please apply again with more detail about your moderation experience."],
+  ["Deny", "Thank you for applying. We are not moving forward right now. You can re-apply in 14 days."]
+];
 const safeQ = s => String(s || "").replace(/[^A-Za-z0-9_]/g, "").slice(0, 16);
 const sel = (name, cur, items) => `<select class="fi" data-f="${name}" aria-label="${name}">${items.map(([v, l]) => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
 const STATUS_ITEMS = [["open", "Open (pending + review)"], ["all", "All statuses"], ["pending", "Pending"], ["under_review", "Under review"], ["approved", "Accepted / Approved"], ["denied", "Denied"]];
@@ -32,9 +38,10 @@ function actions(kind, row, a) {
   const revLabel = kind === "application" ? "REVIEW" : "Mark under review";
 
   const b = (st, label, cls = "ghost") => row.status === st ? "" : `<button type="button" class="btn ${cls} sm" data-set="${st}">${label}</button>`;
+  const chips = kind === "application" && canDecide ? `<div class="qchips" aria-label="Quick notes"><span>Quick notes:</span>${QUICK.map(([k, t]) => `<button type="button" data-fill="${esc(t)}" data-fill-kind="${k}">${esc(k)}</button>`).join("")}</div>` : "";
   return `<div class="act"><label>${kind === "application" ? "Staff Description / Decision Note" : "Reason"}<small>${canDecide ? "Required to accept/approve or deny. The applicant sees it with your name and rank." : "Optional note for the history."}</small>
     <textarea class="fi" rows="3" maxlength="1000" placeholder="${kind === "application" ? "Add staff description, interview instructions, or denial reason…" : "Write your own reason…"}">${esc(row.decision_reason || "")}</textarea></label>
-    <div class="kactions">${canDecide ? b("approved", okLabel, "ok") + b("denied", noLabel, "no") : ""}${b("under_review", revLabel)}${closed || row.status === "under_review" ? b("pending", "Back to pending") : ""}</div>
+    ${chips}<div class="kactions">${canDecide ? b("approved", okLabel, "ok") + b("denied", noLabel, "no") : ""}${b("under_review", revLabel)}${closed || row.status === "under_review" ? b("pending", "Back to pending") : ""}</div>
     <p class="kmsg err amsg" aria-live="polite"></p></div>`;
 }
 
@@ -55,21 +62,30 @@ function appealCard(r, a) {
     <div class="xbody"><p class="dmuted">Loading&hellip;</p></div></details>
   ${actions("appeal", r, a)}</article>`;
 }
+/* The form stores several answers in two text columns; split them back into labelled blocks for staff. */
+function parseApplication(r) {
+  const exp = String(r.experience || ""), mot = String(r.motivation || "");
+  const mic = /\[Mic:\s*([^|\]]*?)\s*\|\s*Recording:\s*([^\]]*?)\s*\]/.exec(exp);
+  const pun = /\[Punishment History:\s*([^\]]*)\]/.exec(exp);
+  const prior = /Prior Staff\/Plugins:\s*([\s\S]*)$/.exec(exp);
+  const blocks = [...mot.matchAll(/\[([^\]\n]+)\]\n([\s\S]*?)(?=\n\n\[|$)/g)].map(m => [m[1].trim(), m[2].trim()]);
+  return { mic: mic?.[1], rec: mic?.[2], pun: pun?.[1]?.trim(), prior: prior?.[1]?.trim(), blocks, parsed: !!(mic || pun || blocks.length) };
+}
 function applicationCard(r, a) {
-  return `<article class="kcase" data-kind="application" data-id="${r.id}">
+  const x = parseApplication(r), rc = N.RANKS[r.role]?.color || "var(--gold)";
+  const chip = (k, v, cls = "") => v ? `<span class="achip ${cls}"><small>${k}</small><b>${esc(v)}</b></span>` : "";
+  const answers = x.parsed
+    ? `${x.prior ? `<div class="ans"><h5>Prior staff experience &amp; plugins</h5><p>${esc(x.prior)}</p></div>` : ""}${x.blocks.map(([h, t]) => `<div class="ans"><h5>${esc(h)}</h5><p>${esc(t)}</p></div>`).join("")}`
+    : `<dl class="kv"><dt>Experience &amp; Details</dt><dd class="pre">${esc(r.experience)}</dd><dt>Answers &amp; Motivation</dt><dd class="pre">${esc(r.motivation)}</dd></dl>`;
+  return `<article class="kcase appcard ${esc(r.status)}" data-kind="application" data-id="${r.id}">
     <header>
-      <div class="who">${av(r.mc_username)}<div><b>APP-${r.id} &middot; ${esc(r.mc_username)}</b><small>Applying for <b>${esc(r.role.toUpperCase())}</b> &middot; Discord: ${esc(r.discord)}</small></div></div>
+      <div class="who">${av(r.mc_username)}<div><b>APP-${r.id} &middot; ${esc(r.mc_username)}</b><small>Applying for <b class="rolechip" style="--rc:${rc}">${esc(r.role.toUpperCase())}</b> &middot; submitted ${date(Date.parse(r.created_at))}</small></div></div>
       ${N.pill(r.status)}
     </header>
-    <p class="meta">Age: <b>${esc(r.age_band)}</b> &middot; TZ: <b>${esc(r.timezone)}</b> &middot; Availability: <b>${esc(r.availability)} hrs/wk</b> &middot; submitted ${date(Date.parse(r.created_at))}</p>
+    <div class="achips">${chip("Discord", r.discord)}${chip("Age", r.age_band)}${chip("Time zone", r.timezone)}${chip("Hours / week", r.availability)}${chip("Microphone", x.mic)}${chip("Can record", x.rec)}${chip("Punishment history", x.pun, /clean|none|no\b|never/i.test(x.pun || "") ? "good" : "warn")}</div>
     ${N.decision("appeal", r)}
-    <details open>
-      <summary>Application Answers &amp; Experience</summary>
-      <dl class="kv">
-        <dt>Experience &amp; Details</dt><dd class="pre">${esc(r.experience)}</dd>
-        <dt>Scenario Answers &amp; Motivation</dt><dd class="pre">${esc(r.motivation)}</dd>
-      </dl>
-    </details>
+    <details open><summary>Application answers</summary><div class="answers">${answers}</div></details>
+    <details data-extra><summary>Review history</summary><div class="xbody"><p class="dmuted">Loading&hellip;</p></div></details>
     ${actions("application", r, a)}
   </article>`;
 }
@@ -189,6 +205,11 @@ CP.authReady.then(auth => {
   async function original(card) {
     const id = Number(card.dataset.id), x = card.querySelector(".xbody");
     try {
+      if (card.dataset.kind === "application") {
+        const tl = await auth.sb.from("case_events").select("actor_name,actor_rank,from_status,to_status,reason,created_at").eq("kind", "application").eq("case_id", id).order("created_at", { ascending: true });
+        x.innerHTML = tl.error ? `<p class="dmuted">History is unavailable.</p>` : N.timeline(tl.data) || `<p class="dmuted">No history yet.</p>`;
+        return;
+      }
       const { data: row } = await auth.sb.from(card.dataset.kind === "report" ? "player_reports" : "ban_appeals").select("*").eq("id", id).single();
       let extra = "";
       if (card.dataset.kind === "appeal") {
@@ -208,6 +229,8 @@ CP.authReady.then(auth => {
   box.addEventListener("click", async e => {
     const t = e.target.closest("[data-tab]"); if (t) { S.tab = t.dataset.tab; history.replaceState(null, "", "#" + S.tab); return draw(); }
     const pg = e.target.closest("[data-pg]"); if (pg) { const st = S[S.tab]; st.page = Math.max(0, st.page + Number(pg.dataset.pg)); await body(); return scrollTo({ top: 0, behavior: "smooth" }); }
+    const fill = e.target.closest("[data-fill]");
+    if (fill) { const ta = fill.closest(".act").querySelector("textarea"); ta.value = fill.dataset.fill; ta.focus(); return; }
     const b = e.target.closest("[data-set]"); if (!b) return;
     const card = b.closest(".kcase"), kind = card.dataset.kind, status = b.dataset.set, msg = card.querySelector(".amsg"), reason = card.querySelector(".act textarea").value.trim();
     const decided = status === "approved" || status === "denied";

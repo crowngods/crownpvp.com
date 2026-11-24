@@ -41,7 +41,7 @@ const AV_OK = /^https:\/\/[a-z0-9]+\.supabase\.co\/storage\/v1\/object\/public\/
 const avatarOf = (p, name) => (p?.avatar_url && AV_OK.test(p.avatar_url)) ? p.avatar_url : CP.head(name, 64);
 function render() {
   const s = slot(); if (!s) return;
-  if (!auth.user) { s.innerHTML = `<a class="btn acct-in" href="login.html">Sign in</a>`; return; }
+  if (!auth.user) { s.innerHTML = `<a class="btn acct-in" href="login.html?tab=up">Free Sign Up</a><a class="acct-login" href="login.html">Log in</a>`; return; }
   const name = auth.profile?.username || "Account";
   s.innerHTML = `<div class="acct"><button type="button" class="ib" id="al-btn" aria-label="Alerts" aria-expanded="false">${BELL}<span id="al-n" class="bd" hidden>0</span></button>
   <button type="button" class="ib av" id="av-btn" aria-label="Account menu" aria-expanded="false"><img src="${esc(avatarOf(auth.profile, name))}" alt="" width="28" height="28" style="border-radius:6px;object-fit:cover"></button>
