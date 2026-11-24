@@ -7,10 +7,11 @@ const fmt = n => n.toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nav = [
   { label: "Home", href: "index.html", key: "home" },
-  { label: "Game", keys: ["gamemodes", "vote", "client", "punishments"], items: [
+  { label: "Game", keys: ["gamemodes", "vote", "client"], items: [
     ["gamemodes.html", "Gamemodes", "Pick how you play"], ["vote.html", "Vote", "Free daily rewards"],
-    ["client.html", "Crown Client", "Coming soon"], ["punishments.html", "Punishments", "Public ban list"]] },
+    ["client.html", "Crown Client", "Coming soon"]] },
   { label: "Players", href: "player.html", key: "player" },
+  { label: "Punishments", href: "punishments.html", key: "punishments" },
   { label: "Community", keys: ["community"], items: [
     ["index.html#feed", "News feed", "Latest from the team"], ["profile.html", "My profile", "Likes, bio and friends"],
     [C.discord, "Discord", "Join the community", true], ["staff.html", "Staff team", "Meet the people"]] },
@@ -19,12 +20,11 @@ const nav = [
   { label: "Support", keys: ["help", "support", "appeals", "tickets", "faq"], items: [
     ["help.html", "Help center", "Start here"], ["tickets.html?new=1", "Open a ticket", "Talk to staff"],
     ["support.html", "Report a player", "Cheating or abuse"], ["appeals.html", "Appeal a punishment", "Ban and mute appeals"], ["faq.html", "FAQ", "Quick answers"]] },
-  { label: "Merch", href: "merch.html", key: "merch", cls: "aq-new" },
   { label: "Store", href: "store.html", key: "store" }
 ];
 const footerNav = [
   ["index.html", "Home"], ["gamemodes.html", "Gamemodes"], ["client.html", "Client"],
-  ["store.html", "Store"], ["merch.html", "Merchandise"], ["vote.html", "Vote"],
+  ["store.html", "Store"], ["vote.html", "Vote"],
   ["staff.html#apply", "Staff Applications"], ["rules.html", "Rules"],
   ["punishments.html", "Punishments"], ["player.html", "Players"], ["help.html", "Support"]
 ];
@@ -73,11 +73,11 @@ visualStyles.href = "css/visual-restored.css?v=20261124-server-banner-v2";
 document.head.append(visualStyles);
 const finalStyles = document.createElement("link");
 finalStyles.rel = "stylesheet";
-finalStyles.href = "css/crown-final.css?v=20261129-charcoal-community";
+finalStyles.href = "css/crown-final.css?v=20261125-nomerch";
 document.head.append(finalStyles);
 const foldedReferenceStyles = document.createElement("link");
 foldedReferenceStyles.rel = "stylesheet";
-foldedReferenceStyles.href = "css/folded-reference.css?v=20261129-reference-match-2-font-polish";
+foldedReferenceStyles.href = "css/folded-reference.css?v=20261125-nomerch";
 document.head.append(foldedReferenceStyles);
 const darkPaperStyles = document.createElement("link");
 darkPaperStyles.rel = "stylesheet";
@@ -119,9 +119,7 @@ $("#site-header").outerHTML = `<div class="aq-top" role="banner"><div class="aq-
       <small>OP FACTIONS · JAVA EDITION</small>
     </a>
     <div class="aq-cta">
-      <a class="aq-btn aq-btn-red" href="punishments.html"><span>Punishments</span><small>View player records</small></a>
       <button class="aq-btn aq-btn-play" type="button" data-copy title="Click to copy the server IP"><span>PLAY NOW</span><small>${C.ip}</small></button>
-      <a class="aq-btn aq-btn-gold" href="merch.html"><span>Shop Merch</span><small>Packs · plugins · sites</small></a>
     </div>
     <div class="aq-online"><i class="live-dot"></i><b data-online>…</b> players online · <button type="button" data-copy>${C.ip}</button></div>
   </div>
@@ -162,12 +160,11 @@ $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeDd(); });
 }
 
-/* ---------- Home page: promo tiles under the banner + merchandise showcase ---------- */
+/* ---------- Home page: promo tiles under the banner ---------- */
 if (page === "home") {
   const main = $("main");
   const tiles = [
     ["store.html", "assets/tile-gold.webp", "50% 50%", "Gold Store", "Get 250 gold for every $1", "red"],
-    ["merch.html", "assets/tile-merch.webp", "50% 50%", "Merch & Services", "Packs, plugins, maps & websites", "gold"],
     ["vote.html", "assets/tile-vote.webp", "50% 50%", "Vote for rewards", "4 vote sites, daily prizes", "blue"],
     ["staff.html#apply", "assets/tile-staff.webp", "50% 50%", "Join the Staff Team", "Applications are open now", "red"]
   ];
@@ -176,15 +173,6 @@ if (page === "home") {
   strip.setAttribute("aria-label", "Featured");
   strip.innerHTML = `<div class="aq-tiles-in">${tiles.map(t => `<a class="aq-tile aq-${t[5]}" href="${t[0]}" ><span class="aq-tile-art" style="background-image:url('${t[1]}');background-position:${t[2]}"></span><span class="aq-tile-txt"><b>${t[3]}</b><small>${t[4]}</small></span></a>`).join("")}</div>`;
   main.prepend(strip);
-
-  const items = Array.isArray(C.merch) ? C.merch : [];
-  if (items.length) {
-    const sec = document.createElement("section");
-    sec.className = "aq-merch"; sec.id = "merch";
-    sec.innerHTML = `<div class="aq-merch-in"><div class="aq-sec-head"><div><span class="aq-eyebrow">CROWNPVP MERCH</span><h2>Merchandise &amp; Services</h2><p>Built by the CrownPVP team for other servers. Tell us what you need in a ticket and we send a price.</p></div><a class="aq-btn aq-btn-gold aq-btn-sm" href="merch.html"><span>See everything</span></a></div>
-      <div class="aq-merch-grid">${items.map(m => `<a class="aq-merch-card" href="tickets.html?new=1"><span class="aq-merch-ico" aria-hidden="true">${m.icon || "✦"}</span><span class="aq-merch-tag">${esc(m.tag || "")}</span><b>${esc(m.name)}</b><small>${esc(m.desc)}</small><em>Order in a ticket →</em></a>`).join("")}</div></div>`;
-    main.append(sec);
-  }
 }
 
 document.addEventListener("click", async e => {
@@ -406,4 +394,7 @@ if (sk) {
   const initialName = new URLSearchParams(location.search).get("player") || "";
   if (initialName) { inp.value = initialName; load(initialName); }
 }
+
+/* ---------- Language switcher (Dutch, Arabic, English, Filipino, Spanish, French) ---------- */
+{ const l = document.createElement("script"); l.src = "js/i18n.js?v=20261125-lang"; l.defer = true; document.body.append(l); }
 })();

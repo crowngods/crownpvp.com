@@ -162,7 +162,7 @@ html body section.aq-hero {
 /* ================= Promo tiles ================= */
 .aq-tiles { position: relative; z-index: 3; margin: -34px auto 0; padding: 0 16px; }
 .aq-tiles-in {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; width: min(1120px, 100%); margin: 0 auto; padding: 14px; border-radius: 26px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; width: min(1120px, 100%); margin: 0 auto; padding: 14px; border-radius: 26px;
   background: linear-gradient(180deg, #17181c, #0a0b0d); border: 3px solid #000; box-shadow: 0 0 0 1px rgba(255, 255, 255, .12), 0 0 0 5px #15161a, 0 0 0 6px rgba(246, 203, 98, .35), 0 22px 44px rgba(0, 0, 0, .6);
 }
 .aq-tile { position: relative; display: block; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; border: 2px solid #000; text-decoration: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, .14); transition: transform .2s ease, box-shadow .2s ease; }

@@ -128,30 +128,35 @@
             </label>
           </div>
 
-          <div class="form-section-title">02 · Minecraft Server &amp; Moderation Experience</div>
-          <label>Previous Minecraft Server Staff Experience &amp; Plugins Known
-            <textarea name="experience" rows="4" maxlength="900" placeholder="List servers you staffed on, your rank, player count, and plugins/tools you know (e.g., LiteBans, CoreProtect, Vulcan/Grim anticheat, WorldEdit, FactionsUUID)."></textarea>
-          </label>
-
+          <div class="form-section-title">02 · Your Background</div>
           <label>Have you ever been banned or punished on CrownPVP or other servers? If yes, explain honestly.
             <input name="punishmentHistory" maxlength="250" required placeholder="e.g. Clean record / Muted once 6 months ago for spam">
           </label>
 
-          <div class="form-section-title">03 · Minecraft PvP &amp; OpFactions Scenario Questions</div>
-          <label>1. Hacked Client &amp; Anticheat Detection: How do you tell the difference between a legit high-CPS/high-ping PvPer and someone using Reach, Velocity, or AutoClicker?
-            <textarea name="qCheats" rows="3" minlength="25" maxlength="550" required placeholder="Explain what signs you look for in combat, anticheat alerts, and why recording proof before banning matters."></textarea>
+          <div class="form-section-title">03 · Application Questions</div>
+          <label>1. Why are you applying for <b id="q1-role">this role</b> on CrownPVP, and what would you aim to accomplish in your first month?
+            <textarea name="q1Why" rows="4" minlength="40" maxlength="800" required placeholder="Tell us your motivation and the goals you would set for your first 30 days."></textarea>
           </label>
 
-          <label>2. OpFactions &amp; Raid Disputes: A faction accuses another faction of using an illegal cannon or glitching into their base during a raid. What steps do you take?
-            <textarea name="qFactions" rows="3" minlength="25" maxlength="550" required placeholder="Describe how you check blocks/logs (e.g., CoreProtect), pause/escalate to senior staff, and stay neutral."></textarea>
+          <label>2. What experience would help you in this role? Describe one specific example, what you personally did, and how it turned out.
+            <span class="qhint" style="display:block;font-weight:400;opacity:.7;font-size:.85em;margin-top:2px">You can use an example from Minecraft, Discord, another project, or any team you’ve worked with.</span>
+            <textarea name="q2Experience" rows="4" minlength="40" maxlength="800" required placeholder="Describe one real example: the situation, what you personally did, and the result."></textarea>
           </label>
 
-          <label>3. Staff Integrity &amp; Friends: Your close friend or faction teammate breaks a server rule in front of you and asks you to look the other way. How do you handle it?
-            <textarea name="qIntegrity" rows="3" minlength="20" maxlength="450" required placeholder="Explain how you handle bias, impartiality, and reporting conflicts of interest."></textarea>
+          <label>3. Which days and times can you reliably commit to CrownPVP? Please answer in your local time.
+            <textarea name="q3Schedule" rows="3" minlength="15" maxlength="400" required placeholder="e.g. Monday to Friday 7 PM to 10 PM, Saturday 2 PM to 8 PM (my local time)"></textarea>
           </label>
 
-          <label>4. Why CrownPVP? What makes you stand out from other applicants?
-            <textarea name="motivation" rows="4" minlength="40" maxlength="700" required placeholder="Tell us about your strengths, maturity under pressure, and what you want to improve on CrownPVP."></textarea>
+          <label>4. A player reports a problem, but you only have one side of the story. What would you check first, what would you tell the player, and when would you involve another staff member?
+            <textarea name="q4Report" rows="4" minlength="40" maxlength="800" required placeholder="Explain what you would check, what you would say to the player, and when you would escalate."></textarea>
+          </label>
+
+          <label>5. A close friend or faction teammate asks you to make an exception for them. How would you handle it, and what would you tell them?
+            <textarea name="q5Friend" rows="4" minlength="30" maxlength="700" required placeholder="Explain how you stay fair and what you would say to your friend."></textarea>
+          </label>
+
+          <label>6. You make a mistake in your role that affects players or the team. What would you do first, who would you tell, and how would you handle the follow-up?
+            <textarea name="q6Mistake" rows="4" minlength="40" maxlength="800" required placeholder="Explain your first step, who you would tell, and how you would follow up."></textarea>
           </label>
 
           <label class="checkline">
@@ -168,11 +173,11 @@
   </main>
   <div id="site-footer"></div>
   <script src="js/config.js?v=20261124-social"></script>
-  <script src="js/app.js?v=20261125-header"></script>
+  <script src="js/app.js?v=20261125-nomerch"></script>
   <script src="js/net.js?v=20261125"></script>
   <script src="js/staff.js?v=20261125"></script>
   <script src="js/forms-core.js?v=20261125"></script>
-  <script src="js/staff-apply.js?v=20261125-apply-v4"></script>
+  <script src="js/staff-apply.js?v=20261125-apply-v6"></script>
   <script src="js/features.js?v=20261125" defer></script>
 <script src="js/realm-polish.js?v=20261125" defer></script>
 </body>

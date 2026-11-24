@@ -37,6 +37,9 @@
     bar.querySelector("#ap-fill").style.width = Math.round((done / Math.max(1, total)) * 100) + "%";
     bar.classList.toggle("full", done >= total);
   }
+  const roleSel = form.querySelector("#application-role"), q1Role = document.getElementById("q1-role");
+  const syncRole = () => { if (q1Role) q1Role.textContent = roleSel?.selectedOptions?.[0]?.value ? roleSel.selectedOptions[0].textContent.trim() : "this role"; };
+  roleSel?.addEventListener("change", syncRole); syncRole();
   form.addEventListener("input", progress);
   form.addEventListener("change", progress);
   progress();
@@ -154,15 +157,16 @@
       const raw = Object.fromEntries(new FormData(form).entries());
       const compiledExperience = [
         `[Mic: ${raw.micStatus} | Recording: ${raw.canRecord}]`,
-        `[Punishment History: ${raw.punishmentHistory}]`,
-        raw.experience ? `Prior Staff/Plugins: ${raw.experience.trim()}` : "Prior Staff/Plugins: None listed"
-      ].join("\n").slice(0, 1200);
+        `[Punishment History: ${raw.punishmentHistory}]`
+      ].join("\n").slice(0, 600);
       const compiledMotivation = [
-        `[Why CrownPVP]\n${raw.motivation.trim()}`,
-        `[Q1 · Hacked Clients & Anticheat]\n${raw.qCheats.trim()}`,
-        `[Q2 · OpFactions & Raid Disputes]\n${raw.qFactions.trim()}`,
-        `[Q3 · Staff Integrity & Impartiality]\n${raw.qIntegrity.trim()}`
-      ].join("\n\n").slice(0, 2500);
+        `[Q1 · Why ${String(raw.role || "this role").toUpperCase()} & first-month goals]\n${raw.q1Why.trim()}`,
+        `[Q2 · Relevant experience]\n${raw.q2Experience.trim()}`,
+        `[Q3 · Reliable days & times (their local time)]\n${raw.q3Schedule.trim()}`,
+        `[Q4 · One-sided report]\n${raw.q4Report.trim()}`,
+        `[Q5 · Friend asks for an exception]\n${raw.q5Friend.trim()}`,
+        `[Q6 · Own mistake & follow-up]\n${raw.q6Mistake.trim()}`
+      ].join("\n\n").slice(0, 6000);
 
       try {
         if (auth?.user) {
