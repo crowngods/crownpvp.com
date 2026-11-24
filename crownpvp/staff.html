@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Staff Team &amp; Applications | CrownPVP</title>
+  <meta name="description" content="Meet the CrownPVP team and submit a staff application.">
+  <meta name="theme-color" content="#07080b">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20261125">
+  <link rel="stylesheet" href="css/crown.css?v=20261125">
+  <link rel="stylesheet" href="css/elite.css?v=20261125">
+  <link rel="stylesheet" href="css/upgrade.css?v=20261125">
+  <link rel="stylesheet" href="css/features.css?v=20261125">
+  <link rel="stylesheet" href="css/hd-overhaul.css?v=20261125"><link rel="stylesheet" href="css/kingdom.css?v=20261125"><link rel="stylesheet" href="css/minecraft.css?v=20261125">
+<link rel="stylesheet" href="css/realm-redesign.css?v=20261125">
+
+<link rel="stylesheet" href="css/crownpvp-2026.css?v=20261125">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/hypixel.css?v=20261125"></head>
+<body data-page="staff">
+  <div id="bg" aria-hidden="true"><div class="grid"></div></div>
+  <div id="site-header"></div>
+  <main>
+    <div class="phead">
+      <div class="wrap split">
+        <div>
+          <div class="eyebrow">THE PEOPLE BEHIND THE REALM</div>
+          <h1>Staff team</h1>
+          <p>Meet the people who run CrownPVP and see which positions are open. Every application is reviewed privately.</p>
+        </div>
+      </div>
+    </div>
+    <section class="tight"><div class="wrap">
+      <div class="section-head"><div><div class="eyebrow">LEADERSHIP</div><h2>Owners</h2><p>The founders who lead CrownPVP.</p></div></div>
+      <div id="leadership"></div>
+    </div></section>
+    <section class="alt"><div class="wrap">
+      <div class="section-head"><div><div class="eyebrow">THE ENGINEER</div><h2>Developer</h2><p>The person behind the server and the website.</p></div></div>
+      <div id="developer"></div>
+    </div></section>
+    <section class="tight"><div class="wrap"><div class="section-head"><div><div class="eyebrow">THE TEAM</div><h2>Staff</h2><p>The people who keep the realm fair and friendly.</p></div></div><div id="staff"></div></div></section>
+    <section class="alt"><div class="wrap"><div class="section-head"><div><div class="eyebrow">ROLE RESPONSIBILITIES</div><h2>What each role does</h2><p>Every team member is expected to be respectful, reliable and fair.</p></div></div><div class="roles" id="roles"></div></div></section>
+    <section id="manage" class="alt" hidden><div class="wrap"><div class="section-head"><div><div class="eyebrow">TEAM MANAGEMENT</div><h2>Add a player to a role</h2><p>Only people with the manage-staff permission see this. The player needs a CrownPVP website account.</p></div></div>
+      <form id="role-form" class="kcard kform role-form"><div class="two"><label>Website username<input class="fi" name="user" maxlength="16" required pattern="[A-Za-z0-9_]{3,16}" autocomplete="off" placeholder="Player's username"></label><label>Role<select class="fi" name="rank" required><option value="" disabled selected>Choose a role</option><option value="owner">Owner</option><option value="coowner">Co-Owner</option><option value="manager">Manager</option><option value="admin">Admin</option><option value="developer">Developer</option><option value="moderator">Moderator</option><option value="helper">Helper</option><option value="media">Media</option><option value="__remove">Remove from staff</option></select></label></div>
+      <label>Position title (optional)<input class="fi" name="title" maxlength="40" placeholder="e.g. Head Moderator"></label><p class="kmsg" id="role-msg" role="status"></p><button class="btn gold" type="submit">Save role</button></form></div></section>
+    <section id="apply" class="staff-apply-section">
+      <div class="wrap">
+        <div class="staff-apply-head">
+          <div>
+            <div class="eyebrow">JOIN THE TEAM</div>
+            <h2>Make a difference<br><span>in the community.</span></h2>
+            <p>Choose an available role and answer the Minecraft moderation questions below. Accurate details help ownership review your application quickly.</p>
+          </div>
+          <div class="staff-apply-note">
+            <b>APPLICATION PROCESS</b>
+            <span>1. Complete all 3 sections</span>
+            <span>2. Owner reviews privately</span>
+            <span>3. Discord interview if shortlisted</span>
+            <small>Sending an application does not guarantee a position.</small>
+          </div>
+        </div>
+
+        <form id="staff-application" class="application-form">
+          <div class="form-section-title">01 · Identity &amp; Availability</div>
+          <div class="form-two">
+            <label>Minecraft Username (IGN)
+              <input name="name" maxlength="16" required placeholder="Your exact Java Edition IGN" autocomplete="off">
+            </label>
+            <label>Discord Username
+              <input name="discord" maxlength="64" required placeholder="e.g. username">
+            </label>
+          </div>
+
+          <div class="form-three">
+            <label>Position Applying For
+              <select name="role" id="application-role" required>
+                <option value="">Choose a role</option>
+                <option value="helper">Helper</option>
+                <option value="moderator">Moderator</option>
+                <option value="admin">Admin</option>
+                <option value="media">Media</option>
+              </select>
+            </label>
+            <label>Age Range
+              <select name="ageBand" required>
+                <option value="">Choose range</option>
+                <option>13-15</option>
+                <option>16-17</option>
+                <option>18+</option>
+              </select>
+            </label>
+            <label>Time Zone
+              <input name="timezone" maxlength="64" required placeholder="e.g. GMT+8 / EST / CET">
+            </label>
+          </div>
+
+          <div class="form-three">
+            <label>Weekly Availability
+              <select name="availability" required>
+                <option value="">Choose hours per week</option>
+                <option value="3-5">3–5 hours / week</option>
+                <option value="5-10">5–10 hours / week</option>
+                <option value="10-20">10–20 hours / week</option>
+                <option value="20+">20+ hours / week</option>
+              </select>
+            </label>
+            <label>Working Microphone &amp; Voice Chat?
+              <select name="micStatus" required>
+                <option value="">Select option</option>
+                <option value="Yes - Can talk anytime">Yes — Can join staff VC anytime</option>
+                <option value="Yes - Limited hours">Yes — Available during specific hours</option>
+                <option value="No microphone">No — Text communication only</option>
+              </select>
+            </label>
+            <label>Can You Record / Clip Cheaters (OBS/Medal)?
+              <select name="canRecord" required>
+                <option value="">Select option</option>
+                <option value="Yes - 1080p/60fps capable">Yes — Can record &amp; upload proof</option>
+                <option value="Yes - Short clips only">Yes — Short replay clips only</option>
+                <option value="No">No</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="form-section-title">02 · Minecraft Server &amp; Moderation Experience</div>
+          <label>Previous Minecraft Server Staff Experience &amp; Plugins Known
+            <textarea name="experience" rows="4" maxlength="900" placeholder="List servers you staffed on, your rank, player count, and plugins/tools you know (e.g., LiteBans, CoreProtect, Vulcan/Grim anticheat, WorldEdit, FactionsUUID)."></textarea>
+          </label>
+
+          <label>Have you ever been banned or punished on CrownPVP or other servers? If yes, explain honestly.
+            <input name="punishmentHistory" maxlength="250" required placeholder="e.g. Clean record / Muted once 6 months ago for spam">
+          </label>
+
+          <div class="form-section-title">03 · Minecraft PvP &amp; OpFactions Scenario Questions</div>
+          <label>1. Hacked Client &amp; Anticheat Detection: How do you tell the difference between a legit high-CPS/high-ping PvPer and someone using Reach, Velocity, or AutoClicker?
+            <textarea name="qCheats" rows="3" minlength="25" maxlength="550" required placeholder="Explain what signs you look for in combat, anticheat alerts, and why recording proof before banning matters."></textarea>
+          </label>
+
+          <label>2. OpFactions &amp; Raid Disputes: A faction accuses another faction of using an illegal cannon or glitching into their base during a raid. What steps do you take?
+            <textarea name="qFactions" rows="3" minlength="25" maxlength="550" required placeholder="Describe how you check blocks/logs (e.g., CoreProtect), pause/escalate to senior staff, and stay neutral."></textarea>
+          </label>
+
+          <label>3. Staff Integrity &amp; Friends: Your close friend or faction teammate breaks a server rule in front of you and asks you to look the other way. How do you handle it?
+            <textarea name="qIntegrity" rows="3" minlength="20" maxlength="450" required placeholder="Explain how you handle bias, impartiality, and reporting conflicts of interest."></textarea>
+          </label>
+
+          <label>4. Why CrownPVP? What makes you stand out from other applicants?
+            <textarea name="motivation" rows="4" minlength="40" maxlength="700" required placeholder="Tell us about your strengths, maturity under pressure, and what you want to improve on CrownPVP."></textarea>
+          </label>
+
+          <label class="checkline">
+            <input type="checkbox" name="confirm" value="yes" required>
+            <span>I confirm all answers are my own and understand applications are reviewed privately by CrownPVP management.</span>
+          </label>
+
+          <p id="application-message" class="form-message" role="status"></p>
+          <button class="btn gold wide" id="application-submit" type="submit" style="font-size:1rem;letter-spacing:.08em;padding:15px 24px;text-transform:uppercase;">SUBMIT APPLICATION</button>
+        </form>
+        <div id="my-applications" style="margin-top:34px;"></div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+  <script src="js/config.js?v=20261124-social"></script>
+  <script src="js/app.js?v=20261125-header"></script>
+  <script src="js/net.js?v=20261125"></script>
+  <script src="js/staff.js?v=20261125"></script>
+  <script src="js/forms-core.js?v=20261125"></script>
+  <script src="js/staff-apply.js?v=20261125-apply-v4"></script>
+  <script src="js/features.js?v=20261125" defer></script>
+<script src="js/realm-polish.js?v=20261125" defer></script>
+</body>
+</html>
