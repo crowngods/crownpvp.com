@@ -79,6 +79,23 @@ create policy "staff_applications: read own or staff" on public.staff_applicatio
 grant select on public.staff_applications to authenticated;
 
 
+-- ---- 0) Your live table has extra columns the website does not fill in (for example mic_status) that are
+--         marked NOT NULL. That made every submit fail with "null value in column ... violates not-null constraint".
+--         Make every such leftover column optional. The mic/recording answers are already saved inside "experience".
+do $$
+declare c record;
+begin
+  for c in
+    select column_name
+    from information_schema.columns
+    where table_schema = 'public' and table_name = 'staff_applications'
+      and is_nullable = 'NO' and column_default is null and is_identity = 'NO'
+      and column_name not in ('mc_username','discord','role','age_band','timezone','availability','motivation','account_name','experience','status','created_at','updated_at','decision_reason')
+  loop
+    execute format('alter table public.staff_applications alter column %I drop not null', c.column_name);
+  end loop;
+end $$;
+
 -- ---- extra grants so every signed-in player can use the permission helpers and read their own rows
 grant usage on schema public to anon, authenticated;
 grant execute on function public.has_perm(text) to authenticated;
