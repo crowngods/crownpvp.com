@@ -67,7 +67,7 @@ After news-social.sql, run `supabase/profiles-upgrade.sql` once (profile picture
 ## Social Hub: friends, presence and private messages
 Run `supabase/social-hub.sql` after `setup.sql`, `network-upgrade.sql` and `news-social.sql`. It adds the profile columns it needs itself, and stops with a clear message if an earlier script is missing. This adds friend requests, accepted friendships, private one-to-one messages, member online status, an anonymous active-visitor counter, and public profile likes (one like per account, with unlike support). Re-run `social-hub.sql` on an existing installation to add the profile-likes table and RPC functions safely. The SQL uses row-level security and scoped RPC functions; clients cannot read other players' private messages or write presence rows directly.
 
-The site shows a floating Community button on every page and a Community Hub card in the homepage sidebar. Signed-in players can add another website username, accept or cancel requests, see friends as online/offline, open a profile from a news comment and start a private conversation with an accepted friend. A visitor is considered active for three minutes after the latest page heartbeat. The visitor counter stores only a random browser token and timestamp, not IP addresses or account details.
+The site shows a floating Community button on every page and a folded-charcoal Community Hub card in the homepage sidebar. The card displays the number of active website visitors (not the Minecraft server's in-game player count), lists friends and their online status, provides one-click private messaging, and includes an inline Add Friend form. Signed-in players can accept or cancel requests, see friends as online/offline, open profiles and send private messages to accepted friends. A visitor is considered active for three minutes after the latest page heartbeat. The visitor counter stores only a random browser token and timestamp, not IP addresses or account details. The news feed can display the posting account's username, avatar and staff rank under the post author name; the public author lookup exposes only those fields for accounts that authored a published news post.
 
 Friends and direct messages require a CrownPVP website account. Each player needs to use their CrownPVP website username; a Minecraft username that has not registered on the website cannot be added yet.
 
@@ -75,3 +75,8 @@ Friends and direct messages require a CrownPVP website account. Each player need
 1. Run `supabase/staff-applications.sql` once (Applications tab, ACCEPT / DENY / REVIEW with a written note).
 2. Run `supabase/likes-leaderboard.sql` once to show "Most liked players" on profile pages (needs `social-hub.sql` first).
 3. Applicants must be signed in so every application reaches the Staff Dashboard and they get bell alerts.
+
+
+## Comment profile pictures
+
+Run `supabase/comment-avatars.sql` once (after `profiles-upgrade.sql`). It adds `get_news_comment_authors`, which lets the news feed show each commenter's profile picture. Until it is run, comments fall back to the letter circle.

@@ -307,6 +307,19 @@ end $$;
 revoke all on function public.get_direct_messages(text) from public, anon;
 grant execute on function public.get_direct_messages(text) to authenticated;
 
+-- Public author labels for published news posts. Only exposes username, public rank and avatar;
+-- the profile is returned only when that account authored a publicly readable news post.
+create or replace function public.get_news_post_authors(p_user_ids uuid[])
+returns table(user_id uuid, username text, staff_rank text, position_title text, avatar_url text)
+language sql security definer stable set search_path = public as $$
+  select p.id, p.username, p.staff_rank, p.position_title, p.avatar_url
+  from public.profiles p
+  where p.id = any(coalesce(p_user_ids, '{}'::uuid[]))
+    and exists (select 1 from public.news_posts n where n.created_by = p.id);
+$$;
+revoke all on function public.get_news_post_authors(uuid[]) from public;
+grant execute on function public.get_news_post_authors(uuid[]) to anon, authenticated;
+
 -- Keep access limited to the functions above; no client can read another player's private messages.
 
 -- Public profile likes. A player can like each profile once and can remove their own like.
