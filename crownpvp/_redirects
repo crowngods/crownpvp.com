@@ -1,0 +1,32 @@
+/index.html /
+/client.html /client 301
+/store.html /store 301
+/stats.html /player.html 301
+/stats /player.html 301
+/vote.html /vote 301
+/merch.html /merch 301
+/tickets.html /tickets 301
+/staff.html /staff 301
+/rules.html /rules 301
+/punishments.html /punishments 301
+/support.html /support 301
+/appeals.html /appeals 301
+/account.html /account 301
+/faq.html /faq 301
+/client /client.html 200
+/store /store.html 200
+/vote /vote.html 200
+/merch /merch.html 200
+/tickets /tickets.html 200
+/staff /staff.html 200
+/rules /rules.html 200
+/punishments /punishments.html 200
+/support /support.html 200
+/appeals /appeals.html 200
+/account /account.html 200
+/faq /faq.html 200
+/owner /reports-admin.html 200
+
+/help /help.html 200
+/gamemodes /gamemodes.html 200
+/opfactions /opfactions.html 200
