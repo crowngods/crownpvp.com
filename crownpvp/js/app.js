@@ -40,6 +40,14 @@ const v3Styles = document.createElement("link");
 v3Styles.rel = "stylesheet";
 v3Styles.href = "css/crown-v3.css?v=20261127-merged";
 document.head.append(v3Styles);
+const visualStyles = document.createElement("link");
+visualStyles.rel = "stylesheet";
+visualStyles.href = "css/visual-restored.css?v=20261124-contrast-header";
+document.head.append(visualStyles);
+const grandStyles = document.createElement("link");
+grandStyles.rel = "stylesheet";
+grandStyles.href = "css/grand-update.css?v=20261124-network";
+document.head.append(grandStyles);
 
 /* ---------- Accounts + alerts (only when Supabase is configured in config.js) ---------- */
 CP.authReady = new Promise(r => { CP._authResolve = r; });
