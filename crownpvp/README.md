@@ -130,6 +130,9 @@ Crown Client is presented as an upcoming project only. There is no download in t
 - **Is the new version live?** Scroll to the footer. It should say "Site v8". If it does not, the new files are not published yet (check GitHub > Actions).
 - **Support tickets** (`/tickets`): topics are in `js/config.js` (`ticketTopics`). Run `supabase/support-tickets.sql` once in Supabase > SQL Editor, after `network-upgrade.sql`. Players must be signed in. Staff with report access see an "All tickets" tab and can reply or close tickets.
 
+## Staff applications on the staff dashboard (Supabase)
+On the live site (GitHub Pages + Supabase) staff applications no longer need the Cloudflare inbox. Run `supabase/staff-applications.sql` once (see `supabase/README.md`). Applications then appear on `dashboard.html` > Applications with the status Reviewing, and staff accept or deny them there. Applicants must be signed in and follow their status on the Staff page. The Cloudflare `/api/applications` route and `/owner` inbox are unchanged and are only used if you deploy that backend.
+
 ## Important launch checklist
 
 - [ ] Apply `schema.sql` to the production D1 database.

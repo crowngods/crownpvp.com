@@ -57,6 +57,15 @@ Optional: **Authentication** > **Sign In / Providers** > **Email**: turn **Confi
 ### LiteBans data for player profiles
 The GitHub Action already runs `sync-litebans.py --export`. It now also writes `players.json` (first join, last seen, latest name; never IPs). LiteBans does not track playtime, so the profile says "Not tracked" unless you set `PLAYTIME_TABLE` in the sync `.env`.
 
+## Staff applications (dashboard review)
+Run `supabase/staff-applications.sql` once in the SQL Editor, AFTER `network-upgrade.sql`. It is safe to run again and never deletes data.
+1. A signed-in player fills in the form on the Staff page. The application lands on the **staff dashboard > Applications** tab with the status **Reviewing**, and staff who can read applications get an alert on the bell.
+2. Staff press **Accept** or **Deny** and must write a reason (shown to the applicant with the staff member's name and rank). **Back to reviewing** reopens a decided application (Manager or above, same rule as reports and appeals). Staff cannot decide their own application.
+3. The applicant follows the status (Reviewing, Accepted or Denied), the reason and the history in the "Your application" panel above the form, and gets an alert on the bell. They can have one application being reviewed at a time and can apply again after a decision. A position that already has 3 people is closed for new applications, like on the Staff page.
+4. Accepting does not hand out a rank by itself. Give the person their rank afterwards in **Staff dashboard > Staff** so the normal rank rules and slot limits still apply.
+5. Who can read and decide applications: `applications_view` and `applications_decide` in the `rank_permissions` table (Table Editor). Defaults: Owner, Co-Owner, Manager, Admin and Developer. Re-running the script never overwrites your changes. Give one person access with `update public.profiles set extra_perms = '{applications_view,applications_decide}' where lower(username)=lower('Name');`
+6. If the script has not been run yet, the form still works the old way: the application is saved on the device and can be copied into a Discord ticket.
+
 ## News comments and reactions
 Run `supabase/news-social.sql` once in the SQL Editor. Players must be signed in to comment or react.
 

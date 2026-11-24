@@ -60,12 +60,14 @@
     if (!own) return;
     const $ = id => document.getElementById(id);
     const say = (id, message, ok) => { const el = $(id); el.textContent = message; el.className = "pf-msg " + (ok ? "ok" : "err"); };
+    const SETUP = "Profile setup is not finished. The site owner needs to run supabase/profiles-upgrade.sql in Supabase.";
+    const missing = err => { console.error("Profile action failed:", err); return /could not find the function|schema cache|bucket not found|does not exist|relation .* does not exist/i.test(String(err?.message || err?.error || "")); };
     const count = () => { $("pf-count").textContent = $("pf-bio").value.length + "/300"; };
     count(); $("pf-bio").oninput = count;
     $("pf-toggle").onclick = () => { const el = $("pf-edit"); el.hidden = !el.hidden; };
     $("pf-save").onclick = async () => {
       const { error } = await auth.sb.rpc("update_my_profile", { p_bio: $("pf-bio").value });
-      error ? say("pf-m1", "Could not save your bio.") : (say("pf-m1", "Bio saved.", true), document.querySelector(".pf-bio").textContent = $("pf-bio").value.trim() || "You have not written a bio yet.");
+      error ? say("pf-m1", missing(error) ? SETUP : "Could not save your bio.") : (say("pf-m1", "Bio saved.", true), document.querySelector(".pf-bio").textContent = $("pf-bio").value.trim() || "You have not written a bio yet.");
     };
     $("pf-file").onchange = async event => {
       const file = event.target.files[0]; if (!file) return;
@@ -78,11 +80,11 @@
         const saved = await auth.sb.rpc("update_my_profile", { p_bio: $("pf-bio").value, p_avatar_url: url });
         if (saved.error) throw saved.error;
         document.querySelector(".pf-av img").src = url; say("pf-m2", "Picture updated.", true);
-      } catch { say("pf-m2", "Upload failed. Use a JPG, PNG or WebP under 2 MB."); }
+      } catch (err) { say("pf-m2", missing(err) ? SETUP : "Upload failed. Use a JPG, PNG or WebP under 2 MB."); }
     };
     $("pf-clear").onclick = async () => {
       const { error } = await auth.sb.rpc("update_my_profile", { p_bio: $("pf-bio").value, p_clear_avatar: true });
-      if (error) return say("pf-m2", "Could not reset.");
+      if (error) return say("pf-m2", missing(error) ? SETUP : "Could not reset.");
       document.querySelector(".pf-av img").src = CP.head(p.username, 256); say("pf-m2", "Using your Minecraft head.", true);
     };
     $("pf-rename").onclick = async () => {
@@ -91,7 +93,7 @@
       if (!/^[A-Za-z0-9_]{3,16}$/.test(value)) return say("pf-m3", "Use 3 to 16 letters, numbers or underscores.");
       if (!confirm(`Change your username to "${value}"? You can only do this once.`)) return;
       const { error } = await auth.sb.rpc("change_my_username", { p_username: value });
-      if (error) return say("pf-m3", errText(error.message || ""));
+      if (error) return say("pf-m3", missing(error) ? SETUP : errText(error.message || ""));
       location.href = "profile.html";
     };
   });
