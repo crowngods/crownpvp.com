@@ -60,6 +60,10 @@ const visualStyles = document.createElement("link");
 visualStyles.rel = "stylesheet";
 visualStyles.href = "css/visual-restored.css?v=20261124-server-banner-v2";
 document.head.append(visualStyles);
+const headerStyles = document.createElement("link");
+headerStyles.rel = "stylesheet";
+headerStyles.href = "css/network-header.css?v=20261125-header";
+document.head.append(headerStyles);
 
 /* ---------- Accounts + alerts (only when Supabase is configured in config.js) ---------- */
 CP.authReady = new Promise(r => { CP._authResolve = r; });
@@ -84,12 +88,12 @@ $("#site-header").outerHTML = `<section class="crown-banner" aria-label="CrownPV
   <div class="crown-banner-inner">
     <a class="crown-banner-crest" href="index.html" aria-label="CrownPVP home">
       <img src="assets/logo.svg" alt="">
-      <span><b>CROWN NETWORK</b><small>OP FACTIONS · JAVA EDITION</small></span>
+      <span><b>CrownPVP</b><small>OP FACTIONS · JAVA EDITION</small></span>
     </a>
     <div class="crown-banner-cta">
-      <div class="crown-banner-kicker"><i></i> YOUR NEXT ADVENTURE STARTS HERE</div>
-      <a class="crown-banner-play" href="gamemodes.html"><span>PLAY NOW</span><small>ENTER THE REALM</small></a>
-      <button class="crown-banner-ip" type="button" data-copy><span>SERVER IP <b>${C.ip}</b></span><small>CLICK TO COPY</small></button>
+      <div class="crown-banner-kicker">Your next adventure starts here</div>
+      <a class="crown-banner-play" href="gamemodes.html">PLAY NOW</a>
+      <button class="crown-banner-ip" type="button" data-copy title="Click to copy the server IP"><span>Server IP</span><b>${C.ip}</b></button>
     </div>
   </div>
 </section>
