@@ -1,0 +1,456 @@
+/* CrownPVP network header — compact, Hypixel-style masthead.
+   Full-width artwork banner (logo left, PLAY NOW right) with the gold
+   navigation bar sitting half over the bottom edge of the artwork.
+   Loaded last (see js/app.js) so it wins over the older stylesheets. */
+
+:root {
+  --nh-wrap: 1140px;
+  --nh-gold-1: #ffe9a8;
+  --nh-gold-2: #f3c868;
+  --nh-gold-3: #d79a34;
+  --nh-edge: #8a5a14;
+  --nh-ink: #2b1a05;
+}
+
+/* ---------- Banner ---------- */
+.crown-banner {
+  position: relative !important;
+  isolation: isolate !important;
+  display: block !important;
+  width: 100% !important;
+  min-height: clamp(200px, 15.5vw, 262px) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-bottom: 3px solid #5b3704 !important;
+  border-radius: 0 !important;
+  background: #1a0f22 url("../assets/header-bg-1280.webp") center 30% / cover no-repeat !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45) !important;
+}
+@media (min-width: 640px) {
+  .crown-banner { background-image: url("../assets/header-bg-2560.webp") !important; }
+}
+/* Big or high-density screens get the full 5000px artwork. */
+@media (min-width: 2200px), (min-width: 1100px) and (min-resolution: 1.5dppx) {
+  .crown-banner { background-image: url("../assets/header-bg-5000.webp") !important; }
+}
+/* Readability veil: darker behind the logo, a soft fade into the nav bar. */
+.crown-banner::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, rgba(10, 6, 16, .62) 0%, rgba(10, 6, 16, .14) 40%, rgba(10, 6, 16, 0) 62%, rgba(10, 6, 16, .30) 100%),
+    linear-gradient(0deg, rgba(10, 6, 16, .62) 0%, rgba(10, 6, 16, 0) 38%) !important;
+}
+.crown-banner::after { content: none !important; display: none !important; }
+
+.crown-banner-inner {
+  position: relative !important;
+  z-index: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  width: min(var(--nh-wrap), calc(100% - 32px)) !important;
+  min-height: inherit !important;
+  margin: 0 auto !important;
+  padding: 18px 0 50px !important; /* bottom room for the overlapping nav */
+  box-sizing: border-box !important;
+}
+
+/* ---------- Logo ---------- */
+.crown-banner-crest {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  max-width: none !important;
+  text-decoration: none !important;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .7)) !important;
+  transition: transform .18s ease !important;
+}
+.crown-banner-crest:hover { transform: translateY(-2px) !important; }
+.crown-banner-crest img {
+  display: block !important;
+  width: clamp(52px, 5.6vw, 82px) !important;
+  height: auto !important;
+  filter: drop-shadow(0 2px 0 #3a2105) drop-shadow(0 0 2px #000) !important;
+}
+.crown-banner-crest span { display: grid !important; gap: 6px !important; }
+.crown-banner-crest b {
+  display: block !important;
+  font: 900 clamp(2rem, 4.6vw, 3.7rem)/.9 "Cinzel", "Times New Roman", serif !important;
+  letter-spacing: .04em !important;
+  text-transform: uppercase !important;
+  color: transparent !important;
+  background: linear-gradient(180deg, #fff3bd 0%, #ffd76a 42%, #e09a26 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  /* dark outline + bevel, built from stacked shadows so the gradient survives */
+  filter: drop-shadow(1px 0 0 #2a1604) drop-shadow(-1px 0 0 #2a1604) drop-shadow(0 2px 0 #4a2a06) drop-shadow(0 4px 0 #2a1604) !important;
+}
+.crown-banner-crest small {
+  display: block !important;
+  color: #f6e6c4 !important;
+  font: 800 clamp(.56rem, .9vw, .72rem)/1.2 "Manrope", system-ui, sans-serif !important;
+  letter-spacing: .24em !important;
+  text-shadow: 0 2px 6px #000, 0 0 2px #000 !important;
+}
+
+/* ---------- Play block ---------- */
+.crown-banner-cta {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 9px !important;
+  width: auto !important;
+  min-width: 250px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.crown-banner-kicker {
+  display: block !important;
+  color: #f9e3b0 !important;
+  font: 700 .68rem/1.2 "Manrope", system-ui, sans-serif !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 2px 6px #000, 0 0 2px #000 !important;
+  text-align: center !important;
+}
+.crown-banner-kicker i { display: none !important; }
+.crown-banner-play {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  min-height: 54px !important;
+  padding: 10px 34px !important;
+  border: 3px solid var(--nh-edge) !important;
+  border-radius: 7px !important;
+  background: linear-gradient(180deg, var(--nh-gold-1) 0%, var(--nh-gold-2) 48%, var(--nh-gold-3) 100%) !important;
+  color: var(--nh-ink) !important;
+  font: 800 1.12rem/1 "Cinzel", "Times New Roman", serif !important;
+  letter-spacing: .05em !important;
+  text-decoration: none !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5) !important;
+  /* steel bezel around the gold plate, like a framed game button */
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, .75),
+    0 0 0 3px #2c3b52,
+    0 0 0 5px #6f87a6,
+    0 0 0 6px #14202f,
+    0 10px 20px rgba(0, 0, 0, .55) !important;
+  transition: transform .15s ease, filter .15s ease !important;
+}
+.crown-banner-play small { display: none !important; }
+.crown-banner-play:hover { transform: translateY(-2px) !important; filter: brightness(1.08) !important; }
+.crown-banner-play:focus-visible,
+.crown-banner-ip:focus-visible,
+body > header.crown-nav a:focus-visible { outline: 3px solid #fff !important; outline-offset: 3px !important; }
+
+.crown-banner-ip {
+  display: inline-flex !important;
+  align-items: baseline !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin-top: 6px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  color: #f3e5c8 !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  text-shadow: 0 2px 6px #000, 0 0 2px #000 !important;
+}
+.crown-banner-ip span { font: 700 .76rem/1.3 "Manrope", system-ui, sans-serif !important; letter-spacing: .04em !important; text-transform: uppercase !important; }
+.crown-banner-ip span::after { content: " \00BB" !important; }
+.crown-banner-ip b { color: #ffd76a !important; font: 800 .86rem/1.3 "Manrope", system-ui, sans-serif !important; letter-spacing: .03em !important; text-transform: uppercase !important; }
+.crown-banner-ip small { display: none !important; }
+.crown-banner-ip:hover b { text-decoration: underline !important; }
+
+/* ---------- Navigation bar (half over the banner) ---------- */
+body > header.crown-nav:not(#_) {
+  position: relative !important; /* scrolls away with the page, as the site intends */
+  top: auto !important;
+  z-index: 60 !important;
+  width: 100% !important;
+  margin: -29px 0 14px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  pointer-events: none !important; /* only the bar itself catches clicks */
+}
+body > header.crown-nav::after { content: none !important; display: none !important; }
+body > header.crown-nav .crown-nav-shell {
+  pointer-events: auto !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: min(var(--nh-wrap), calc(100% - 32px)) !important;
+  min-height: 58px !important;
+  margin: 0 auto !important;
+  padding: 5px !important;
+  box-sizing: border-box !important;
+  border: 2px solid #14202f !important;
+  border-radius: 9px !important;
+  background: linear-gradient(180deg, #8aa1be 0%, #566d8a 38%, #34465f 100%) !important;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, .45),
+    inset 0 -2px 0 rgba(0, 0, 0, .3),
+    0 0 0 2px #0a1019,
+    0 10px 26px rgba(0, 0, 0, .55) !important;
+}
+body > header.crown-nav nav#nav:not(#_) {
+  display: flex !important;
+  position: static !important;
+  flex: 1 1 auto !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  gap: 5px !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+body > header.crown-nav nav#nav:not(#_) a {
+  position: relative !important;
+  display: flex !important;
+  flex: 1 1 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  margin: 0 !important;
+  padding: 6px 8px !important;
+  border: 1px solid rgba(110, 66, 8, .75) !important;
+  border-radius: 5px !important;
+  background: linear-gradient(180deg, #fbe5ab 0%, #efc566 52%, #dca247 100%) !important;
+  color: var(--nh-ink) !important;
+  font: 700 clamp(.66rem, .8vw, .85rem)/1.15 "Cinzel", "Times New Roman", serif !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .45) !important;
+  white-space: normal !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 2px 0 rgba(70, 40, 3, .6) !important;
+  transition: background .15s ease, transform .15s ease !important;
+}
+body > header.crown-nav nav#nav:not(#_) a:hover,
+body > header.crown-nav nav#nav:not(#_) a.on {
+  background: linear-gradient(180deg, #fff3c4 0%, #f7d57d 100%) !important;
+  transform: translateY(-1px) !important;
+}
+body > header.crown-nav nav#nav:not(#_) a.on { font-weight: 900 !important; box-shadow: inset 0 1px 0 #fff, 0 3px 0 rgba(70, 40, 3, .7) !important; }
+body > header.crown-nav nav#nav:not(#_) a.nav-staff { font-weight: 900 !important; }
+body > header.crown-nav nav#nav:not(#_) a.on::after { content: none !important; display: none !important; }
+
+body > header.crown-nav .hr {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 0 0 auto !important;
+  margin: 0 0 0 2px !important;
+}
+body > header.crown-nav #acct-slot { display: inline-flex !important; align-items: center !important; gap: 6px !important; }
+body > header.crown-nav #cart-btn,
+body > header.crown-nav #burger {
+  display: inline-grid !important;
+  place-items: center !important;
+  position: relative !important;
+  width: 42px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(110, 66, 8, .75) !important;
+  border-radius: 5px !important;
+  background: linear-gradient(180deg, #fbe5ab, #dca247) !important;
+  color: #34200a !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 2px 0 rgba(70, 40, 3, .6) !important;
+  cursor: pointer !important;
+}
+body > header.crown-nav #burger { display: none !important; font-size: 1.15rem !important; }
+body > header.crown-nav #cart-btn svg { width: 18px !important; height: 18px !important; }
+body > header.crown-nav #cart-btn .bd { top: -5px !important; right: -5px !important; }
+
+/* Homepage: the banner replaces the old hero; keep a little air before the feed. */
+body[data-page="home"] .hx-hero { display: none !important; }
+body[data-page="home"] .hx-frame { margin-top: 8px !important; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  body > header.crown-nav .crown-nav-shell { gap: 5px !important; }
+  body > header.crown-nav nav#nav:not(#_) { gap: 3px !important; }
+  body > header.crown-nav nav#nav:not(#_) a { padding: 6px 4px !important; font-size: .64rem !important; }
+}
+
+@media (max-width: 930px) {
+  body > header.crown-nav .crown-nav-shell { min-height: 56px !important; align-items: center !important; }
+  /* label so the collapsed bar isn't empty on the left */
+  body > header.crown-nav .crown-nav-shell::before {
+    content: "MENU" !important;
+    padding-left: 10px !important;
+    color: #fff !important;
+    font: 800 .8rem/1 "Cinzel", serif !important;
+    letter-spacing: .14em !important;
+    text-shadow: 0 2px 0 #14202f !important;
+  }
+  body > header.crown-nav nav#nav:not(#_) {
+    display: none !important;
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 80 !important;
+    display: none !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    padding: 10px !important;
+    border: 2px solid #14202f !important;
+    border-radius: 10px !important;
+    background: linear-gradient(180deg, #566d8a, #34465f) !important;
+    box-shadow: 0 16px 38px rgba(0, 0, 0, .6) !important;
+  }
+  body > header.crown-nav nav#nav:not(#_).open { display: grid !important; }
+  body > header.crown-nav nav#nav:not(#_) a,
+  body > header.crown-nav nav#nav:not(#_) a.nav-staff {
+    justify-content: flex-start !important;
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    font-size: .76rem !important;
+  }
+  body > header.crown-nav #burger { display: inline-grid !important; }
+  .crown-banner-cta { min-width: 220px !important; }
+}
+
+@media (max-width: 700px) {
+  .crown-banner { min-height: 212px !important; background-position: 32% 30% !important; }
+  .crown-banner-inner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding: 14px 0 44px !important;
+  }
+  .crown-banner-crest { gap: 10px !important; }
+  .crown-banner-crest small { letter-spacing: .16em !important; }
+  .crown-banner-cta {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .crown-banner-kicker { display: none !important; }
+  .crown-banner-play { width: auto !important; min-height: 46px !important; padding: 8px 24px !important; font-size: .98rem !important; flex: 0 0 auto !important; }
+  .crown-banner-ip { margin-top: 0 !important; flex-direction: column !important; align-items: flex-end !important; gap: 0 !important; text-align: right !important; }
+  .crown-banner-ip span { font-size: .6rem !important; }
+  .crown-banner-ip span::after { content: none !important; }
+  .crown-banner-ip b { font-size: .78rem !important; }
+  body > header.crown-nav #acct-slot { max-width: 150px !important; overflow: hidden !important; }
+  body > header.crown-nav #acct-slot a { font-size: .65rem !important; }
+}
+
+@media (max-width: 390px) {
+  body > header.crown-nav nav#nav:not(#_).open { grid-template-columns: 1fr !important; }
+  .crown-banner-play { padding: 8px 18px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crown-banner-crest, .crown-banner-play, body > header.crown-nav nav#nav:not(#_) a { transition: none !important; }
+}
+
+/* Inner pages start their own banner right under the nav. */
+body:not([data-page="home"]) > header.crown-nav:not(#_) { margin-bottom: 0 !important; }
+
+
+/* ==========================================================================
+   AQW-STYLE GLOBAL GRAY BACKGROUND + SIDE-TO-SIDE BLACK VIGNETTE (ALL PAGES)
+   ========================================================================== */
+html, body {
+  background-color: #1c1f24 !important;
+  color: #f3f4f6 !important;
+}
+
+body {
+  background: #1c1f24 !important;
+}
+
+/* Global gray backdrop + your folder artwork + faded black side-to-side edges */
+body::before {
+  content: "" !important;
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    /* Faded black side-to-side like AQW */
+    linear-gradient(90deg, rgba(0, 0, 0, 0.94) 0%, rgba(12, 14, 17, 0.45) 14%, rgba(28, 31, 36, 0.15) 50%, rgba(12, 14, 17, 0.45) 86%, rgba(0, 0, 0, 0.94) 100%),
+    /* Gray tint overlay over your folder background */
+    linear-gradient(180deg, rgba(22, 24, 29, 0.78) 0%, rgba(32, 35, 41, 0.86) 45%, rgba(24, 27, 32, 0.92) 100%),
+    url("../assets/crown-voxel-battle.webp") center 32% / cover no-repeat !important;
+  filter: grayscale(0.45) contrast(1.04) !important;
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+}
+
+/* Make Store, Merch, Dashboard & Inner Section Wrappers transparent so the gray backdrop shows through */
+body[data-page="store"] main,
+body[data-page="store"] .phead,
+body[data-page="store"] section,
+body[data-page="merch"] main,
+body[data-page="merch"] .phead,
+body[data-page="merch"] section,
+.phead,
+.khero,
+section.alt,
+section.tight {
+  background: transparent !important;
+}
+
+/* ==========================================================================
+   AQW-STYLE TOP BANNER HEADER WITH YOUR BATTLE ARTWORK & SIDE BLACK FADES
+   ========================================================================== */
+.crown-banner {
+  max-width: 1480px !important;
+  min-height: clamp(320px, 28vw, 440px) !important;
+  margin: 0 auto !important;
+  border-bottom: 4px solid #0b0c0e !important;
+  background: #0d0f12 url("../assets/crown-voxel-battle.webp") center 36% / cover no-repeat !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Side-to-side black fade inside the header banner just like AQW */
+.crown-banner::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, #060709 0%, rgba(6, 7, 9, 0.78) 8%, rgba(6, 7, 9, 0.08) 25%, rgba(6, 7, 9, 0.08) 75%, rgba(6, 7, 9, 0.78) 92%, #060709 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.05) 35%, rgba(0, 0, 0, 0.15) 70%, rgba(8, 9, 11, 0.92) 100%) !important;
+}
