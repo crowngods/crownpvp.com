@@ -5,7 +5,23 @@ const page = document.body.dataset.page;
 try { const clean = location.pathname.replace(/(^|\/)index\.html$/, "$1").replace(/\.html$/, ""); if (clean !== location.pathname) history.replaceState(null, "", clean + location.search + location.hash); } catch { /* ignore */ }
 const fmt = n => n.toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const nav = [["index.html","Home","home"],["gamemodes.html","Gamemodes","gamemodes"],["client.html","Client","client"],["store.html","Store","store"],["merch.html","Merchandise","merch"],["vote.html","Vote","vote"],["staff.html","Staff","staff"],["rules.html","Rules","rules"],["punishments.html","Punishments","punishments"],["player.html","Players","player"],["help.html","Support","help"]];
+const nav = [
+  ["index.html", "Home", "home"],
+  ["gamemodes.html", "Games", "gamemodes"],
+  ["player.html", "Players", "player"],
+  ["index.html#feed", "Community", "community"],
+  ["rules.html", "Rules & Policies", "rules"],
+  ["staff.html#apply", "Staff Applications", "staff"],
+  ["help.html", "Support", "help"],
+  ["store.html", "Store", "store"]
+];
+const footerNav = [
+  ["index.html", "Home"], ["gamemodes.html", "Gamemodes"], ["client.html", "Client"],
+  ["store.html", "Store"], ["merch.html", "Merchandise"], ["vote.html", "Vote"],
+  ["staff.html#apply", "Staff Applications"], ["rules.html", "Rules"],
+  ["punishments.html", "Punishments"], ["player.html", "Players"], ["help.html", "Support"]
+];
+const navActive = key => key === page || (key === "community" && page === "home" && location.hash === "#feed");
 const MS = "";
 const CART_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="18" cy="20.5" r="1.2"/></svg>`;
 
@@ -42,12 +58,8 @@ v3Styles.href = "css/crown-v3.css?v=20261127-merged";
 document.head.append(v3Styles);
 const visualStyles = document.createElement("link");
 visualStyles.rel = "stylesheet";
-visualStyles.href = "css/visual-restored.css?v=20261124-contrast-header";
+visualStyles.href = "css/visual-restored.css?v=20261124-server-banner-v2";
 document.head.append(visualStyles);
-const grandStyles = document.createElement("link");
-grandStyles.rel = "stylesheet";
-grandStyles.href = "css/grand-update.css?v=20261124-network";
-document.head.append(grandStyles);
 
 /* ---------- Accounts + alerts (only when Supabase is configured in config.js) ---------- */
 CP.authReady = new Promise(r => { CP._authResolve = r; });
@@ -68,16 +80,29 @@ CP.authReady.then(() => {
 });
 
 /* ---------- Layout ---------- */
-$("#site-header").outerHTML = `<div class="partner-bar"><div class="wrap"><span><i></i> OPEN FOR PARTNERSHIP</span><a href="tickets.html?new=1&amp;topic=Partnership&amp;title=Partnership%20request">Discuss a partnership <b>↗</b></a></div></div>
-<header><div class="wrap"><a class="logo" href="index.html" aria-label="CrownPVP home"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
-<nav id="nav" aria-label="Main">${nav.map(n => `<a href="${n[0]}" class="${n[2] === "merch" ? "merch-in " : ""}${n[2] === page ? "on" : ""}"${n[2] === page ? ' aria-current="page"' : ""}>${n[1]}</a>`).join("")}</nav>
-<div class="hr"><button class="ippill" data-copy aria-label="Copy server IP"><i class="dot" id="hdot"></i><code>${C.ip}</code></button><span id="acct-slot"></span><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div></div></header>
+$("#site-header").outerHTML = `<section class="crown-banner" aria-label="CrownPVP network banner">
+  <div class="crown-banner-inner">
+    <a class="crown-banner-crest" href="index.html" aria-label="CrownPVP home">
+      <img src="assets/logo.svg" alt="">
+      <span><b>CROWN NETWORK</b><small>OP FACTIONS · JAVA EDITION</small></span>
+    </a>
+    <div class="crown-banner-cta">
+      <div class="crown-banner-kicker"><i></i> YOUR NEXT ADVENTURE STARTS HERE</div>
+      <a class="crown-banner-play" href="gamemodes.html"><span>PLAY NOW</span><small>ENTER THE REALM</small></a>
+      <button class="crown-banner-ip" type="button" data-copy><span>SERVER IP <b>${C.ip}</b></span><small>CLICK TO COPY</small></button>
+    </div>
+  </div>
+</section>
+<header class="crown-nav"><div class="crown-nav-shell">
+  <nav id="nav" aria-label="Main">${nav.map(n => `<a href="${n[0]}" class="${n[2] === "staff" ? "nav-staff " : ""}${navActive(n[2]) ? "on" : ""}"${navActive(n[2]) ? ' aria-current="page"' : ""}>${n[1]}</a>`).join("")}</nav>
+  <div class="hr"><span id="acct-slot"></span><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div>
+</div></header>
 <div id="scrim"></div>
 <aside id="cart" class="drawer" aria-hidden="true" aria-label="Shopping cart"><div class="dh"><h3>Your cart</h3><button class="ib" data-cart-close aria-label="Close cart">&times;</button></div><div class="db" id="cart-items"></div><div class="df" id="cart-foot"></div></aside>`;
 $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a class="logo" href="index.html"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
 <p style="margin-top:12px">The official website of CrownPVP — news, community updates, player support and everything happening across the network.</p>
 <div class="ip" style="margin:16px 0 0"><code>${C.ip}</code><button data-copy>Copy IP</button></div></div>
-<div><h3>Explore</h3>${nav.map(n => `<a href="${n[0]}">${n[1]}</a>`).join("")}</div>
+<div><h3>Explore</h3>${footerNav.map(n => `<a href="${n[0]}">${n[1]}</a>`).join("")}</div>
 <div><h3>Community</h3><a href="${C.discord}" target="_blank" rel="noopener">Join Discord</a><a href="store.html">Gold Store</a><a href="support.html">Report a player</a><a href="appeals.html">Appeal a punishment</a><a href="player.html">Player lookup</a><a href="faq.html">FAQ</a><a href="staff.html#apply">Staff applications</a><a href="${esc(C.supportChannel || C.discord)}" target="_blank" rel="noopener">Store &amp; community support</a></div></div>
 <div class="copy"><span>&copy; ${new Date().getFullYear()} CrownPVP. All rights reserved. <small class="ver">${esc(C.siteVersion || "")}</small></span><span>Developed by <b>Raizukennn</b> · We are not affiliated with Mojang Studios or Microsoft.</span></div></div></footer><div id="toast" role="status"></div>`;
 {

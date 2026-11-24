@@ -425,3 +425,350 @@ body .hx-note {
 @media (prefers-reduced-motion: reduce) {
   body::before { transform: none !important; }
 }
+
+/* -------------------------------------------------------------------------
+   CrownPVP network banner + gold game-network navigation.
+   This replaces the oversized standalone homepage hero with one compact,
+   consistent masthead inspired by classic Minecraft network websites.
+   ------------------------------------------------------------------------- */
+.crown-banner {
+  position: relative !important;
+  isolation: isolate !important;
+  width: min(1200px, calc(100% - 40px)) !important;
+  min-height: clamp(190px, 19vw, 250px) !important;
+  margin: 18px auto 0 !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(236, 194, 110, .68) !important;
+  border-bottom: 0 !important;
+  border-radius: 13px 13px 0 0 !important;
+  background: #090c14 url("../assets/crownpvp-header.webp") center 47% / cover no-repeat !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, .48), inset 0 1px 0 rgba(255, 255, 255, .2) !important;
+}
+.crown-banner::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, rgba(5, 7, 12, .12) 0%, rgba(5, 7, 12, .02) 48%, rgba(5, 7, 12, .30) 65%, rgba(5, 7, 12, .86) 100%),
+    linear-gradient(0deg, rgba(5, 7, 12, .48), transparent 42%, rgba(5, 7, 12, .14)) !important;
+}
+.crown-banner-inner {
+  position: relative !important;
+  z-index: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 22px !important;
+  width: 100% !important;
+  min-height: inherit !important;
+  box-sizing: border-box !important;
+  padding: 17px 22px !important;
+}
+.crown-banner-crest {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  max-width: 250px !important;
+  padding: 10px 13px !important;
+  border: 1px solid rgba(244, 211, 147, .35) !important;
+  border-radius: 10px !important;
+  background: rgba(7, 9, 14, .70) !important;
+  color: #f7e8c6 !important;
+  text-decoration: none !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .32) !important;
+  backdrop-filter: blur(8px) !important;
+}
+.crown-banner-crest img {
+  display: block !important;
+  width: 43px !important;
+  height: 43px !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 3px 8px rgba(226, 178, 81, .42)) !important;
+}
+.crown-banner-crest span { display: grid !important; gap: 4px !important; }
+.crown-banner-crest b {
+  color: #f3d28d !important;
+  font: 800 .82rem/1 "Cinzel", Georgia, serif !important;
+  letter-spacing: .09em !important;
+}
+.crown-banner-crest small {
+  color: #e0d4c0 !important;
+  font: 700 .55rem/1.2 "Manrope", sans-serif !important;
+  letter-spacing: .09em !important;
+}
+.crown-banner-cta {
+  display: grid !important;
+  justify-items: stretch !important;
+  gap: 9px !important;
+  width: min(290px, 34%) !important;
+  padding: 13px !important;
+  border: 1px solid rgba(236, 194, 110, .52) !important;
+  border-radius: 12px !important;
+  background: rgba(8, 10, 15, .83) !important;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .42) !important;
+  backdrop-filter: blur(13px) saturate(1.1) !important;
+}
+.crown-banner-kicker {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  color: #f5e2bf !important;
+  font: 800 .62rem/1.3 "Manrope", sans-serif !important;
+  letter-spacing: .1em !important;
+  text-align: center !important;
+}
+.crown-banner-kicker i {
+  display: inline-block !important;
+  width: 7px !important;
+  height: 7px !important;
+  flex: 0 0 7px !important;
+  border-radius: 50% !important;
+  background: #81d99c !important;
+  box-shadow: 0 0 11px rgba(129, 217, 156, .72) !important;
+}
+.crown-banner-play {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  min-height: 58px !important;
+  padding: 8px 15px !important;
+  border: 3px solid #a66b16 !important;
+  border-radius: 8px !important;
+  background: linear-gradient(180deg, #ffe6a4 0%, #f5c96f 48%, #d99b39 100%) !important;
+  color: #2c1b08 !important;
+  font: 800 1.08rem/1 "Cinzel", Georgia, serif !important;
+  letter-spacing: .035em !important;
+  text-decoration: none !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .45) !important;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .75), 0 4px 0 #573707, 0 8px 18px rgba(0, 0, 0, .28) !important;
+  transition: transform .16s ease, filter .16s ease !important;
+}
+.crown-banner-play small {
+  color: #65400d !important;
+  font: 800 .52rem/1 "Manrope", sans-serif !important;
+  letter-spacing: .15em !important;
+}
+.crown-banner-play:hover { transform: translateY(-2px) !important; filter: brightness(1.08) !important; }
+.crown-banner-ip {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 9px 11px !important;
+  border: 1px dashed rgba(241, 207, 143, .44) !important;
+  border-radius: 7px !important;
+  background: rgba(2, 4, 8, .62) !important;
+  color: #eadbc1 !important;
+  cursor: pointer !important;
+  text-align: left !important;
+}
+.crown-banner-ip span { font: 700 .62rem/1.35 "Manrope", sans-serif !important; }
+.crown-banner-ip b { color: #ffdc91 !important; font: 800 .7rem/1.2 "JetBrains Mono", monospace !important; }
+.crown-banner-ip small { color: #a9a49a !important; font: 800 .48rem/1.2 "Manrope", sans-serif !important; letter-spacing: .07em !important; white-space: nowrap !important; }
+
+body > header.crown-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 60 !important;
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body > header.crown-nav::after { content: none !important; display: none !important; }
+body > header.crown-nav .crown-nav-shell {
+  position: relative !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  gap: 9px !important;
+  width: min(1200px, calc(100% - 40px)) !important;
+  min-height: 66px !important;
+  margin: 0 auto !important;
+  padding: 6px 8px !important;
+  box-sizing: border-box !important;
+  border: 2px solid #9a661c !important;
+  border-top: 2px solid #f3d58e !important;
+  border-radius: 0 0 9px 9px !important;
+  background: linear-gradient(180deg, #f7d98e 0%, #e8b85a 47%, #c98b35 100%) !important;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.74), inset 0 -3px 0 rgba(101,57,7,.24), 0 8px 24px rgba(0,0,0,.42) !important;
+}
+body > header.crown-nav nav#nav {
+  display: flex !important;
+  position: static !important;
+  flex: 1 1 auto !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  gap: 5px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body > header.crown-nav nav#nav a {
+  position: relative !important;
+  display: flex !important;
+  flex: 1 1 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  min-height: 49px !important;
+  padding: 8px 10px !important;
+  margin: 0 !important;
+  border: 1px solid rgba(118, 74, 14, .60) !important;
+  border-radius: 5px !important;
+  background: linear-gradient(180deg, #f8dfa0 0%, #e8b957 100%) !important;
+  color: #2e1d09 !important;
+  font: 700 clamp(.65rem, .78vw, .82rem)/1.15 "Cinzel", Georgia, serif !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,.4) !important;
+  white-space: normal !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.68), 0 2px 0 rgba(91,55,4,.5) !important;
+  transition: background .15s ease, transform .15s ease, box-shadow .15s ease !important;
+}
+body > header.crown-nav nav#nav a:hover,
+body > header.crown-nav nav#nav a.on {
+  background: linear-gradient(180deg, #fff0bb 0%, #f2cf7c 100%) !important;
+  color: #211405 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 3px 0 rgba(91,55,4,.58), 0 5px 12px rgba(77,44,5,.16) !important;
+}
+body > header.crown-nav nav#nav a.nav-staff {
+  border-color: #71440d !important;
+  background: linear-gradient(180deg, #fff0bd 0%, #eab956 100%) !important;
+  font-weight: 900 !important;
+}
+body > header.crown-nav .hr {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  flex: 0 0 auto !important;
+  margin: 0 0 0 4px !important;
+}
+body > header.crown-nav #acct-slot { display: inline-flex !important; align-items: center !important; gap: 6px !important; }
+body > header.crown-nav #cart-btn,
+body > header.crown-nav #burger {
+  display: inline-grid !important;
+  place-items: center !important;
+  position: relative !important;
+  width: 42px !important;
+  height: 43px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(118, 74, 14, .65) !important;
+  border-radius: 5px !important;
+  background: linear-gradient(180deg, #f8dfa0, #e1ad4d) !important;
+  color: #34200a !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 2px 0 rgba(91,55,4,.5) !important;
+  cursor: pointer !important;
+}
+body > header.crown-nav #burger { display: none !important; font-size: 1.15rem !important; }
+body > header.crown-nav #cart-btn svg { width: 18px !important; height: 18px !important; }
+body > header.crown-nav #cart-btn .bd { top: -5px !important; right: -5px !important; }
+
+/* Keep the application form intact and make the route unmistakable. */
+body .quick-apply-link {
+  display: grid !important;
+  grid-template-columns: 27px 1fr !important;
+  align-items: center !important;
+  gap: 2px 9px !important;
+  margin: 0 0 14px !important;
+  padding: 12px 13px !important;
+  border: 1px solid rgba(229, 185, 99, .58) !important;
+  border-left: 4px solid #e8bc69 !important;
+  border-radius: 8px !important;
+  background: linear-gradient(110deg, rgba(211, 158, 70, .2), rgba(13, 17, 24, .76)) !important;
+  color: #ffe1a3 !important;
+  text-decoration: none !important;
+  box-shadow: 0 7px 18px rgba(0,0,0,.18) !important;
+}
+body .quick-apply-link > span { grid-row: 1 / span 2 !important; color: #f7d48e !important; font-size: 1.35rem !important; }
+body .quick-apply-link > b { color: #ffe5b2 !important; font-size: .78rem !important; font-weight: 900 !important; }
+body .quick-apply-link > small { color: #c8b99e !important; font-size: .62rem !important; }
+body .quick-apply-link:hover { border-color: rgba(255, 224, 159, .9) !important; filter: brightness(1.12) !important; }
+
+/* The network masthead is the home hero; avoid stacking a second giant hero. */
+body[data-page="home"] .hx-hero { display: none !important; }
+body[data-page="home"] .hx-frame { margin-top: 24px !important; }
+
+@media (max-width: 1100px) {
+  body > header.crown-nav .crown-nav-shell { gap: 6px !important; }
+  body > header.crown-nav nav#nav { gap: 3px !important; }
+  body > header.crown-nav nav#nav a { padding: 8px 6px !important; font-size: .66rem !important; }
+}
+@media (max-width: 930px) {
+  body > header.crown-nav .crown-nav-shell { min-height: 60px !important; align-items: center !important; padding: 7px 9px !important; }
+  body > header.crown-nav nav#nav {
+    display: none !important;
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 80 !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    padding: 10px !important;
+    border: 1px solid rgba(229, 185, 99, .52) !important;
+    border-radius: 10px !important;
+    background: rgba(14, 17, 23, .98) !important;
+    box-shadow: 0 16px 38px rgba(0,0,0,.58) !important;
+    backdrop-filter: blur(16px) !important;
+  }
+  body > header.crown-nav nav#nav.open { display: grid !important; }
+  body > header.crown-nav nav#nav a,
+  body > header.crown-nav nav#nav a.nav-staff {
+    justify-content: flex-start !important;
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    border: 1px solid rgba(226, 184, 102, .34) !important;
+    border-radius: 6px !important;
+    background: linear-gradient(180deg, #f7d995, #dfa949) !important;
+    color: #2e1d09 !important;
+    font-size: .72rem !important;
+  }
+  body > header.crown-nav #burger { display: inline-grid !important; }
+}
+@media (max-width: 620px) {
+  .crown-banner {
+    width: calc(100% - 24px) !important;
+    min-height: 238px !important;
+    margin-top: 12px !important;
+    background-position: center 46% !important;
+    border-radius: 10px 10px 0 0 !important;
+  }
+  .crown-banner::before {
+    background: linear-gradient(0deg, rgba(5,7,12,.88) 0%, rgba(5,7,12,.22) 62%, rgba(5,7,12,.10) 100%) !important;
+  }
+  .crown-banner-inner { align-items: flex-end !important; justify-content: flex-end !important; padding: 10px !important; }
+  .crown-banner-crest { position: absolute !important; top: 10px !important; left: 10px !important; padding: 7px 9px !important; }
+  .crown-banner-crest img { width: 30px !important; height: 30px !important; }
+  .crown-banner-crest b { font-size: .62rem !important; }
+  .crown-banner-crest small { font-size: .46rem !important; }
+  .crown-banner-cta { width: min(235px, 76%) !important; padding: 9px !important; gap: 6px !important; }
+  .crown-banner-kicker { font-size: .5rem !important; }
+  .crown-banner-play { min-height: 43px !important; font-size: .88rem !important; }
+  .crown-banner-play small { font-size: .45rem !important; }
+  .crown-banner-ip { padding: 7px 8px !important; }
+  .crown-banner-ip span { font-size: .52rem !important; }
+  .crown-banner-ip b { font-size: .58rem !important; }
+  .crown-banner-ip small { font-size: .42rem !important; }
+  body > header.crown-nav .crown-nav-shell { width: calc(100% - 24px) !important; }
+  body > header.crown-nav #acct-slot { max-width: 150px !important; overflow: hidden !important; }
+  body > header.crown-nav #acct-slot a { font-size: .65rem !important; }
+}
+@media (max-width: 390px) {
+  .crown-banner { min-height: 220px !important; }
+  .crown-banner-cta { width: min(220px, 78%) !important; }
+  body > header.crown-nav nav#nav.open { grid-template-columns: 1fr !important; }
+}
