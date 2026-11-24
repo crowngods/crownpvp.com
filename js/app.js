@@ -38,7 +38,7 @@ socialStyles.href = "css/social-hub.css?v=20261124-social";
 document.head.append(socialStyles);
 const fixStyles = document.createElement("link");
 fixStyles.rel = "stylesheet";
-fixStyles.href = "css/responsive-fix.css?v=20261125-mobile";
+fixStyles.href = "css/responsive-fix.css?v=20261126-nav";
 document.head.append(fixStyles);
 
 /* ---------- Accounts + alerts (only when Supabase is configured in config.js) ---------- */
@@ -54,7 +54,7 @@ if (C.supabaseUrl && C.supabaseKey) {
 /* ---------- Social Hub: loaded after the shared Supabase session resolves ---------- */
 CP.authReady.then(() => {
   const social = document.createElement("script");
-  social.src = "js/social-hub.js?v=20261125-mobile";
+  social.src = "js/social-hub.js?v=20261126-nav";
   social.onerror = () => console.warn("CrownPVP Social Hub could not be loaded.");
   document.body.append(social);
 });
@@ -86,7 +86,17 @@ $("#site-footer").outerHTML = `<footer><div class="wrap"><div class="fg"><div><a
   navEl.addEventListener("click", e => { if (e.target.closest("a")) setNav(false); });
   document.addEventListener("click", e => { if (navEl.classList.contains("open") && !e.target.closest("#nav,#burger")) setNav(false); });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && navEl.classList.contains("open")) setNav(false); });
-  window.matchMedia?.("(min-width:1181px)").addEventListener?.("change", e => { if (e.matches) setNav(false); });
+  const hdr = document.querySelector("header");
+  let lastY = scrollY;
+  addEventListener("scroll", () => {
+    const y = scrollY;
+    if (navEl.classList.contains("open")) { lastY = y; return; }
+    if (y > lastY + 6 && y > 120) hdr.classList.add("hdr-hide");
+    else if (y < lastY - 6 || y <= 60) hdr.classList.remove("hdr-hide");
+    lastY = y;
+  }, { passive: true });
+  hdr.addEventListener("focusin", () => hdr.classList.remove("hdr-hide"));
+  window.matchMedia?.("(min-width:1361px)").addEventListener?.("change", e => { if (e.matches) setNav(false); });
 }
 document.addEventListener("click", async e => {
   const joinCopy = e.target.closest("[data-copy-server]");

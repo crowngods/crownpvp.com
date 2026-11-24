@@ -2,7 +2,7 @@
    Loaded last by js/app.js so it wins over the older stylesheets. */
 
 /* ---------- Menu: phones, tablets and small desktop windows ---------- */
-@media (max-width: 1180px) {
+@media (max-width: 1360px) {
   header { z-index: 3000 !important; }
   header .wrap { position: relative !important; flex-wrap: nowrap !important; justify-content: space-between !important; }
   header .hr { margin-left: auto !important; flex: none; }
@@ -47,7 +47,7 @@
   /* floating Community button must never cover the open menu */
   body.nav-open .cph-launch { opacity: 0; pointer-events: none; }
 }
-@media (min-width: 620px) and (max-width: 1180px) {
+@media (min-width: 620px) and (max-width: 1360px) {
   header nav#nav.open { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 380px) {
@@ -89,3 +89,19 @@
 @media (max-width: 560px) {
   .cph-launch { right: 12px !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important; }
 }
+
+/* ---------- Desktop: one clean row, never wraps or clips ---------- */
+@media (min-width: 1361px) {
+  header .wrap { width: min(1560px, 96%) !important; }
+  header nav#nav { flex-wrap: nowrap !important; flex: 1 1 auto; min-width: 0; justify-content: center; gap: 4px !important; }
+  header nav#nav a { white-space: nowrap; flex: none; padding: 9px 11px !important; font-size: .74rem !important; }
+}
+
+@media (min-width: 1820px) {
+  /* leave room for the floating MERCHANDISE button on the left */
+  header .wrap { width: min(1400px, 96%) !important; }
+}
+
+/* ---------- Header hides while scrolling down, returns on scroll up ---------- */
+header { transition: transform .28s ease; will-change: transform; }
+header.hdr-hide { transform: translateY(-115%); }
