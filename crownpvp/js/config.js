@@ -44,7 +44,7 @@ window.CROWN = {
     { date: "2026-11-23", tag: "Support", author: "CrownPVP Team", title: "Support tickets are open", body: "Connection issues, a missing prize, a denied staff application, a partnership or a purchase: open a ticket and staff reply to you on the website.", link: "tickets.html?new=1", cta: "Open a ticket" },
     { date: "2026-11-23", tag: "Staff", author: "CrownPVP Team", title: "Join the staff team", body: "Fill in the application on the Staff page. Every application is reviewed privately by management.", link: "staff.html#apply", cta: "Apply now" }
   ],
-  siteVersion: "Site v7 · 23 Nov 2026",
+  siteVersion: "Site v8 · 24 Nov 2026",
   // Merchandise & services (shown on /merch). Prices are agreed in the ticket.
   merch: [
     { icon: "🎨", tag: "1.8 to 26.3", name: "PvP Resource Packs", desc: "Clean, low-fire, FPS-friendly packs made for PvP. Works on every version from 1.8 to 26.3." },

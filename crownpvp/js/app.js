@@ -5,7 +5,7 @@ const page = document.body.dataset.page;
 try { const clean = location.pathname.replace(/(^|\/)index\.html$/, "$1").replace(/\.html$/, ""); if (clean !== location.pathname) history.replaceState(null, "", clean + location.search + location.hash); } catch { /* ignore */ }
 const fmt = n => n.toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const nav = [["index.html","Home","home"],["gamemodes.html","Gamemodes","gamemodes"],["client.html","Client","client"],["store.html","Store","store"],["merch.html","Merch","merch"],["vote.html","Vote","vote"],["staff.html","Staff","staff"],["rules.html","Rules","rules"],["punishments.html","Punishments","punishments"],["player.html","Players","player"],["help.html","Support","help"]];
+const nav = [["index.html","Home","home"],["gamemodes.html","Gamemodes","gamemodes"],["client.html","Client","client"],["store.html","Store","store"],["merch.html","Merchandise","merch"],["vote.html","Vote","vote"],["staff.html","Staff","staff"],["rules.html","Rules","rules"],["punishments.html","Punishments","punishments"],["player.html","Players","player"],["help.html","Support","help"]];
 const MS = "";
 const CART_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="18" cy="20.5" r="1.2"/></svg>`;
 
@@ -31,6 +31,12 @@ const pill = p => p.status === "none" ? "" : `<span class="pill ${p.status === "
 const expires = p => p.permanent ? (p.status === "none" ? "&mdash;" : "Never") : date(p.until);
 const CP = window.CP = { $, $$, esc, fmt, toast, api, date, ago, clean, head, ready, loginUrl, MS, pill, expires };
 
+/* Apply the static charcoal backdrop immediately; Social Hub UI loads after auth settles. */
+const socialStyles = document.createElement("link");
+socialStyles.rel = "stylesheet";
+socialStyles.href = "css/social-hub.css?v=20261124-social";
+document.head.append(socialStyles);
+
 /* ---------- Accounts + alerts (only when Supabase is configured in config.js) ---------- */
 CP.authReady = new Promise(r => { CP._authResolve = r; });
 if (C.supabaseUrl && C.supabaseKey) {
@@ -41,10 +47,18 @@ if (C.supabaseUrl && C.supabaseKey) {
   document.head.append(lib);
 } else CP._authResolve(null);
 
+/* ---------- Social Hub: loaded after the shared Supabase session resolves ---------- */
+CP.authReady.then(() => {
+  const social = document.createElement("script");
+  social.src = "js/social-hub.js?v=20261124";
+  social.onerror = () => console.warn("CrownPVP Social Hub could not be loaded.");
+  document.body.append(social);
+});
+
 /* ---------- Layout ---------- */
 $("#site-header").outerHTML = `<div class="partner-bar"><div class="wrap"><span><i></i> OPEN FOR PARTNERSHIP</span><a href="tickets.html?new=1&amp;topic=Partnership&amp;title=Partnership%20request">Discuss a partnership <b>↗</b></a></div></div>
-<header><div class="wrap"><a class="logo" href="index.html" aria-label="CrownPVP home"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
-<nav id="nav" aria-label="Main">${nav.map(n => `<a href="${n[0]}"${n[2] === page ? ' class="on" aria-current="page"' : ""}>${n[1]}</a>`).join("")}</nav>
+<header><a class="merch-float${page === "merch" ? " on" : ""}" href="merch.html"><span aria-hidden="true">&#128717;</span> MERCHANDISE</a><div class="wrap"><a class="logo" href="index.html" aria-label="CrownPVP home"><img src="assets/logo.svg" alt=""><b>CrownPVP</b></a>
+<nav id="nav" aria-label="Main">${nav.map(n => `<a href="${n[0]}" class="${n[2] === "merch" ? "merch-in " : ""}${n[2] === page ? "on" : ""}"${n[2] === page ? ' aria-current="page"' : ""}>${n[1]}</a>`).join("")}</nav>
 <div class="hr"><button class="ippill" data-copy aria-label="Copy server IP"><i class="dot" id="hdot"></i><code>${C.ip}</code></button><span id="acct-slot"></span><button id="cart-btn" class="ib" aria-label="Open cart">${CART_ICON}<span id="cart-n" class="bd" hidden>0</span></button><button id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button></div></div></header>
 <div id="scrim"></div>
 <aside id="cart" class="drawer" aria-hidden="true" aria-label="Shopping cart"><div class="dh"><h3>Your cart</h3><button class="ib" data-cart-close aria-label="Close cart">&times;</button></div><div class="db" id="cart-items"></div><div class="df" id="cart-foot"></div></aside>`;
@@ -72,30 +86,8 @@ $$("[data-discord]").forEach(a => { a.href = C.discord; a.target = "_blank"; a.r
 $$("[data-ip]").forEach(e => e.textContent = C.ip);
 const serverAddressInput = $("[data-server-address]"); if (serverAddressInput) serverAddressInput.value = C.ip;
 
-/* Account linking is intentionally disabled. No external account sign-in is used on this website. */
-/* ---------- Animated realm background ---------- */
-{
-  const bg = document.createElement("div"); bg.id = "bg"; bg.setAttribute("aria-hidden", "true");
-  bg.innerHTML = '<i class="aur a1"></i><i class="aur a2"></i><i class="aur a3"></i><i class="grid"></i><i class="spot"></i><i class="vig"></i>';
-  document.body.prepend(bg);
-  if (!matchMedia("(prefers-reduced-motion:reduce)").matches) {
-    addEventListener("pointermove", e => { bg.style.setProperty("--mx", e.clientX + "px"); bg.style.setProperty("--my", e.clientY + "px"); }, { passive: true });
-    const cv = document.createElement("canvas"); cv.id = "embers"; document.body.prepend(cv);
-    const x = cv.getContext("2d"); let w, h, sy = 0; const rs = () => { w = cv.width = innerWidth; h = cv.height = innerHeight; }; rs(); addEventListener("resize", rs);
-    addEventListener("scroll", () => { sy = scrollY; }, { passive: true });
-    const R = Math.random, stars = Array.from({ length: 90 }, () => ({ x: R(), y: R(), r: R() * 1.1 + .3, s: R() * 6, z: R() * .6 + .1 }));
-    const em = Array.from({ length: 60 }, () => ({ x: R() * 2400, y: R() * 1400, r: R() * 2.2 + .6, v: R() * .55 + .15, a: R() * .5 + .2, s: R() * 6, c: R() < .65 ? "245,215,110" : "184,154,255" }));
-    (function f(t) {
-      x.clearRect(0, 0, w, h);
-      stars.forEach(o => { const yy = ((o.y * h - sy * o.z * .15) % h + h) % h, k = .25 + .55 * Math.abs(Math.sin(t / 1400 + o.s)); x.fillStyle = `rgba(225,210,255,${k})`; x.fillRect(o.x * w, yy, o.r, o.r); });
-      em.forEach(o => { o.y -= o.v; o.x += Math.sin(o.y / 55 + o.s) * .35; if (o.y < -10) { o.y = h + 10; o.x = R() * w; }
-        const px = o.x % w, k = o.a * (.65 + .35 * Math.sin(t / 700 + o.s)), g = x.createRadialGradient(px, o.y, 0, px, o.y, o.r * 5);
-        g.addColorStop(0, `rgba(${o.c},${k})`); g.addColorStop(.35, `rgba(${o.c},${k * .4})`); g.addColorStop(1, `rgba(${o.c},0)`);
-        x.fillStyle = g; x.beginPath(); x.arc(px, o.y, o.r * 5, 0, 7); x.fill(); });
-      requestAnimationFrame(f);
-    })(0);
-  }
-}
+/* The shared page backdrop is intentionally static now. The homepage hero keeps its own artwork. */
+document.body.classList.add("crown-solid-page");
 
 /* ---------- Live status (real API only, fetched once and shared) ---------- */
 CP.status = C.statusApi ? fetch(C.statusApi).then(r => r.json()).catch(() => null) : Promise.resolve(null);

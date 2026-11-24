@@ -12,7 +12,11 @@ const auth = { sb, user: null, profile: null, safeLink, on: fn => listeners.push
 async function loadProfile() {
   auth.profile = null;
   if (!auth.user) return;
-  try { const { data } = await sb.from("profiles").select("username,is_staff,staff_rank").eq("id", auth.user.id).maybeSingle(); auth.profile = data || null; } catch { /* offline */ }
+  try {
+    let r = await sb.from("profiles").select("username,is_staff,staff_rank,avatar_url,bio,username_changed").eq("id", auth.user.id).maybeSingle();
+    if (r.error) r = await sb.from("profiles").select("username,is_staff,staff_rank").eq("id", auth.user.id).maybeSingle(); /* profile columns not added yet */
+    auth.profile = r.data || null;
+  } catch { /* offline */ }
 }
 auth.alerts = async (limit = 30) => {
   const { data, error } = await sb.from("notifications").select("id,title,body,link,read,created_at").order("created_at", { ascending: false }).limit(limit);
@@ -33,14 +37,16 @@ function panelHtml(items) {
   return `<div class="alh">Alerts</div><div class="alb">${items.length ? items.map(a => `<a class="ali${a.read ? "" : " un"}" href="${esc(safeLink(a.link) || "alerts.html")}" data-id="${a.id}"><b>${esc(a.title)}</b>${a.body ? `<span>${esc(a.body)}</span>` : ""}<time>${ago(Date.parse(a.created_at))}</time></a>`).join("") : `<p class="ale">You are all caught up.</p>`}</div>
   <div class="alf"><button type="button" data-al-readall>Mark all read</button><a href="alerts.html">Show all&hellip;</a></div>`;
 }
+const AV_OK = /^https:\/\/[a-z0-9]+\.supabase\.co\/storage\/v1\/object\/public\/avatars\//;
+const avatarOf = (p, name) => (p?.avatar_url && AV_OK.test(p.avatar_url)) ? p.avatar_url : CP.head(name, 64);
 function render() {
   const s = slot(); if (!s) return;
   if (!auth.user) { s.innerHTML = `<a class="btn acct-in" href="login.html">Sign in</a>`; return; }
   const name = auth.profile?.username || "Account";
   s.innerHTML = `<div class="acct"><button type="button" class="ib" id="al-btn" aria-label="Alerts" aria-expanded="false">${BELL}<span id="al-n" class="bd" hidden>0</span></button>
-  <button type="button" class="ib av" id="av-btn" aria-label="Account menu" aria-expanded="false"><img src="${esc(CP.head(name, 32))}" alt="" width="28" height="28"></button>
+  <button type="button" class="ib av" id="av-btn" aria-label="Account menu" aria-expanded="false"><img src="${esc(avatarOf(auth.profile, name))}" alt="" width="28" height="28" style="border-radius:6px;object-fit:cover"></button>
   <div class="alp" id="al-panel" hidden></div>
-  <div class="avm" id="av-menu" hidden><div class="avn"><small>Signed in as</small><b>${esc(name)}</b></div><a href="alerts.html">Alerts${auth.profile?.is_staff ? " &amp; staff tools" : ""}</a>${auth.profile?.staff_rank ? `<a href="dashboard.html">Staff dashboard</a>` : ""}<a href="support.html?tab=mine">My reports</a><a href="appeals.html?tab=mine">My appeals</a><button type="button" data-signout>Sign out</button></div></div>`;
+  <div class="avm" id="av-menu" hidden><div class="avn"><small>Signed in as</small><b>${esc(name)}</b></div><a href="profile.html">My profile</a><a href="alerts.html">Alerts${auth.profile?.is_staff ? " &amp; staff tools" : ""}</a>${auth.profile?.staff_rank ? `<a href="dashboard.html">Staff dashboard</a>` : ""}<a href="support.html?tab=mine">My reports</a><a href="appeals.html?tab=mine">My appeals</a><button type="button" data-signout>Sign out</button></div></div>`;
   refreshCount();
 }
 function closeMenus() { ["al-panel", "av-menu"].forEach(id => { const e = $("#" + id); if (e) e.hidden = true; }); ["al-btn", "av-btn"].forEach(id => $("#" + id)?.setAttribute("aria-expanded", "false")); }

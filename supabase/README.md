@@ -59,3 +59,14 @@ The GitHub Action already runs `sync-litebans.py --export`. It now also writes `
 
 ## News comments and reactions
 Run `supabase/news-social.sql` once in the SQL Editor. Players must be signed in to comment or react.
+
+## Profiles
+After news-social.sql, run `supabase/profiles-upgrade.sql` once (profile picture, bio, one-time username change).
+
+
+## Social Hub: friends, presence and private messages
+Run `supabase/social-hub.sql` after `setup.sql`, `network-upgrade.sql` and `news-social.sql`. It adds the profile columns it needs itself, and stops with a clear message if an earlier script is missing. This adds friend requests, accepted friendships, private one-to-one messages, member online status and an anonymous active-visitor counter. The SQL uses row-level security and scoped RPC functions; clients cannot read other players' private messages or write presence rows directly.
+
+The site shows a floating Community button on every page and a Community Hub card in the homepage sidebar. Signed-in players can add another website username, accept or cancel requests, see friends as online/offline, open a profile from a news comment and start a private conversation with an accepted friend. A visitor is considered active for three minutes after the latest page heartbeat. The visitor counter stores only a random browser token and timestamp, not IP addresses or account details.
+
+Friends and direct messages require a CrownPVP website account. Each player needs to use their CrownPVP website username; a Minecraft username that has not registered on the website cannot be added yet.

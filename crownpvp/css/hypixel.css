@@ -125,3 +125,34 @@ a.hx-mode{display:block;color:var(--txt)!important;text-decoration:none;transiti
 .fb-cf{display:flex;gap:8px;margin-top:12px}.fb-cf textarea,#cform textarea{flex:1;font:inherit;background:#f0f2f5;border:1px solid #ccd0d5;border-radius:18px;padding:9px 14px;min-height:42px;resize:vertical;width:100%}
 #cform{padding:8px 16px 14px}#cform textarea{border-radius:10px;min-height:90px}#cprev{max-width:100%;max-height:260px;border-radius:8px;margin-top:8px;display:block}
 .fb-row{display:flex;justify-content:space-between;gap:8px;margin-top:10px;align-items:center}
+/* Merch: its own button, apart from the main nav (wide screens); inside nav on narrow ones */
+header nav a{padding:8px 11px;font-size:.76rem}
+.merch-float{display:none;position:absolute;left:22px;top:50%;transform:translateY(-50%);align-items:center;gap:8px;font-family:var(--fh);font-weight:700;font-size:.82rem;color:var(--g1)!important;background:linear-gradient(#2c1b3f,#170e24);border:2px solid var(--g2);border-radius:99px;padding:9px 18px;box-shadow:0 0 0 2px #000,0 4px 14px #000a}
+.merch-float:hover,.merch-float.on{background:linear-gradient(#41285c,#241438)}
+/* profile */
+.pf{max-width:1000px;margin:26px auto;padding:0 18px}
+.pf-head{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;background:#1c1812;border:3px solid var(--g2);border-radius:10px 10px 0 0;padding:20px;box-shadow:0 0 0 4px #000}
+.pf-av{position:relative;width:170px;height:170px;border-radius:10px;overflow:hidden;border:3px solid var(--g3);background:#000;flex:none}
+.pf-av img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+.pf-av label{position:absolute;inset:auto 0 0 0;background:#000b;color:var(--g1);text-align:center;padding:7px;font-weight:800;font-size:.85rem;cursor:pointer}
+.pf-info{flex:1;min-width:220px}.pf-info h1{font-family:var(--fh);color:#fff;font-size:1.9rem;margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;overflow-wrap:anywhere}
+.pf-rank{font:800 .72rem var(--fb);letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(var(--g1),var(--g2));color:#2b1a05;border-radius:99px;padding:4px 10px}
+.pf-info p{margin:8px 0 0;color:#d9cdb4}.pf-info .pf-bio{color:#fff;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}.pf-info .pf-bio.empty{color:#9a8c72;font-style:italic}
+.pf-act{display:flex;gap:8px;flex-wrap:wrap}
+.pf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:#2a2218;border:3px solid var(--g2);border-top:0;border-radius:0 0 10px 10px;padding:14px;box-shadow:0 0 0 4px #000}
+.pf-stats div{background:#15110b;border-radius:8px;padding:12px;text-align:center}.pf-stats b{display:block;color:var(--g1);font-size:1.4rem}.pf-stats span{color:#c9b99b;font-size:.8rem}
+.pf-edit{margin-top:22px;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.pf-edit section{background:var(--panel);color:var(--txt);border:2px solid var(--g2);border-radius:8px;padding:16px}
+.pf-edit h2{font-family:var(--fh);color:#4a2f0a;font-size:1rem;margin:0 0 10px}.pf-edit textarea,.pf-edit input[type=text]{width:100%;font:inherit;border:2px solid #cfc3aa;border-radius:6px;padding:10px;background:#fff;color:#222}
+.pf-edit textarea{min-height:110px;resize:vertical}.pf-msg{min-height:1.2em;font-size:.85rem;margin:8px 0 0}.pf-msg.err{color:var(--red)}.pf-msg.ok{color:#1f7a45}
+.pf-edit .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+@media(max-width:600px){.pf-stats{grid-template-columns:1fr}.pf-av{width:130px;height:130px}}
+.pf-edit h2{font-size:1.05rem!important;letter-spacing:0!important;line-height:1.2!important;font-family:var(--fh)!important;color:#4a2f0a!important}
+.pf-edit textarea,.pf-edit input[type=text]{background:#fff!important;color:#222!important;border:2px solid #cfc3aa!important}
+.pf-edit .row{justify-content:flex-start!important}.pf-edit .hx-note{margin:0 0 10px}
+.pf-edit label.hx-btn{margin:0}
+/* bigger MERCHANDISE button */
+.merch-float{left:24px;gap:10px;font-size:1.02rem;letter-spacing:.06em;padding:14px 26px;border-width:3px;white-space:nowrap}
+.merch-float span{font-size:1.35rem;line-height:1}
+
+@media(min-width:1820px){.merch-float{display:inline-flex}header nav a.merch-in{display:none}}

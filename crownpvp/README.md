@@ -127,7 +127,7 @@ Crown Client is presented as an upcoming project only. There is no download in t
 - **Home hub**: the news feed is `news` in `js/config.js` (newest first, add or edit entries there). The hero has a PLAY NOW button plus live player and Discord count pills.
 - **Join boosters**: a follow-along "Play now" bar, a "Claim the crown" call-to-action above every footer, and a Minecraft-style pop-up when someone copies the IP (all in `js/features.js` and `css/minecraft.css`).
 - **Partnership**: the top-bar link opens a ticket with the topic "Partnership". Re-run `supabase/support-tickets.sql` once so the database accepts that topic.
-- **Is the new version live?** Scroll to the footer. It should say "Site v7". If it does not, the new files are not published yet (check GitHub > Actions).
+- **Is the new version live?** Scroll to the footer. It should say "Site v8". If it does not, the new files are not published yet (check GitHub > Actions).
 - **Support tickets** (`/tickets`): topics are in `js/config.js` (`ticketTopics`). Run `supabase/support-tickets.sql` once in Supabase > SQL Editor, after `network-upgrade.sql`. Players must be signed in. Staff with report access see an "All tickets" tab and can reply or close tickets.
 
 ## Important launch checklist
@@ -144,7 +144,7 @@ Crown Client is presented as an upcoming project only. There is no download in t
 
 ## Visual refresh and verification
 
-The supplied CrownPVP battle artwork is now the shared site background and homepage hero artwork (optimized WebP). The background has a slow, restrained cinematic drift rather than distracting flashing effects; devices using `prefers-reduced-motion` get a static background. The report form and private owner inbox also have a refreshed dark charcoal, muted gold and crimson interface.
+The supplied CrownPVP battle artwork remains in the homepage hero. Shared page backgrounds are now static charcoal/black while scrolling, without the former animated/parallax backdrop. The report form and private owner inbox also have a refreshed dark charcoal, muted gold and crimson interface.
 
 The updated project was smoke-tested locally on 21 November 2026:
 - Home and report pages returned HTTP 200.
@@ -153,6 +153,11 @@ The updated project was smoke-tested locally on 21 November 2026:
 - The local report API accepted a test report, returned it to the owner inbox, and accepted a status change and private reply.
 
 These local tests do not configure your live Cloudflare account. For live report delivery, deploy the `crownpvp/` folder to Cloudflare Pages, bind the D1 database as `DB`, apply `schema.sql`, and set the production `REPORT_OWNER_KEY` and `SYNC_TOKEN` secrets as described above. The local preview database is temporary and is not your live database.
+
+## Social Hub (friends, private messages and live presence)
+Apply `supabase/social-hub.sql` after `setup.sql`, `network-upgrade.sql`, `news-social.sql` and `profiles-upgrade.sql`. It adds friend requests, accepted friendships, one-to-one private messages, friend online/offline status and the active website visitor count. The floating Community control appears on every page; the homepage also has a Community Hub card in the right sidebar. Player names in news comments now open their public profiles, where visitors can send friend requests or message existing friends.
+
+The active count measures browser sessions with a recent heartbeat (three-minute window), not verified Minecraft server connections. Friend presence is for signed-in website accounts only. Direct messages are limited to accepted friends.
 
 ## Network upgrade (reports, appeals, staff dashboard, team, player profiles, CrownClient)
 These pages run on GitHub Pages + Supabase (not the Cloudflare functions): `support.html` (reports), `appeals.html`, `dashboard.html` (staff only), `staff.html`, `player.html`, `client.html`. Setup: `supabase/network-upgrade.sql` (see `supabase/README.md`, section 7). CrownClient shows COMING SOON until you set `CROWN.client.status = "released"` and real https links in `js/config.js`. Theme: `css/kingdom.css`.
