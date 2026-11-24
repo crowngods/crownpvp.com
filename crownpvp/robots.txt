@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /owner
-Disallow: /reports-admin.html
-Disallow: /api/
