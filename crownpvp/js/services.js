@@ -142,24 +142,12 @@ if (projectForm) {
   });
 }
 
-/* constellation background + cursor light */
-const cv = $("#bg"), cx = cv.getContext("2d"); let W2, H2, pts = [];
-const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); W2 = cv.width = innerWidth * d; H2 = cv.height = innerHeight * d; pts = Array.from({ length: Math.round(innerWidth / 22) }, () => ({ x: Math.random() * W2, y: Math.random() * H2, vx: (Math.random() - .5) * .35 * d, vy: (Math.random() - .5) * .35 * d })); };
-fit(); addEventListener("resize", fit);
-const draw = () => { cx.clearRect(0, 0, W2, H2); const L = 150 * (W2 / innerWidth);
-  for (const p of pts) { p.x = (p.x + p.vx + W2) % W2; p.y = (p.y + p.vy + H2) % H2; cx.fillStyle = "rgba(196,181,253,.7)"; cx.fillRect(p.x, p.y, 2, 2); }
-  for (let a = 0; a < pts.length; a++) for (let b = a + 1; b < pts.length; b++) { const dx = pts[a].x - pts[b].x, dy = pts[a].y - pts[b].y, d = dx * dx + dy * dy; if (d < L * L) { cx.strokeStyle = `rgba(139,92,246,${.22 * (1 - Math.sqrt(d) / L)})`; cx.beginPath(); cx.moveTo(pts[a].x, pts[a].y); cx.lineTo(pts[b].x, pts[b].y); cx.stroke(); } }
-  requestAnimationFrame(draw); };
-if (!RM) draw();
-if (!RM) addEventListener("pointermove", e => { document.body.style.setProperty("--mx", e.clientX + "px"); document.body.style.setProperty("--my", e.clientY + "px"); });
-
 /* spotlight glow follows the pointer */
 document.addEventListener("pointermove", e => { const c = e.target.closest?.(".sv-card,.sv-p,.sv-a"); if (!c) return; const r = c.getBoundingClientRect(); c.style.setProperty("--x", e.clientX - r.left + "px"); c.style.setProperty("--y", e.clientY - r.top + "px"); });
 
-/* 3D tilt on cards, magnetic buttons */
+/* subtle 3D tilt on cards */
 if (!RM && matchMedia("(hover:hover)").matches) {
-  $$(".sv-card,.sv-p").forEach(c => { c.addEventListener("pointermove", e => { if (!c.classList.contains("in")) return; const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; c.style.transform = `perspective(800px) rotateY(${x * 9}deg) rotateX(${-y * 9}deg) translateY(-4px)`; }); c.addEventListener("pointerleave", () => c.style.transform = ""); });
-  $$(".btn").forEach(b => { b.addEventListener("pointermove", e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .2}px,${(e.clientY - r.top - r.height / 2) * .3}px)`; }); b.addEventListener("pointerleave", () => b.style.transform = ""); });
+  $$(".sv-card,.sv-p").forEach(c => { c.addEventListener("pointermove", e => { if (!c.classList.contains("in")) return; const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; c.style.transform = `perspective(800px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg) translateY(-3px)`; }); c.addEventListener("pointerleave", () => c.style.transform = ""); });
 }
 
 /* count-up numbers */
@@ -171,8 +159,4 @@ $$("[data-n]").filter(e => e.closest(".sv-stats")).forEach(count);
 /* one scroll-reveal pass for every section */
 const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; e.target.classList.add("in"); $$("[data-n]", e.target).forEach(count); io.unobserve(e.target); }), { threshold: .15 });
 $$(".rv,.sv-steps").forEach(x => io.observe(x));
-
-/* decode effect on section headings */
-if (!RM) { const sc = el => { const t = el.textContent, ch = "01<>/{}[]#$%"; let f = 0; el.setAttribute("aria-label", t); const id = setInterval(() => { el.textContent = [...t].map((c, i) => c === " " || i < f / 1.2 ? c : ch[Math.random() * ch.length | 0]).join(""); if (++f > t.length * 1.2) { el.textContent = t; clearInterval(id); } }, 28); };
-  const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { sc(e.target); io2.unobserve(e.target); } }), { threshold: .6 }); $$(".sv-head h2").forEach(h => io2.observe(h)); }
 })();
