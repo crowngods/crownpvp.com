@@ -1,0 +1,6 @@
+.env
+*.env
+!.env.example
+.dev.vars
+__pycache__/
+crownpvp/data/
