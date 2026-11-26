@@ -1,10 +1,10 @@
-/* CrownPVP /service: web development services, sample projects, pricing. Orders go through a support ticket. */
+/* CrownPVP Services studio: project briefs are handled by the independent service-project intake API. */
 (() => {
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 try { const p = location.pathname.replace(/\.html$/, ""); if (p !== location.pathname) history.replaceState(null, "", p + location.search + location.hash); } catch {}
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const T = item => `tickets.html?new=1&topic=${encodeURIComponent("Website services")}&item=${encodeURIComponent(item)}`;
+const T = item => `?project=${encodeURIComponent(item)}#project-intake`;
 
 const SAMPLES = [
   { id: "lexora", url: "lexora.law", name: "Lexora Law Firm", desc: "A trust-first legal services website with practice areas, testimonials and a consultation booking button.", code: ["<header class=\"hero\">", "  <h1>Justice. Professionalism.</h1>", "  <a href=\"#book\">Get Consultation</a>", "</header>"] },
@@ -98,7 +98,7 @@ const PACKAGES = [
 ];
 $("#price-grid").innerHTML = PACKAGES.map((p, i) => `<article class="sv-p rv${p.pop ? " pop" : ""}" style="--i:${i}">${p.pop ? '<span class="bd">★ Most popular</span>' : ""}<h3>${esc(p.name)}</h3><p class="pd">${esc(p.desc)}</p><div class="pr"><small>from</small><strong>$<span data-n="${p.price}">0</span></strong><small>one-time</small><s>$${p.was}</s></div><span class="sv-save">Save $${p.was - p.price}</span><a class="btn gold" href="${T(p.name)}">Choose this package</a><ul><li><b>Delivered in 1 week 2 days</b></li>${p.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul></article>`).join("");
 $("#addon-grid").innerHTML = (window.CROWN.merch || []).map((m, i) => {
-  const href = `tickets.html?new=1&topic=Merch&item=${encodeURIComponent(m.name)}`;
+  const href = `?project=${encodeURIComponent(m.name)}#project-intake`;
   const label = i === 4 ? "Start a conversation" : "Discuss this item";
   return `<article class="sv-a sv-minecraft-card rv" style="--i:${i}">
     <div class="sv-a-art" aria-hidden="true"><span class="sv-a-index">${String(i + 1).padStart(2, "0")}</span><span class="sv-a-glyph">${esc(m.icon)}</span><span class="sv-a-orbit"></span></div>
@@ -108,6 +108,39 @@ $("#addon-grid").innerHTML = (window.CROWN.merch || []).map((m, i) => {
     <a class="sv-a-link" href="${href}">${label}<span aria-hidden="true">↗</span></a></div>
   </article>`;
 }).join("");
+
+/* dedicated service project intake — never sends clients to support tickets or Supabase */
+const projectForm = $("#project-form");
+if (projectForm) {
+  const params = new URLSearchParams(location.search), preset = params.get("project");
+  const serviceSelect = $("#project-service");
+  if (preset && serviceSelect) {
+    const map = { "PvP Resource Packs":"Minecraft resource pack", "Custom Plugins":"Minecraft plugin", "Maps & Builds":"Minecraft map or build", "Website Customization":"Minecraft website", "Something Custom":"Something custom", "Game Store Theme":"Website design & development", "Landing Page":"Website design & development", "Business Website":"Website design & development", "Webshop":"Website design & development" };
+    const target = map[preset] || (serviceSelect.querySelector(`option[value="${CSS.escape(preset)}"]`) ? preset : "");
+    if (target) serviceSelect.value = target;
+    const brief = projectForm.elements.brief;
+    if (brief && !brief.value) brief.placeholder = `Tell us what you have in mind for: ${preset}. Include features, goals and references…`;
+  }
+  projectForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const button = $("#project-submit"), status = $("#project-status"), data = Object.fromEntries(new FormData(projectForm).entries());
+    button.disabled = true; button.classList.add("is-loading"); button.innerHTML = '<span class="sv-spinner"></span> Sending brief…';
+    status.textContent = "Submitting your project request securely…"; status.classList.remove("is-error","is-success");
+    try {
+      const response = await fetch("/api/service-tickets", { method:"POST", headers:{"content-type":"application/json","x-requested-with":"crown"}, body:JSON.stringify(data) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Your request could not be submitted.");
+      projectForm.reset();
+      status.innerHTML = `Request received. Your project reference is <strong>${esc(result.reference || "received")}</strong>. Keep it for your records.`;
+      status.classList.add("is-success");
+      button.innerHTML = 'Brief submitted <span>✓</span>';
+    } catch (err) {
+      status.textContent = err.message || "Something went wrong. Please try again.";
+      status.classList.add("is-error");
+      button.disabled = false; button.innerHTML = 'Try submitting again <span>↗</span>';
+    }
+  });
+}
 
 /* constellation background + cursor light */
 const cv = $("#bg"), cx = cv.getContext("2d"); let W2, H2, pts = [];

@@ -168,3 +168,10 @@ These pages run on GitHub Pages + Supabase (not the Cloudflare functions): `supp
 
 ## 2026 Realm UI redesign
 The visual redesign is loaded from `css/realm-redesign.css` and `js/realm-polish.js`. It is a progressive visual layer and does not change Supabase, SQL, authentication, API routes, or backend behavior.
+
+
+## CrownPVP Services project intake (separate from support tickets)
+
+The `/services` page uses `POST /api/service-tickets` and stores commissions in the dedicated Cloudflare D1 table `service_project_tickets`. It does not call the support-ticket page, the Supabase support-ticket tables, or the player support workflow.
+
+Before accepting live requests, apply `server/service-project-tickets.sql` to the Cloudflare D1 database bound as `DB` (the same Cloudflare D1 binding used by the site's API, but a separate table and route). Optional: set `SERVICE_TICKET_WEBHOOK` to a private Discord webhook URL to receive new project-request notifications. Owner-only retrieval is available at `GET /api/service-tickets` with the existing `x-owner-key` header (`REPORT_OWNER_KEY`). Never expose that key in browser code.

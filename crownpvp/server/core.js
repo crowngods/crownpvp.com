@@ -338,6 +338,45 @@ async function applicationsRoutes(req, env, parts) {
   return fail(404, "Not found");
 }
 
+/* ---------- independent CrownPVP service project intake ---------- */
+async function serviceTicketsRoutes(req, env, parts) {
+  const now = Date.now(), method = req.method;
+  if (method === "POST" && parts.length === 0) {
+    const d = await parseBody(req);
+    if (!d) return fail(400, "We could not read your project brief. Please try again.");
+    // Quiet honeypot for basic bot filtering.
+    if (text(d.website, 120)) return json({ ok: true, id: "received" }, 201);
+    const name = text(d.name, 64), email = text(d.email, 120).toLowerCase();
+    const discord = text(d.discord, 64), service = text(d.service, 80), budget = text(d.budget, 40);
+    const timeline = text(d.timeline, 40), brief = text(d.brief, 4000), reference = text(d.reference, 500);
+    if (name.length < 2) return fail(400, "Please enter your name.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail(400, "Enter a valid email address.");
+    const allowed = ["Website design & development","Full-stack application","UI / UX redesign","Website maintenance","Minecraft resource pack","Minecraft plugin","Minecraft map or build","Minecraft website","Something custom"];
+    if (!allowed.includes(service)) return fail(400, "Choose the service you need.");
+    if (brief.length < 30) return fail(400, "Please add at least 30 characters to your project brief.");
+    if (reference) { try { const u = new URL(reference); if (!["http:","https:"].includes(u.protocol)) throw new Error(); } catch { return fail(400, "Reference link must start with http:// or https://."); } }
+    const ip = req.headers.get("cf-connecting-ip") || "unknown";
+    const ipHash = b64u(await crypto.subtle.digest("SHA-256", te.encode(ip)));
+    const recent = await env.DB.prepare("SELECT COUNT(*) c FROM service_project_tickets WHERE ip_hash=? AND created>?").bind(ipHash, now - 3600000).first();
+    if ((recent?.c || 0) >= 5) return fail(429, "Too many project requests from this connection. Please try again later.");
+    const result = await env.DB.prepare(`INSERT INTO service_project_tickets(name,email,discord,service,budget,timeline,brief,reference,created,status,ip_hash)
+      VALUES(?,?,?,?,?,?,?,?,?,'new',?)`).bind(name,email,discord,service,budget,timeline,brief,reference,now,ipHash).run();
+    const id = result.meta.last_row_id, ref = `CP-SV-${String(id).padStart(5,"0")}`;
+    if (env.SERVICE_TICKET_WEBHOOK) {
+      const safe = v => String(v || "").replace(/[*_`~|@]/g, "").slice(0, 500);
+      const notice = `**New CrownPVP project request · ${ref}**\n**Name:** ${safe(name)}\n**Email:** ${safe(email)}\n**Discord:** ${safe(discord) || "Not provided"}\n**Service:** ${safe(service)}\n**Budget:** ${safe(budget)}\n**Timeline:** ${safe(timeline)}\n**Brief:** ${safe(brief)}`;
+      try { await fetch(env.SERVICE_TICKET_WEBHOOK, { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({allowed_mentions:{parse:[]},content:notice}) }); } catch { /* Stored request remains valid if notifications fail. */ }
+    }
+    return json({ ok:true, reference:ref }, 201);
+  }
+  if (method === "GET" && parts.length === 0) {
+    if (!ownerKeyOK(req, env)) return fail(403, "Owner access only.");
+    const rows = (await env.DB.prepare("SELECT id,name,email,discord,service,budget,timeline,brief,reference,created,status FROM service_project_tickets ORDER BY created DESC LIMIT 200").all()).results || [];
+    return json({ items: rows.map(r => ({...r, reference_id:`CP-SV-${String(r.id).padStart(5,"0")}`})) });
+  }
+  return fail(404, "Not found");
+}
+
 /* ---------- player stats (gold, activity) ---------- */
 async function syncStats(req, env) {
   const given = req.headers.get("authorization") || "";
@@ -440,6 +479,7 @@ export async function handle(request, env, ctx = {}) {
     if (route === "me") return json({ user, login: !!(env.MS_CLIENT_ID && env.MS_CLIENT_SECRET && env.SESSION_SECRET), checkout: !!env.TEBEX_PUBLIC_TOKEN });
     if (!env.DB && route !== "checkout") return fail(503, "Database not configured.");
     if (route === "stats" && m === "GET") return statsGet(env, url, parts);
+    if (route === "service-tickets") return serviceTicketsRoutes(request, env, parts);
     if (route === "reports") return reportsRoutes(request, env, parts);
     if (route === "applications") return applicationsRoutes(request, env, parts);
     if (route === "punishments" && m === "GET") return listPunishments(env, url);
