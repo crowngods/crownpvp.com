@@ -179,7 +179,7 @@ try {
   const foot = document.querySelector("footer");
   if (foot && document.body.dataset.page !== "tickets") {
     const s = document.createElement("section"); s.className = "final-cta";
-    s.innerHTML = `<div class="wrap"><div class="eyebrow">YOUR LEGACY STARTS HERE</div><h2>Claim the <span class="gold-t">crown</span></h2><p>Join CrownPVP on Java 1.8+ to 26+ and start building your base today.</p><div class="ip big"><code>${esc(C.ip)}</code><button type="button" data-copy>Copy IP</button></div><div class="row"><a class="btn gold" href="${esc(C.discord)}" target="_blank" rel="noopener">Join Discord</a><a class="btn ghost" href="vote.html">Vote</a><a class="btn ghost" href="service.html">Services</a></div></div>`;
+    s.innerHTML = `<div class="wrap"><div class="eyebrow">YOUR LEGACY STARTS HERE</div><h2>Claim the <span class="gold-t">crown</span></h2><p>Join CrownPVP on Java 1.8+ to 26+ and start building your base today.</p><div class="ip big"><code>${esc(C.ip)}</code><button type="button" data-copy>Copy IP</button></div><div class="row"><a class="btn gold" href="${esc(C.discord)}" target="_blank" rel="noopener">Join Discord</a><a class="btn ghost" href="vote.html">Vote</a><a class="btn ghost" href="services.html">Services</a></div></div>`;
     foot.before(s);
   }
   const bar = document.createElement("div"); bar.className = "joinbar"; bar.innerHTML = `<span>Play now</span><code>${esc(C.ip)}</code><button type="button" class="btn gold sm" data-copy>Copy IP</button>`; document.body.append(bar);

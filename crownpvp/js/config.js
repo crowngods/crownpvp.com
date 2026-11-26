@@ -45,7 +45,7 @@ window.CROWN = {
     { date: "2026-11-23", tag: "Staff", author: "CrownPVP Team", title: "Join the staff team", body: "Fill in the application on the Staff page. Every application is reviewed privately by management.", link: "staff.html#apply", cta: "Apply now" }
   ],
   siteVersion: "Site v8 · 24 Nov 2026",
-  // Merchandise & services (shown on /service). Prices are agreed in the ticket.
+  // Merchandise & services (shown on /services). Prices are agreed in the ticket.
   merch: [
     { icon: "🎨", tag: "1.8 to 26.3", name: "PvP Resource Packs", desc: "Clean, low-fire, FPS-friendly packs made for PvP. Works on every version from 1.8 to 26.3." },
     { icon: "🧩", tag: "Made to order", name: "Custom Plugins", desc: "Java plugins built for your server: kits, factions features, menus, economy and more." },

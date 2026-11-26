@@ -1,6 +1,8 @@
 /* CrownPVP /service: web development services, sample projects, pricing. Orders go through a support ticket. */
 (() => {
-const { $, $$, esc } = CP;
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+try { const p = location.pathname.replace(/\.html$/, ""); if (p !== location.pathname) history.replaceState(null, "", p + location.search + location.hash); } catch {}
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const T = item => `tickets.html?new=1&topic=${encodeURIComponent("Website services")}&item=${encodeURIComponent(item)}`;
 
@@ -96,6 +98,17 @@ const PACKAGES = [
 ];
 $("#price-grid").innerHTML = PACKAGES.map((p, i) => `<article class="sv-p rv${p.pop ? " pop" : ""}" style="--i:${i}">${p.pop ? '<span class="bd">★ Most popular</span>' : ""}<h3>${esc(p.name)}</h3><p class="pd">${esc(p.desc)}</p><div class="pr"><small>from</small><strong>$<span data-n="${p.price}">0</span></strong><small>one-time</small><s>$${p.was}</s></div><span class="sv-save">Save $${p.was - p.price}</span><a class="btn gold" href="${T(p.name)}">Choose this package</a><ul><li><b>Delivered in 1 week 2 days</b></li>${p.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul></article>`).join("");
 $("#addon-grid").innerHTML = (window.CROWN.merch || []).map((m, i) => `<article class="sv-a rv" style="--i:${i}"><div class="ic" aria-hidden="true">${esc(m.icon)}</div><h3>${esc(m.name)}</h3><p>${esc(m.desc)}</p><div class="row"><span>${[9, 29, 39, 199, 0][i] ? `from <b>$${[9, 29, 39, 199, 0][i]}</b>` : "<b>Quote</b>"}</span><a href="${T(m.name)}">Order via ticket</a></div></article>`).join("");
+
+/* constellation background + cursor light */
+const cv = $("#bg"), cx = cv.getContext("2d"); let W2, H2, pts = [];
+const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); W2 = cv.width = innerWidth * d; H2 = cv.height = innerHeight * d; pts = Array.from({ length: Math.round(innerWidth / 22) }, () => ({ x: Math.random() * W2, y: Math.random() * H2, vx: (Math.random() - .5) * .35 * d, vy: (Math.random() - .5) * .35 * d })); };
+fit(); addEventListener("resize", fit);
+const draw = () => { cx.clearRect(0, 0, W2, H2); const L = 150 * (W2 / innerWidth);
+  for (const p of pts) { p.x = (p.x + p.vx + W2) % W2; p.y = (p.y + p.vy + H2) % H2; cx.fillStyle = "rgba(196,181,253,.7)"; cx.fillRect(p.x, p.y, 2, 2); }
+  for (let a = 0; a < pts.length; a++) for (let b = a + 1; b < pts.length; b++) { const dx = pts[a].x - pts[b].x, dy = pts[a].y - pts[b].y, d = dx * dx + dy * dy; if (d < L * L) { cx.strokeStyle = `rgba(139,92,246,${.22 * (1 - Math.sqrt(d) / L)})`; cx.beginPath(); cx.moveTo(pts[a].x, pts[a].y); cx.lineTo(pts[b].x, pts[b].y); cx.stroke(); } }
+  requestAnimationFrame(draw); };
+if (!RM) draw();
+if (!RM) addEventListener("pointermove", e => { document.body.style.setProperty("--mx", e.clientX + "px"); document.body.style.setProperty("--my", e.clientY + "px"); });
 
 /* spotlight glow follows the pointer */
 document.addEventListener("pointermove", e => { const c = e.target.closest?.(".sv-card,.sv-p,.sv-a"); if (!c) return; const r = c.getBoundingClientRect(); c.style.setProperty("--x", e.clientX - r.left + "px"); c.style.setProperty("--y", e.clientY - r.top + "px"); });
