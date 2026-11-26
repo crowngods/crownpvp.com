@@ -97,7 +97,17 @@ const PACKAGES = [
   { name: "Webshop", desc: "An online store built to sell, from product page to checkout.", price: 499, was: 799, items: ["WooCommerce or custom-built shop", "Product, cart & checkout pages", "PayPal, card & iDEAL setup", "Up to 25 products added for you", "3 revision rounds"] }
 ];
 $("#price-grid").innerHTML = PACKAGES.map((p, i) => `<article class="sv-p rv${p.pop ? " pop" : ""}" style="--i:${i}">${p.pop ? '<span class="bd">★ Most popular</span>' : ""}<h3>${esc(p.name)}</h3><p class="pd">${esc(p.desc)}</p><div class="pr"><small>from</small><strong>$<span data-n="${p.price}">0</span></strong><small>one-time</small><s>$${p.was}</s></div><span class="sv-save">Save $${p.was - p.price}</span><a class="btn gold" href="${T(p.name)}">Choose this package</a><ul><li><b>Delivered in 1 week 2 days</b></li>${p.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul></article>`).join("");
-$("#addon-grid").innerHTML = (window.CROWN.merch || []).map((m, i) => `<article class="sv-a rv" style="--i:${i}"><div class="ic" aria-hidden="true">${esc(m.icon)}</div><h3>${esc(m.name)}</h3><p>${esc(m.desc)}</p><div class="row"><span>${[9, 29, 39, 199, 0][i] ? `from <b>$${[9, 29, 39, 199, 0][i]}</b>` : "<b>Quote</b>"}</span><a href="${T(m.name)}">Order via ticket</a></div></article>`).join("");
+$("#addon-grid").innerHTML = (window.CROWN.merch || []).map((m, i) => {
+  const href = `tickets.html?new=1&topic=Merch&item=${encodeURIComponent(m.name)}`;
+  const label = i === 4 ? "Start a conversation" : "Discuss this item";
+  return `<article class="sv-a sv-minecraft-card rv" style="--i:${i}">
+    <div class="sv-a-art" aria-hidden="true"><span class="sv-a-index">${String(i + 1).padStart(2, "0")}</span><span class="sv-a-glyph">${esc(m.icon)}</span><span class="sv-a-orbit"></span></div>
+    <div class="sv-a-content"><div class="sv-a-meta">${esc(m.tag || "CROWNPVP / CUSTOM")}</div>
+    <h3>${esc(m.name)}</h3><p>${esc(m.desc)}</p>
+    ${i === 0 ? '<span class="sv-version-chip"><i></i> JAVA EDITION · 1.8 — 26.3</span>' : ''}
+    <a class="sv-a-link" href="${href}">${label}<span aria-hidden="true">↗</span></a></div>
+  </article>`;
+}).join("");
 
 /* constellation background + cursor light */
 const cv = $("#bg"), cx = cv.getContext("2d"); let W2, H2, pts = [];

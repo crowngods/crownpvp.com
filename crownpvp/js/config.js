@@ -47,11 +47,11 @@ window.CROWN = {
   siteVersion: "Site v8 · 24 Nov 2026",
   // Merchandise & services (shown on /services). Prices are agreed in the ticket.
   merch: [
-    { icon: "🎨", tag: "1.8 to 26.3", name: "PvP Resource Packs", desc: "Clean, low-fire, FPS-friendly packs made for PvP. Works on every version from 1.8 to 26.3." },
-    { icon: "🧩", tag: "Made to order", name: "Custom Plugins", desc: "Java plugins built for your server: kits, factions features, menus, economy and more." },
-    { icon: "🗺️", tag: "Custom builds", name: "Maps & Builds", desc: "Spawns, arenas, faction maps and custom builds designed for your server." },
-    { icon: "🌐", tag: "Full design", name: "Website Customization", desc: "A website like this one for your own server: store, vote page, staff page, tickets and a live Discord card." },
-    { icon: "✨", tag: "Just ask", name: "Something Custom", desc: "Need something that is not listed? Describe it in a ticket and we will tell you if we can build it." }
+    { icon: "✦", tag: "01 / PVP / VISUALS", name: "PvP Resource Packs", desc: "Clean, low-fire, FPS-friendly packs made for PvP. Works on every version from 1.8 to 26.3." },
+    { icon: "⌘", tag: "02 / JAVA / SYSTEMS", name: "Custom Plugins", desc: "Java plugins built for your server: kits, factions features, menus, economy and more." },
+    { icon: "⌖", tag: "03 / MAPS / BUILDS", name: "Maps & Builds", desc: "Spawns, arenas, faction maps and custom builds designed for your server." },
+    { icon: "◈", tag: "04 / WEB / BRANDING", name: "Website Customization", desc: "A website like this one for your own server: store, vote page, staff page, tickets and a live Discord card." },
+    { icon: "+", tag: "05 / MADE TO BRIEF", name: "Something Custom", desc: "Need something that is not listed? Describe it in a ticket and we will tell you if we can build it." }
   ],
   topApi: "/api/stats/top?limit=10",
   statusApi: "https://api.mcsrvstat.us/3/play.crownpvp.com",
