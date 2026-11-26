@@ -1,105 +1,45 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#050507">
-  <meta name="description" content="Facet — a real-time material studio for glass, light and digital surfaces.">
-  <title>Facet — Designed in glass</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/facet-services.css?v=20261126-4">
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
-      }
-    }
-  </script>
-</head>
-<body>
-  <canvas id="facet-canvas" aria-hidden="true"></canvas>
-  <div id="facet-dom" aria-hidden="false">
-    <div id="nav-plane" class="plane nav-plane">
-      <a class="wordmark" href="#studio"><span aria-hidden="true"></span><b>Facet</b></a>
-      <div class="nav-links">
-        <a href="#studio" data-action="studio">Studio</a>
-        <a href="#materials" data-action="paper">Materials</a>
-        <a href="#pricing" data-action="studio">Pricing</a>
-      </div>
-      <a class="sign-in" href="login.html">Sign in</a>
-    </div>
-    <div id="panel-plane" class="plane panel-plane">
-      <p class="eyebrow">REAL-TIME MATERIAL STUDIO</p>
-      <h1>Designed<br>in glass.</h1>
-      <p class="intro">Author dispersion, transmission, and refraction in the browser.<br>Live previews, real materials.</p>
-      <button class="open-studio" type="button" data-action="studio">Open studio</button>
-      <a class="read-paper" href="#materials" data-action="paper">Read paper <span aria-hidden="true">→</span></a>
-      <span class="copyright">© Facet Lab</span>
-      <span class="shader-name">KHR_materials_dispersion</span>
-    </div>
-  </div>
-
-  <main id="fallback" class="fallback">
-    <div class="fallback-block">
-      <nav class="fallback-nav">
-        <a class="wordmark" href="#studio"><span aria-hidden="true"></span><b>Facet</b></a>
-        <div class="nav-links">
-          <a href="#studio" data-action="studio">Studio</a>
-          <a href="#materials" data-action="paper">Materials</a>
-          <a href="#pricing" data-action="studio">Pricing</a>
-        </div>
-        <a class="sign-in" href="login.html">Sign in</a>
-      </nav>
-      <section class="fallback-panel">
-        <div class="fallback-shards" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-        <p class="eyebrow">REAL-TIME MATERIAL STUDIO</p>
-        <h1>Designed<br>in glass.</h1>
-        <p class="intro">Author dispersion, transmission, and refraction in the browser.<br>Live previews, real materials.</p>
-        <div class="actions">
-          <button class="open-studio" type="button" data-action="studio">Open studio</button>
-          <a class="read-paper" href="#materials" data-action="paper">Read paper <span aria-hidden="true">→</span></a>
-        </div>
-        <span class="copyright">© Facet Lab</span>
-        <span class="shader-name">KHR_materials_dispersion</span>
-      </section>
-    </div>
-  </main>
-
-  <section id="definitions" class="definitions" aria-labelledby="definitions-title" aria-hidden="true">
-    <button id="back-button" class="back-button" type="button">← Back</button>
-    <div class="definition-copy">
-      <h2 id="definitions-title">Real-time glass, in five terms.</h2>
-      <p><b>Iridescence</b><span> — Angle-dependent color that blooms across a surface as it catches the light.</span></p>
-      <p><b>Index of refraction</b><span> — The ratio that describes how much light bends as it enters a material.</span></p>
-      <p><b>Dispersion</b><span> — The separation of white light into its component colors as it passes through glass.</span></p>
-      <p><b>Transmission</b><span> — The light that travels through a surface, carrying the scene beyond it.</span></p>
-      <p><b>Roughness</b><span> — The microtexture that turns a sharp reflection into a soft studio gradient.</span></p>
-    </div>
-  </section>
-
-  <dialog id="studio-dialog" class="studio-dialog">
-    <form id="studio-form" method="dialog">
-      <button class="dialog-close" type="button" aria-label="Close project form">×</button>
-      <p class="dialog-kicker">FACET / STUDIO INTAKE</p>
-      <h2>Bring your brief to life.</h2>
-      <p class="dialog-intro">Tell us what you want to make. Your request goes to a dedicated project queue, separate from player support.</p>
-      <div class="form-grid">
-        <label>Your name<input name="name" autocomplete="name" maxlength="64" required></label>
-        <label>Email address<input name="email" type="email" autocomplete="email" maxlength="120" required></label>
-        <label class="wide">Discord username <span>(optional)</span><input name="discord" maxlength="64"></label>
-        <label class="wide">Project brief<textarea name="brief" minlength="30" maxlength="4000" rows="5" placeholder="Describe the experience, features and outcome you have in mind…" required></textarea></label>
-        <label class="honeypot" aria-hidden="true">Leave empty<input name="website" tabindex="-1" autocomplete="off"></label>
-      </div>
-      <div class="form-bottom">
-        <p id="form-status" role="status" aria-live="polite">No payment is collected here. Scope and quote are agreed before work begins.</p>
-        <button id="form-submit" class="open-studio" type="submit">Send project brief <span aria-hidden="true">↗</span></button>
-      </div>
-    </form>
-  </dialog>
-
-  <script type="module" src="js/facet-services.js?v=20261126-6"></script>
-</body>
-</html>
+<html lang="en" class="gl-on"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CrownPVP — Digital Forge</title><meta name="description" content="CrownPVP creates premium websites, software and custom Minecraft experiences."><meta name="theme-color" content="#050507">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/services.css?v=20261126-obsidian"><link rel="stylesheet" href="css/services-glass.css?v=20261126-glass">
+<noscript><style>html.gl-on .gl-static{display:flex!important}html.gl-on #gl-canvas{display:none}</style></noscript>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script></head>
+<body data-page="services">
+<nav class="sv-top gl-mini" id="gl-mini" aria-label="Services"><a class="sv-brand" href="index.html"><img src="assets/logo.svg" alt="" width="28" height="28"><b>CROWN<span>PVP</span></b><em>Studio</em></a><div class="sv-navlinks"><a href="#services">Services</a><a href="#work">Showcase</a><a href="#pricing">Pricing</a><a href="#minecraft-services">Minecraft</a><a href="#process">Process</a></div><a class="btn gold" href="#project-intake">Hire me</a></nav>
+<main class="sv">
+<header class="gl-hero" id="glass" aria-label="CrownPVP Studio">
+<canvas id="gl-canvas" aria-hidden="true"></canvas>
+<div class="gl-text" id="gl-text-nav"></div>
+<div class="gl-text" id="gl-text-panel"></div>
+<section class="gl-defs" id="gl-defs" aria-hidden="true" aria-label="What I build">
+<div class="gl-defs-col">
+<h2>What I build, in five parts.</h2>
+<p><b>Websites</b> — Fast, responsive custom sites, landing pages and redesigns, built from scratch around your brand and goals.</p>
+<p><b>Full-stack apps</b> — End-to-end web applications: interface, server logic, database, secure sign-in and admin dashboards.</p>
+<p><b>APIs &amp; payments</b> — Custom REST or GraphQL APIs plus Stripe, PayPal, email and map integrations that just work.</p>
+<p><b>Minecraft systems</b> — Resource packs, plugins, maps and server websites for Java 1.8 through 26.3, built for competitive communities.</p>
+<p><b>Speed &amp; upkeep</b> — Core Web Vitals tuning, bug fixing, security patches and ongoing maintenance after launch.</p>
+<p class="gl-defs-go"><a href="#pricing">See pricing</a><a href="#project-intake">Start a project brief ↗</a></p>
+</div></section>
+<button class="gl-back" id="gl-back" type="button">← Back</button>
+<div class="gl-static">
+<div class="gl-s-nav"><a class="gl-s-brand" href="index.html"><i></i>CrownPVP <span>Studio</span></a><div><a href="#services">Services</a><a href="#work">Showcase</a><a href="#pricing">Pricing</a><a href="#minecraft-services">Minecraft</a></div><a href="#project-intake">Hire me ↗</a></div>
+<div class="gl-s-panel"><p class="gl-s-eye">WEB &amp; MINECRAFT STUDIO</p><h1>Built to be<br>remembered.</h1><p class="gl-s-sub">Premium websites, full-stack apps and custom Minecraft systems. Six years building, taking on select projects.</p><div class="gl-s-cta"><a class="gl-s-pill" href="#project-intake">Hire me</a><a href="#services">See what I build →</a></div></div>
+</div>
+</header>
+<div class="sv-ticker"><div id="ticker"></div></div>
+<section class="sv-experience"><div class="sv-wrap sv-exp-grid"><div class="sv-exp-lead"><p class="sv-exp-kicker">Experience</p><h2>Experience is<br><span>in the details.</span></h2><p>Six-plus years of hands-on experience across the digital build process — bringing interface design, engineering and optimization together in one considered workflow.</p></div><div class="sv-exp-number"><strong>6<span>+</span></strong><small>years of experience</small><div class="sv-exp-rule"></div><p>Thoughtful design. Dependable engineering. Performance that matters.</p></div><div class="sv-exp-skills"><span>Full-Stack Development</span><span>Frontend Development</span><span>Backend Development</span><span>Web Development</span><span>Software Development</span><span>UI / UX Design</span><span>Website Optimization</span></div></div></section>
+<section class="sv-sec" id="services"><div class="sv-wrap"><div class="sv-head sv-head-split"><div><p class="sv-kicker">Services</p><h2>One partner.<br><span>Every layer.</span></h2></div><p>Whether you need a striking front-end, a complete application or the systems behind your Minecraft server, we bring the pieces together.</p></div><div class="sv-cards" id="svc-cards"></div><div class="sv-two"><div><p class="sv-kicker">Front end</p><h3>Core web development</h3><ul id="core-list"></ul></div><div><p class="sv-kicker">Back end</p><h3>Full-stack development</h3><ul id="full-list"></ul></div></div></div></section>
+<section class="sv-sec sv-speed-section"><div class="sv-wrap"><div class="sv-speed-layout"><div class="sv-head"><p class="sv-kicker">Performance</p><h2>Fast feels<br><span>different.</span></h2><p>We aim for clean, accessible and search-friendly builds, then test and refine against the real requirements of each project.</p></div><div class="sv-rings"><div class="ring rv"><svg viewBox="0 0 80 80"><circle class="t" cx="40" cy="40" r="34"/><circle class="f" cx="40" cy="40" r="34"/></svg><b>↗</b><span>Performance-minded</span></div><div class="ring rv"><svg viewBox="0 0 80 80"><circle class="t" cx="40" cy="40" r="34"/><circle class="f" cx="40" cy="40" r="34"/></svg><b>⌘</b><span>Responsive by default</span></div><div class="ring rv"><svg viewBox="0 0 80 80"><circle class="t" cx="40" cy="40" r="34"/><circle class="f" cx="40" cy="40" r="34"/></svg><b>◇</b><span>Accessible interfaces</span></div><div class="ring rv"><svg viewBox="0 0 80 80"><circle class="t" cx="40" cy="40" r="34"/><circle class="f" cx="40" cy="40" r="34"/></svg><b>⌁</b><span>Search-ready structure</span></div></div></div></div></section>
+<section class="sv-sec" id="work"><div class="sv-wrap"><div class="sv-head sv-head-split"><div><p class="sv-kicker">Showcase</p><h2>Different briefs.<br><span>One standard.</span></h2></div><p>Explore sample directions demonstrating different visual systems and project types. Concept previews are illustrative, not claimed client work.</p></div><div class="sv-stage" id="work-show"><div class="sv-tabs" id="work-tabs" role="tablist" aria-label="Sample project concepts"></div><div class="sv-big"><div class="sv-frame"><div class="sv-bar"><i></i><i></i><i></i><span id="work-url"></span></div><div class="sv-view" id="work-view"></div></div><div class="sv-info"><div><p class="sv-kicker">CONCEPT / <span id="work-index">01</span></p><h3 id="work-name"></h3><p id="work-desc"></p></div><a class="btn gold" id="work-cta" href="#project-intake">Build a direction like this ↗</a></div></div></div></div></section>
+<section class="sv-sec" id="pricing"><div class="sv-wrap"><div class="sv-head sv-head-split"><div><p class="sv-kicker">Pricing</p><h2>Make it<br><span>real.</span></h2></div><p>Clear starting prices for common website projects. Final scope, deliverables and timing are confirmed with you before work begins.</p></div><div class="sv-price" id="price-grid"></div><p class="sv-note">Have a more ambitious brief? <a href="?project=Custom%20quote#project-intake">Request a custom quote ↗</a></p></div></section>
+<section class="sv-sec sv-process-section" id="process"><div class="sv-wrap"><div class="sv-head sv-head-split"><div><p class="sv-kicker">How it works</p><h2>From first idea<br><span>to launch day.</span></h2></div><p>Every project starts with a conversation. We agree on the scope before building, so you know what is being made and what happens next.</p></div><ol class="sv-steps"><li><span>1</span><h3>Start the conversation</h3><p>Submit a project brief and receive a dedicated reference number.</p></li><li><span>2</span><h3>Shape the project</h3><p>We clarify the details, agree on the quote and confirm a realistic timeline.</p></li><li><span>3</span><h3>Build, review, launch</h3><p>We develop the project, share progress, refine the result and prepare it to go live.</p></li></ol></div></section>
+<section class="sv-sec sv-collection" id="minecraft-services"><div class="sv-wrap"><div class="sv-head sv-head-split"><div><p class="sv-kicker">Minecraft services</p><h2>Build your<br><span>next advantage.</span></h2></div><p>Custom resources, tools and environments for Minecraft communities — from competitive PvP visuals to a complete server identity.</p></div><div class="sv-add" id="addon-grid"></div></div></section>
+<section class="sv-sec sv-intake" id="project-intake"><div class="sv-wrap"><div class="sv-intake-grid"><div class="sv-intake-copy"><p class="sv-kicker">Hire me</p><h2>Start with<br><span>the idea.</span></h2><p>Tell us what you want to build. Your request goes into a dedicated CrownPVP project queue — separate from player support tickets.</p><div class="sv-intake-points"><span><i>✓</i> A real project brief, not a generic support form</span><span><i>✓</i> Scope, quote and timeline confirmed before work</span><span><i>✓</i> Your own project reference number</span></div><div class="sv-intake-stamp"><b>CrownPVP Studio</b><span>Projects and commissions</span></div></div><form class="sv-intake-form" id="project-form"><div class="sv-form-head"><div><span>New project request</span><b>Tell us about it.</b></div><i>Private</i></div><div class="sv-form-grid"><label>Your name<input name="name" autocomplete="name" placeholder="How should we call you?" required maxlength="64"></label><label>Email address<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required maxlength="120"></label><label>Discord username<input name="discord" placeholder="username / @username" maxlength="64"></label><label>What do you need?<select name="service" id="project-service" required><option value="" disabled selected>Select a service</option><option>Website design & development</option><option>Full-stack application</option><option>UI / UX redesign</option><option>Website maintenance</option><option>Minecraft resource pack</option><option>Minecraft plugin</option><option>Minecraft map or build</option><option>Minecraft website</option><option>Something custom</option></select></label><label>Estimated budget<select name="budget"><option value="Not sure yet">Not sure yet</option><option>Under $100</option><option>$100–$250</option><option>$250–$500</option><option>$500–$1,000</option><option>$1,000+</option></select></label><label>Ideal timeline<select name="timeline"><option>Flexible</option><option>Within 1 week</option><option>Within 2–4 weeks</option><option>Within 1–2 months</option><option>Specific deadline</option></select></label><label class="wide">Project brief<textarea name="brief" rows="5" minlength="30" maxlength="4000" placeholder="What are you trying to build? Include features, goals, references and anything we should know…" required></textarea><small>At least 30 characters. Clear briefs help us quote accurately.</small></label><label class="wide">Reference link <span class="optional">OPTIONAL</span><input name="reference" type="url" placeholder="https://example.com"></label><label class="sv-honeypot" aria-hidden="true">Leave this field empty<input name="website" tabindex="-1" autocomplete="off"></label></div><div class="sv-form-bottom"><p id="project-status" role="status" aria-live="polite">Your request is private and used only to discuss this project.</p><button class="btn gold" type="submit" id="project-submit">Send project brief</button></div></form></div></div></section><section class="sv-sec" id="faq"><div class="sv-wrap sv-narrow"><div class="sv-head"><p class="sv-kicker">FAQ</p><h2>Good to <span>know.</span></h2></div><div class="sv-faq"><details><summary>How long does a project take?</summary><p>Timing depends on scope, content and integrations. We confirm a realistic delivery schedule before work begins.</p></details><details><summary>When do I pay?</summary><p>Payment terms are agreed after the scope and price are confirmed in your project request. Nothing is charged on this page.</p></details><details><summary>Can I request changes?</summary><p>Yes. The included revision rounds and review process are confirmed with the package or project scope.</p></details><details><summary>Can you work with my existing branding?</summary><p>Absolutely. Share your logo, colors and references, or we can propose a visual direction that fits your project.</p></details><details><summary>What Minecraft versions do you support?</summary><p>PvP resource packs are designed for Minecraft Java versions 1.8 through 26.3. Plugin compatibility is confirmed against your server version and setup.</p></details></div></div></section>
+<section class="sv-sec sv-last"><div class="sv-wrap"><div class="sv-final"><div class="sv-final-grid"><div><p class="sv-kicker">Ready when you are</p><h2>Have an idea?<br><span>Let's build it.</span></h2></div><div><p>Tell us what you're imagining. We'll talk through the details and find the right way to bring it to life.</p><div class="sv-cta"><a class="btn gold" href="#project-intake">Start a project brief</a><a class="btn ghost" href="#services">Back to services</a></div></div></div><div class="sv-final-mark">CROWN<span>PVP</span><b>CP / 01</b></div></div></div></section>
+</main><footer class="sv-foot"><span>© 2026 CrownPVP Studio</span><a href="index.html">Back to CrownPVP</a></footer>
+<script src="js/config.js?v=20261124-social"></script><script src="js/services.js?v=20261126-glass"></script><script type="module" src="js/services-glass.js?v=20261126-glass"></script></body></html>
