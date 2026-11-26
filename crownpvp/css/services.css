@@ -10,3 +10,58 @@
 @media(max-width:700px){.sv-wrap{width:calc(100% - 34px)}.sv-top{height:65px;padding:0 17px}.sv-navlinks{display:none}.sv-brand em{display:none}.sv-top>.btn{min-height:38px;padding:0 11px;font-size:8px}.sv-hero{min-height:0;padding:70px 0}.sv-hgrid{grid-template-columns:1fr;gap:42px}.sv-copy h1{font-size:clamp(3.6rem,15vw,6rem)}.sv-lead{font-size:12px}.sv-build{max-width:570px;width:100%;margin:auto}.sv-scroll-cue{display:none}.sv-experience{padding:68px 0}.sv-exp-grid{grid-template-columns:1fr;gap:25px}.sv-exp-number{border-left:0;border-top:1px solid #d7b56d66;padding:24px 0 0}.sv-exp-skills{grid-column:auto}.sv-sec{padding:72px 0}.sv-section-top{margin-bottom:32px;font-size:8px}.sv-head-split{grid-template-columns:1fr;gap:18px}.sv-head h2{font-size:clamp(2.7rem,12vw,4.3rem)}.sv-head>p:last-child{font-size:11px}.sv-cards{grid-template-columns:1fr 1fr;gap:8px}.sv-card{min-height:220px;padding:17px 14px}.sv-card .ic{margin-bottom:24px}.sv-card h3{font-size:12px}.sv-card p{font-size:9px}.sv-two{grid-template-columns:1fr;gap:32px;margin-top:42px;padding-top:32px}.sv-rings{grid-template-columns:repeat(2,1fr)}.sv-stage{grid-template-columns:1fr}.sv-tabs{display:grid;grid-template-columns:repeat(2,1fr)}.sv-tabs button{padding:10px}.sv-info{align-items:flex-start;flex-direction:column}.sv-price{grid-template-columns:1fr 1fr;gap:8px}.sv-p{padding:18px 13px}.sv-p h3{font-size:13px}.sv-p .pr strong{font-size:28px}.sv-steps{grid-template-columns:1fr;gap:8px}.sv-steps li{padding:19px}.sv-steps li>span{margin-bottom:21px}.sv-add{grid-template-columns:1fr;gap:9px}.sv-a{grid-column:auto;min-height:205px;grid-template-columns:86px 1fr}.sv-a-content{padding:18px 15px}.sv-a h3{font-size:14px}.sv-a p{font-size:9px}.sv-final-grid{grid-template-columns:1fr;gap:24px}.sv-final{padding:28px 21px}.sv-final-mark{margin-top:38px}.sv-foot{padding:21px 17px;font-size:7px}}
 @media(max-width:420px){.sv-tag{font-size:7px;letter-spacing:.04em}.sv-copy h1{font-size:3.35rem}.sv-cards,.sv-price{grid-template-columns:1fr}.sv-card{min-height:180px}.sv-card .ic{margin-bottom:17px}.sv-p .pd{min-height:0}.sv-a{grid-template-columns:70px 1fr}.sv-a-art:before{width:108px;height:108px}.sv-a-art:after{width:78px;height:78px}.sv-a-glyph{font-size:33px}.sv-section-top span:last-child{max-width:43%;text-align:right}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.sv-bg canvas{display:none}}
+
+/* CROWN FORGE / premium depth pass — scoped to the Services page */
+:root{--gold:#e0bd73;--gold2:#ffe4a6;--panel:#10131b}
+.sv-bg:before{background-size:56px 56px;opacity:.7;mask-image:radial-gradient(ellipse at 50% 30%,#000,transparent 78%)}
+.sv-bg canvas{opacity:.28;filter:drop-shadow(0 0 12px #b89b6240)}
+.sv-top{border-bottom-color:#d9b86b28;background:linear-gradient(180deg,#090a10f2,#090a10c9);box-shadow:0 12px 50px #0005}
+.sv-brand img{filter:drop-shadow(0 0 12px #d7b56d55)}
+.btn{position:relative;isolation:isolate;overflow:hidden;letter-spacing:.035em}
+.btn:after{content:"";position:absolute;z-index:-1;inset:-80% auto -80% -45%;width:35%;transform:rotate(22deg);background:linear-gradient(90deg,transparent,#fff8,transparent);transition:left .65s ease}
+.btn:hover:after{left:125%}
+.btn.gold{background:linear-gradient(115deg,#f4dfaa 0%,#d8b66e 48%,#b98b42 100%);box-shadow:0 8px 26px #c69f5230,inset 0 1px #fff9}
+.sv-hero{min-height:760px;background:radial-gradient(ellipse at 80% 48%,#7e69c51c,transparent 43%)}
+.sv-copy h1{text-shadow:0 10px 45px #0008}
+.sv-copy .accent{background:linear-gradient(100deg,#fff0c2,#d7b56d 48%,#a78bce);background-clip:text;-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 8px 28px #d7b56d24)}
+.sv-build{transform-style:preserve-3d;animation:forgeFloat 8s ease-in-out infinite}
+.sv-build:before{content:"";position:absolute;inset:12% 4%;background:radial-gradient(ellipse,#9a82db24,transparent 68%);filter:blur(22px);transform:translateZ(-50px)}
+.sv-frame{border-color:#e4c47b70;background:linear-gradient(145deg,#20222b,#090b10 60%);box-shadow:0 55px 110px #000b,0 0 0 1px #ffffff0b,0 0 80px #8f7ad12b,inset 0 1px #fff2}
+.sv-build .sv-frame{transform:rotateY(-8deg) rotateX(4deg) translateZ(24px)}
+.sv-build:hover .sv-frame{transform:rotateY(-2deg) rotateX(1deg) translateZ(34px)}
+.sv-code{border-color:#d7b56d32;box-shadow:0 24px 55px #0008,inset 0 1px #fff0}
+@keyframes forgeFloat{0%,100%{translate:0 0}50%{translate:0 -12px}}
+.sv-ticker{background:linear-gradient(90deg,#d7b56d0b,#ffffff05,#9d8cff0b);border-color:#d7b56d25}
+.sv-experience{background:linear-gradient(110deg,#d7b56d0a,transparent 45%,#9d8cff09);}
+.sv-exp-number strong{background:linear-gradient(145deg,#fff4d5,#d7b56d 58%,#9879bd);background-clip:text;-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 10px 28px #d7b56d22)}
+.sv-sec{isolation:isolate}
+.sv-section-top{border-bottom-color:#d7b56d25}
+.sv-head h2{ text-shadow:0 12px 40px #0007 }
+.sv-head h2 span,.sv-exp-lead h2 span,.sv-final h2 span{background:linear-gradient(100deg,#f6dfaa,#c9a45d 60%,#a995d5);background-clip:text;-webkit-background-clip:text;color:transparent}
+.sv-cards{gap:15px;perspective:1400px}
+.sv-card{min-height:270px;padding:25px 22px;border-radius:8px;border-color:#ffffff20;background:linear-gradient(145deg,#1b1e29d9,#0d0f16ed 72%);box-shadow:0 18px 40px #0003,inset 0 1px #ffffff12;transform-style:preserve-3d;will-change:transform}
+.sv-card:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(130deg,#ffffff10,transparent 28%,transparent 70%,#d7b56d0b);opacity:.8}
+.sv-card:before{background:radial-gradient(280px circle at var(--x,50%) var(--y,30%),#e4c47735,transparent 70%)}
+.sv-card:hover{border-color:#e4c477a0;box-shadow:0 30px 65px #0008,0 0 35px #d7b56d13,inset 0 1px #fff2}
+.sv-card .ic{font-size:25px;text-shadow:0 0 25px #e0bd7355;transform:translateZ(24px)}
+.sv-card h3{transform:translateZ(18px)}.sv-card p{transform:translateZ(12px)}
+.sv-two>div,.sv-p,.sv-steps li{border-radius:8px;background:linear-gradient(145deg,#171a24e8,#0b0d13ed);box-shadow:0 20px 45px #0003,inset 0 1px #ffffff0d}
+.sv-p{border-color:#ffffff20;transform-style:preserve-3d;transition:border-color .3s,box-shadow .3s,transform .25s}
+.sv-p.pop{border-color:#e0bd7399;background:linear-gradient(150deg,#4b3b2050,#11131beF 58%);box-shadow:0 25px 70px #0006,0 0 45px #d7b56d16,inset 0 1px #ffe6b733}
+.sv-p:hover{border-color:#e0bd73a8;box-shadow:0 28px 60px #0008,0 0 30px #d7b56d14}
+.sv-p .bd{box-shadow:0 5px 18px #d7b56d2a}
+.sv-tabs button,.sv-steps li,.sv-a{border-radius:7px}
+.sv-big .sv-frame{box-shadow:0 35px 90px #0009,0 0 0 1px #d7b56d2b}
+.sv-a{background:linear-gradient(125deg,#1b1d28,#0c0e14);box-shadow:0 18px 45px #0004}
+.sv-a:hover{transform:translateY(-7px) rotateX(2deg);box-shadow:0 30px 65px #0008,0 0 35px #d7b56d16}
+.sv-a-art{background:radial-gradient(circle at 50% 50%,#d7b56d20,transparent 68%),linear-gradient(145deg,#181b26,#0b0d13)}
+.sv-a-glyph{font-size:48px;text-shadow:0 0 34px #e0bd7380;animation:glyphPulse 4s ease-in-out infinite}
+@keyframes glyphPulse{50%{transform:translateY(-5px) scale(1.06);filter:brightness(1.25)}}
+.sv-final{border-radius:10px;background:radial-gradient(ellipse at 83% 15%,#8d76d43b,transparent 43%),radial-gradient(ellipse at 4% 100%,#d7b56d17,transparent 45%),linear-gradient(115deg,#1b1d27,#0b0d13);box-shadow:0 45px 110px #0009,inset 0 1px #ffffff16}
+.sv-final:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,#ffffff06 50%,transparent 80%);transform:translateX(-100%);animation:finalShine 9s ease-in-out infinite}
+@keyframes finalShine{0%,55%{transform:translateX(-100%)}80%,100%{transform:translateX(100%)}}
+.sv-final-mark{letter-spacing:.2em}
+.sv-faq details{transition:background .25s}.sv-faq details[open]{background:#d7b56d08}
+.sv-faq summary:hover{color:var(--gold2)}
+@media(max-width:700px){.sv-hero{min-height:0}.sv-build{animation:none}.sv-build .sv-frame{transform:none}.sv-card{min-height:230px}.sv-card:hover{transform:translateY(-3px)}.sv-card .ic,.sv-card h3,.sv-card p{transform:none}}
+@media(prefers-reduced-motion:reduce){.sv-build,.sv-a-glyph,.sv-final:before{animation:none!important}}
