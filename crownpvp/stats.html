@@ -1,2 +1,27 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><title>Players | CrownPVP</title><meta http-equiv="refresh" content="0;url=player.html"><link rel="canonical" href="player.html"><a href="player.html">Open the CrownPVP player search</a></html>
-
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CrownPVP Stats | Player Lookup</title><meta name="description" content="Search any Minecraft username and see who is online on CrownPVP right now."><meta name="theme-color" content="#090a0d">
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png"><link rel="manifest" href="site.webmanifest"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/crown.css"><link rel="stylesheet" href="css/elite.css"><link rel="stylesheet" href="css/upgrade.css"><link rel="stylesheet" href="css/features.css"><link rel="stylesheet" href="css/hd-overhaul.css"></head>
+<body data-page="stats"><div id="site-header"></div>
+<main>
+<div class="phead"><div class="wrap split"><div><div class="eyebrow">PLAYER LOOKUP</div><h1>Player stats</h1><p>Enter a Minecraft username, press Search player, and change it any time to look up someone else.</p></div>
+<div class="rate"><b data-online>-</b><span>Online now</span></div></div></div>
+<section class="tight"><div class="wrap">
+<div class="skin" id="skin">
+ <div class="stage"><canvas id="sk-canvas" width="320" height="420" hidden></canvas><div class="fb" id="sk-fb"><img alt="Player skin" width="160" height="340"></div><span class="stat-badge" id="activity" hidden></span></div>
+ <div class="panel">
+  <form class="sf" id="stats-search"><input id="sk-name" name="player" maxlength="16" placeholder="Enter any Minecraft username" aria-label="Minecraft username" autocomplete="off" spellcheck="false" required pattern="[A-Za-z0-9_]{3,16}"><button class="btn" id="sk-go" type="submit">Search player</button></form>
+  <div class="mini"><img id="sk-head" alt="" width="72" height="72"><div><small class="hint">PLAYER</small><h2 id="sk-title" style="font-size:1.9rem">Select a player</h2><div id="sk-sub" class="hint"></div></div></div>
+  <img id="sk-avatar" alt="" width="1" height="1" style="position:absolute;opacity:0;pointer-events:none">
+  <div id="pstats" aria-live="polite"></div>
+  <div class="ctl"><button data-a="walk" class="on">Walk</button><button data-a="run">Run</button><button data-a="idle">Idle</button><button data-a="none">Still</button><button id="sk-rot" class="on">Auto-rotate</button><a class="btn ghost" id="sk-dl" style="padding:8px 14px;font-size:.85rem" download>Download skin</a></div>
+ </div>
+</div>
+<div class="duo">
+ <div><div class="section-head"><div><h2 style="font-size:1.6rem">Online now</h2><p id="online-sub">Checking the server...</p></div></div><div class="online" id="online"></div></div>
+ <div><div class="section-head"><div><h2 style="font-size:1.6rem">Richest players</h2><p>Top Gold balances on CrownPVP.</p></div></div><ol class="lb" id="lb"><li class="hint">Loading...</li></ol></div>
+</div>
+</div></section></main>
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/skinview3d@3.1.0/bundles/skinview3d.bundle.js"></script>
+<script src="js/config.js"></script><script src="js/app.js"></script><script src="js/stats.js"></script><script src="js/features.js" defer></script></body></html>

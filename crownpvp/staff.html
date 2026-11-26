@@ -13,17 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261125">
-  <link rel="stylesheet" href="css/crown.css?v=20261125">
-  <link rel="stylesheet" href="css/elite.css?v=20261125">
-  <link rel="stylesheet" href="css/upgrade.css?v=20261125">
-  <link rel="stylesheet" href="css/features.css?v=20261125">
-  <link rel="stylesheet" href="css/hd-overhaul.css?v=20261125"><link rel="stylesheet" href="css/kingdom.css?v=20261125"><link rel="stylesheet" href="css/minecraft.css?v=20261125">
-<link rel="stylesheet" href="css/realm-redesign.css?v=20261125">
-
-<link rel="stylesheet" href="css/crownpvp-2026.css?v=20261125">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/hypixel.css?v=20261125">
-<link rel="stylesheet" href="css/ascendant.css?v=1">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/crown.css">
+  <link rel="stylesheet" href="css/elite.css">
+  <link rel="stylesheet" href="css/upgrade.css">
+  <link rel="stylesheet" href="css/features.css">
+  <link rel="stylesheet" href="css/hd-overhaul.css">
 </head>
 <body data-page="staff">
   <div id="bg" aria-hidden="true"><div class="grid"></div></div>
@@ -34,23 +29,13 @@
         <div>
           <div class="eyebrow">THE PEOPLE BEHIND THE REALM</div>
           <h1>Staff team</h1>
-          <p>Meet the people who run CrownPVP and see which positions are open. Every application is reviewed privately.</p>
+          <p>Meet the team and see which positions are open. Every application is reviewed privately by the owner.</p>
         </div>
+        <div class="rate"><b id="staff-on">-</b><span>Staff online</span></div>
       </div>
     </div>
-    <section class="tight"><div class="wrap">
-      <div class="section-head"><div><div class="eyebrow">LEADERSHIP</div><h2>Owners</h2><p>The founders who lead CrownPVP.</p></div></div>
-      <div id="leadership"></div>
-    </div></section>
-    <section class="alt"><div class="wrap">
-      <div class="section-head"><div><div class="eyebrow">THE ENGINEER</div><h2>Developer</h2><p>The person behind the server and the website.</p></div></div>
-      <div id="developer"></div>
-    </div></section>
-    <section class="tight"><div class="wrap"><div class="section-head"><div><div class="eyebrow">THE TEAM</div><h2>Staff</h2><p>The people who keep the realm fair and friendly.</p></div></div><div id="staff"></div></div></section>
+    <section class="tight"><div class="wrap" id="staff"></div></section>
     <section class="alt"><div class="wrap"><div class="section-head"><div><div class="eyebrow">ROLE RESPONSIBILITIES</div><h2>What each role does</h2><p>Every team member is expected to be respectful, reliable and fair.</p></div></div><div class="roles" id="roles"></div></div></section>
-    <section id="manage" class="alt" hidden><div class="wrap"><div class="section-head"><div><div class="eyebrow">TEAM MANAGEMENT</div><h2>Add a player to a role</h2><p>Only people with the manage-staff permission see this. The player needs a CrownPVP website account.</p></div></div>
-      <form id="role-form" class="kcard kform role-form"><div class="two"><label>Website username<input class="fi" name="user" maxlength="16" required pattern="[A-Za-z0-9_]{3,16}" autocomplete="off" placeholder="Player's username"></label><label>Role<select class="fi" name="rank" required><option value="" disabled selected>Choose a role</option><option value="owner">Owner</option><option value="coowner">Co-Owner</option><option value="manager">Manager</option><option value="admin">Admin</option><option value="developer">Developer</option><option value="moderator">Moderator</option><option value="helper">Helper</option><option value="media">Media</option><option value="__remove">Remove from staff</option></select></label></div>
-      <label>Position title (optional)<input class="fi" name="title" maxlength="40" placeholder="e.g. Head Moderator"></label><p class="kmsg" id="role-msg" role="status"></p><button class="btn gold" type="submit">Save role</button></form></div></section>
     <section id="apply" class="staff-apply-section">
       <div class="wrap">
         <div class="staff-apply-head">
@@ -83,10 +68,10 @@
             <label>Position Applying For
               <select name="role" id="application-role" required>
                 <option value="">Choose a role</option>
-                <option value="helper">Helper</option>
-                <option value="moderator">Moderator</option>
-                <option value="admin">Admin</option>
-                <option value="media">Media</option>
+                <option value="trial">Trial Staff · 5 positions</option>
+                <option value="helper">Helper · 3 positions</option>
+                <option value="moderator">Moderator · 2 positions</option>
+                <option value="admin">Admin · 3 positions</option>
               </select>
             </label>
             <label>Age Range
@@ -130,35 +115,30 @@
             </label>
           </div>
 
-          <div class="form-section-title">02 · Your Background</div>
+          <div class="form-section-title">02 · Minecraft Server &amp; Moderation Experience</div>
+          <label>Previous Minecraft Server Staff Experience &amp; Plugins Known
+            <textarea name="experience" rows="4" maxlength="900" placeholder="List servers you staffed on, your rank, player count, and plugins/tools you know (e.g., LiteBans, CoreProtect, Vulcan/Grim anticheat, WorldEdit, FactionsUUID)."></textarea>
+          </label>
+
           <label>Have you ever been banned or punished on CrownPVP or other servers? If yes, explain honestly.
             <input name="punishmentHistory" maxlength="250" required placeholder="e.g. Clean record / Muted once 6 months ago for spam">
           </label>
 
-          <div class="form-section-title">03 · Application Questions</div>
-          <label>1. Why are you applying for <b id="q1-role">this role</b> on CrownPVP, and what would you aim to accomplish in your first month?
-            <textarea name="q1Why" rows="4" minlength="40" maxlength="800" required placeholder="Tell us your motivation and the goals you would set for your first 30 days."></textarea>
+          <div class="form-section-title">03 · Minecraft PvP &amp; OpFactions Scenario Questions</div>
+          <label>1. Hacked Client &amp; Anticheat Detection: How do you tell the difference between a legit high-CPS/high-ping PvPer and someone using Reach, Velocity, or AutoClicker?
+            <textarea name="qCheats" rows="3" minlength="25" maxlength="550" required placeholder="Explain what signs you look for in combat, anticheat alerts, and why recording proof before banning matters."></textarea>
           </label>
 
-          <label>2. What experience would help you in this role? Describe one specific example, what you personally did, and how it turned out.
-            <span class="qhint" style="display:block;font-weight:400;opacity:.7;font-size:.85em;margin-top:2px">You can use an example from Minecraft, Discord, another project, or any team you’ve worked with.</span>
-            <textarea name="q2Experience" rows="4" minlength="40" maxlength="800" required placeholder="Describe one real example: the situation, what you personally did, and the result."></textarea>
+          <label>2. OpFactions &amp; Raid Disputes: A faction accuses another faction of using an illegal cannon or glitching into their base during a raid. What steps do you take?
+            <textarea name="qFactions" rows="3" minlength="25" maxlength="550" required placeholder="Describe how you check blocks/logs (e.g., CoreProtect), pause/escalate to senior staff, and stay neutral."></textarea>
           </label>
 
-          <label>3. Which days and times can you reliably commit to CrownPVP? Please answer in your local time.
-            <textarea name="q3Schedule" rows="3" minlength="15" maxlength="400" required placeholder="e.g. Monday to Friday 7 PM to 10 PM, Saturday 2 PM to 8 PM (my local time)"></textarea>
+          <label>3. Staff Integrity &amp; Friends: Your close friend or faction teammate breaks a server rule in front of you and asks you to look the other way. How do you handle it?
+            <textarea name="qIntegrity" rows="3" minlength="20" maxlength="450" required placeholder="Explain how you handle bias, impartiality, and reporting conflicts of interest."></textarea>
           </label>
 
-          <label>4. A player reports a problem, but you only have one side of the story. What would you check first, what would you tell the player, and when would you involve another staff member?
-            <textarea name="q4Report" rows="4" minlength="40" maxlength="800" required placeholder="Explain what you would check, what you would say to the player, and when you would escalate."></textarea>
-          </label>
-
-          <label>5. A close friend or faction teammate asks you to make an exception for them. How would you handle it, and what would you tell them?
-            <textarea name="q5Friend" rows="4" minlength="30" maxlength="700" required placeholder="Explain how you stay fair and what you would say to your friend."></textarea>
-          </label>
-
-          <label>6. You make a mistake in your role that affects players or the team. What would you do first, who would you tell, and how would you handle the follow-up?
-            <textarea name="q6Mistake" rows="4" minlength="40" maxlength="800" required placeholder="Explain your first step, who you would tell, and how you would follow up."></textarea>
+          <label>4. Why CrownPVP? What makes you stand out from other applicants?
+            <textarea name="motivation" rows="4" minlength="40" maxlength="700" required placeholder="Tell us about your strengths, maturity under pressure, and what you want to improve on CrownPVP."></textarea>
           </label>
 
           <label class="checkline">
@@ -167,21 +147,17 @@
           </label>
 
           <p id="application-message" class="form-message" role="status"></p>
-          <button class="btn gold wide" id="application-submit" type="submit" style="font-size:1rem;letter-spacing:.08em;padding:15px 24px;text-transform:uppercase;">SUBMIT APPLICATION</button>
+          <button class="btn gold" id="application-submit" type="submit">Submit Staff Application</button>
         </form>
-        <div id="my-applications" style="margin-top:34px;"></div>
       </div>
     </section>
   </main>
   <div id="site-footer"></div>
-  <script src="js/config.js?v=20261124-social"></script>
-  <script src="js/app.js?v=20261125-nomerch"></script>
-  <script src="js/net.js?v=20261125"></script>
-  <script src="js/staff.js?v=20261125"></script>
-  <script src="js/forms-core.js?v=20261125"></script>
-  <script src="js/staff-apply.js?v=20261125-apply-v6"></script>
-  <script src="js/features.js?v=20261125" defer></script>
-<script src="js/realm-polish.js?v=20261125" defer></script>
-<script src="js/ascendant.js?v=1" defer></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/staff.js"></script>
+  <script src="js/forms-core.js"></script>
+  <script src="js/staff-apply.js"></script>
+  <script src="js/features.js" defer></script>
 </body>
 </html>
