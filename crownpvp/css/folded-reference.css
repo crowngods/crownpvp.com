@@ -1,0 +1,429 @@
+/* CrownPVP — reference-matched Folded Kingdom skin.
+   Loaded after the dynamic theme sheets so the visual reference actually wins. */
+:root {
+  --fold-paper: #dfc18c;
+  --fold-paper-light: #f0d8a8;
+  --fold-ink: #19140e;
+  --fold-gold: #edc66f;
+  --fold-line: rgba(104, 72, 34, .55);
+}
+
+/* Full-page crumpled charcoal paper. */
+html, body { min-height: 100%; background: #090909 !important; }
+body[data-page="home"] {
+  position: relative !important;
+  isolation: isolate !important;
+  color: #211a12 !important;
+  background: #090909 !important;
+}
+body[data-page="home"]::before {
+  content: "" !important;
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -3 !important;
+  pointer-events: none !important;
+  opacity: 1 !important;
+  filter: brightness(.66) contrast(1.12) saturate(.55) !important;
+  background: url("../assets/folded-charcoal.webp") center center / cover no-repeat !important;
+  transform: none !important;
+  animation: none !important;
+}
+body[data-page="home"]::after { content: none !important; display: none !important; }
+body[data-page="home"] main { position: relative !important; z-index: 1 !important; background: transparent !important; }
+
+/* Preserve the existing navigation and artwork; give the hero a torn parchment mount. */
+body[data-page="home"] section.aq-hero {
+  width: min(1300px, 94%) !important;
+  min-height: clamp(250px, 20vw, 315px) !important;
+  margin: 8px auto 0 !important;
+  box-sizing: border-box !important;
+  border: 12px solid transparent !important;
+  border-image-source: url("../assets/parchment-edge.png") !important;
+  border-image-slice: 32 !important;
+  border-image-width: 12px !important;
+  border-image-repeat: stretch !important;
+  border-radius: 0 !important;
+  background-clip: padding-box !important;
+  box-shadow: 0 16px 34px rgba(0,0,0,.58), 0 0 0 1px rgba(28,18,8,.6) !important;
+  clip-path: polygon(.6% 1%, 3% .2%, 7% .8%, 12% .1%, 19% .7%, 27% .1%, 36% .7%, 45% .1%, 54% .6%, 64% .1%, 73% .7%, 82% .1%, 91% .7%, 97% .2%, 99.5% 1.2%, 99.2% 97.8%, 96% 99.6%, 88% 99%, 79% 99.8%, 69% 99%, 58% 99.8%, 48% 99%, 38% 99.8%, 27% 99%, 17% 99.7%, 8% 99%, 1% 98%) !important;
+}
+body[data-page="home"] .aq-hero-in { min-height: inherit !important; }
+
+/* Promo tiles sit on one parchment strip, not a floating black plastic tray. */
+body[data-page="home"] .aq-tiles {
+  position: relative !important;
+  z-index: 3 !important;
+  width: min(1300px, 94%) !important;
+  margin: 8px auto 13px !important;
+  padding: 14px 17px 16px !important;
+  box-sizing: border-box !important;
+  background:
+    linear-gradient(135deg, rgba(250,231,190,.84), rgba(206,171,116,.82) 48%, rgba(239,213,165,.88)),
+    url("../assets/parchment-grain.webp") center / 520px 520px repeat !important;
+  border: 13px solid transparent !important;
+  border-image-source: url("../assets/parchment-edge.png") !important;
+  border-image-slice: 32 !important;
+  border-image-width: 13px !important;
+  border-image-repeat: stretch !important;
+  border-radius: 0 !important;
+  box-shadow: 0 14px 30px rgba(0,0,0,.48) !important;
+  clip-path: polygon(.7% 1%, 5% .1%, 12% .8%, 21% .1%, 30% .8%, 41% .1%, 52% .8%, 63% .1%, 73% .8%, 84% .1%, 94% .8%, 99.3% 1%, 99.7% 96%, 96% 99%, 86% 98.6%, 75% 100%, 64% 98.8%, 52% 100%, 40% 98.8%, 29% 100%, 17% 98.8%, 7% 100%, .3% 97%) !important;
+}
+body[data-page="home"] .aq-tiles-in {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 13px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body[data-page="home"] .aq-tile {
+  min-width: 0 !important;
+  aspect-ratio: 16 / 9 !important;
+  border: 2px solid #49351d !important;
+  border-radius: 12px !important;
+  box-shadow: 0 5px 12px rgba(24,13,4,.52), inset 0 0 0 1px rgba(255,231,174,.25) !important;
+}
+body[data-page="home"] .aq-tile::before { display: none !important; }
+body[data-page="home"] .aq-tile-art { filter: saturate(1.08) contrast(1.05) !important; }
+body[data-page="home"] .aq-tile-txt { left: 12px !important; right: 10px !important; bottom: 9px !important; }
+body[data-page="home"] .aq-tile-txt b { color: #fff7e8 !important; font: 900 clamp(.68rem, .92vw, .88rem)/1.15 "Cinzel", Georgia, serif !important; text-shadow: 0 2px 5px #000, 0 0 8px #000 !important; }
+body[data-page="home"] .aq-tile-txt small { color: #f5dfb5 !important; font-size: .67rem !important; text-shadow: 0 2px 5px #000 !important; }
+body[data-page="home"] .aq-tile:hover { transform: translateY(-3px) !important; border-color: #f0c96f !important; }
+
+/* The news area is a single broad parchment sheet, like the reference. */
+body[data-page="home"] .hx-frame {
+  width: min(1300px, 94%) !important;
+  max-width: none !important;
+  margin: 0 auto 54px !important;
+  padding: 14px !important;
+  box-sizing: border-box !important;
+  color: var(--fold-ink) !important;
+  background:
+    linear-gradient(135deg, rgba(250,232,196,.91), rgba(224,195,146,.91) 52%, rgba(242,218,174,.93)),
+    url("../assets/parchment-grain.webp") center / 640px 640px repeat !important;
+  border: 16px solid transparent !important;
+  border-image-source: url("../assets/parchment-edge.png") !important;
+  border-image-slice: 32 !important;
+  border-image-width: 16px !important;
+  border-image-repeat: stretch !important;
+  border-radius: 0 !important;
+  box-shadow: 0 22px 48px rgba(0,0,0,.58) !important;
+  clip-path: polygon(.5% .8%, 3% .1%, 8% .8%, 15% .1%, 23% .7%, 31% .1%, 40% .8%, 49% .1%, 59% .7%, 69% .1%, 78% .8%, 88% .1%, 96% .7%, 99.5% 1%, 99.1% 98%, 96% 99.5%, 88% 98.8%, 78% 100%, 67% 98.9%, 56% 100%, 45% 98.8%, 34% 100%, 23% 98.9%, 12% 100%, 2% 99%, .3% 97%) !important;
+}
+body[data-page="home"] .hx-cols {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 390px !important;
+  align-items: start !important;
+  gap: 18px !important;
+  background: transparent !important;
+}
+body[data-page="home"] #feed { min-width: 0 !important; }
+
+/* News author rail: avatar, username, then rank badge underneath. */
+body[data-page="home"] .fb {
+  display: grid !important;
+  grid-template-columns: 112px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  margin: 0 0 18px !important;
+  padding: 8px 8px 14px !important;
+  color: #21180e !important;
+  background: rgba(255,246,224,.32) !important;
+  border: 1px solid rgba(124,88,43,.20) !important;
+  border-radius: 9px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 5px 12px rgba(77,48,17,.10) !important;
+  clip-path: none !important;
+}
+body[data-page="home"] .fb-author-rail {
+  grid-column: 1 !important;
+  grid-row: 1 / span 8 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+  min-width: 0 !important;
+  padding: 5px 2px !important;
+  text-align: center !important;
+}
+body[data-page="home"] .fb-author-rail .fb-av {
+  width: 78px !important;
+  height: 78px !important;
+  border: 2px solid #6f512c !important;
+  border-radius: 13px !important;
+  object-fit: cover !important;
+  box-shadow: 0 3px 9px rgba(45,27,9,.42) !important;
+}
+body[data-page="home"] .fb-author-rail b {
+  max-width: 100% !important;
+  color: #23180d !important;
+  font-size: .79rem !important;
+  font-weight: 900 !important;
+  overflow-wrap: anywhere !important;
+}
+body[data-page="home"] .fb-author-rail .fb-author-rank {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  max-width: 100% !important;
+  padding: 3px 8px !important;
+  border: 1px solid #9a6c2c !important;
+  border-radius: 5px !important;
+  background: linear-gradient(100deg,#3a2817,#21170e) !important;
+  color: #f5d98d !important;
+  font-size: .62rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .04em !important;
+  text-transform: uppercase !important;
+}
+body[data-page="home"] .fb-main { grid-column: 2 !important; min-width: 0 !important; }
+body[data-page="home"] .fb-h {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  min-height: 24px !important;
+  padding: 3px 2px 7px !important;
+  color: #58432a !important;
+}
+body[data-page="home"] .fb-h .fb-date { color: #5d482d !important; font-size: .68rem !important; font-weight: 800 !important; }
+body[data-page="home"] .fb-title {
+  margin: 0 0 4px !important;
+  color: #21170d !important;
+  font: 800 clamp(1.1rem,1.6vw,1.35rem)/1.2 "Plus Jakarta Sans", sans-serif !important;
+  letter-spacing: -.035em !important;
+}
+body[data-page="home"] .fb-subtitle { margin: 0 0 6px !important; color: #9c2118 !important; font-size: .9rem !important; font-weight: 900 !important; }
+body[data-page="home"] .fb-t {
+  padding: 0 2px 8px !important;
+  color: #2a2117 !important;
+  font-size: .88rem !important;
+  line-height: 1.55 !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+}
+body[data-page="home"] .fb-t a { color: #8d251b !important; font-weight: 800 !important; }
+body[data-page="home"] .fb-img {
+  display: block !important;
+  width: 100% !important;
+  max-height: 420px !important;
+  margin: 3px 0 10px !important;
+  border: 1px solid rgba(90,57,23,.48) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 5px 13px rgba(39,22,7,.28) !important;
+  object-fit: cover !important;
+}
+body[data-page="home"] .fb-stats, body[data-page="home"] .fb-actions, body[data-page="home"] .fb-cm { color: #4d3a24 !important; background: rgba(255,247,229,.30) !important; border-color: rgba(100,70,34,.18) !important; }
+body[data-page="home"] .fb-actions>button { color: #604a2d !important; }
+body[data-page="home"] .fb-actions>button:hover { background: rgba(120,83,38,.10) !important; }
+body[data-page="home"] .fb-cm .fb-c>div { background: rgba(255,250,238,.72) !important; color: #281e13 !important; }
+body[data-page="home"] .fb-cm .fb-c p { color: #281e13 !important; }
+body[data-page="home"] .fb-cm .fb-c b { color: #281e13 !important; }
+body[data-page="home"] .fb-cf textarea, body[data-page="home"] #cform textarea { color: #241a10 !important; background: rgba(255,249,236,.92) !important; border: 1px solid #9c7a4d !important; }
+body[data-page="home"] #cform { padding: 8px 2px 12px !important; }
+
+/* Right-side plaques: black folded paper with warm, narrow gold trim. */
+body[data-page="home"] .hx-side { display: flex !important; flex-direction: column !important; gap: 14px !important; min-width: 0 !important; }
+body[data-page="home"] .hx-side .hx-ad,
+body[data-page="home"] .hx-side .hx-card,
+body[data-page="home"] .cph-side-head,
+body[data-page="home"] .cph-side-active,
+body[data-page="home"] .cph-side-section,
+body[data-page="home"] .cph-side-add {
+  position: relative !important;
+  overflow: hidden !important;
+  color: #f4ead5 !important;
+  background:
+    linear-gradient(145deg,rgba(44,42,39,.97),rgba(13,13,14,.98) 55%,rgba(4,4,5,.99)),
+    url("../assets/folded-charcoal.webp") center / cover !important;
+  border: 1px solid rgba(208,170,100,.72) !important;
+  border-radius: 11px 7px 12px 8px !important;
+  box-shadow: 0 8px 17px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  clip-path: polygon(1% 2%,6% .5%,14% 1.3%,23% .4%,34% 1.2%,45% .4%,56% 1.1%,67% .5%,79% 1.3%,91% .5%,99% 2%,99.5% 94%,96% 99%,86% 98%,75% 99.5%,63% 98.6%,52% 100%,40% 98.8%,28% 99.7%,16% 98.7%,5% 100%,.5% 96%) !important;
+}
+body[data-page="home"] .hx-side .hx-ad { padding: 22px 15px !important; color: #d8d0c3 !important; }
+body[data-page="home"] .hx-side .hx-ad b { color: #f0cc75 !important; font: 700 1.05rem "Cinzel", Georgia, serif !important; }
+body[data-page="home"] .hx-side .hx-card { padding: 0 !important; }
+body[data-page="home"] .hx-side .hx-card>h3 { padding: 13px 16px !important; background: transparent !important; border: 0 !important; color: #f0cc75 !important; font: 700 .96rem "Cinzel", Georgia, serif !important; }
+body[data-page="home"] .hx-side .hx-body { padding: 12px 16px 16px !important; color: #eee4d0 !important; }
+body[data-page="home"] .hx-side a { color: #eac66f !important; }
+body[data-page="home"] .cph-sidecard { display: grid !important; gap: 10px !important; padding: 0 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+body[data-page="home"] .cph-side-head { display:flex !important; align-items:center !important; justify-content:space-between !important; padding:14px 16px !important; }
+body[data-page="home"] .cph-side-head h3, body[data-page="home"] .cph-side-label, body[data-page="home"] .cph-side-active b { color:#f0cc75 !important; }
+body[data-page="home"] .cph-side-active { display:flex !important; gap:12px !important; align-items:center !important; padding:13px 15px !important; }
+body[data-page="home"] .cph-side-active-icon { color:#eac66f !important; }
+body[data-page="home"] .cph-side-section { padding:13px 14px !important; }
+body[data-page="home"] .cph-side-add { padding:13px 14px !important; }
+body[data-page="home"] .cph-side-open, body[data-page="home"] .cph-launch {
+  border:1px solid #b88b43 !important;
+  background:linear-gradient(135deg,#f1d28d,#bd8c43) !important;
+  color:#211709 !important;
+  box-shadow:0 6px 18px rgba(0,0,0,.36) !important;
+}
+body[data-page="home"] .cph-side-friend { border-color:rgba(255,255,255,.10) !important; background:rgba(255,255,255,.055) !important; }
+body[data-page="home"] .cph-side-friend a { color:#f5dfac !important; }
+body[data-page="home"] .cph-side-friend small { color:#bdb4a4 !important; }
+body[data-page="home"] .cph-side-add input { background:#0b0b0c !important; color:#f5f0e6 !important; border-color:rgba(230,195,128,.3) !important; }
+body[data-page="home"] .cph-side-add button { background:linear-gradient(135deg,#f1d28d,#bd8c43) !important; color:#201607 !important; }
+body[data-page="home"] .cph-side-open { width:100% !important; padding:12px !important; border-radius:7px !important; font-weight:900 !important; }
+body[data-page="home"] .cph-launch { border-radius:7px !important; }
+
+/* Responsive layout. */
+@media (max-width: 1000px) {
+  body[data-page="home"] .hx-cols { grid-template-columns: minmax(0,1fr) 320px !important; }
+  body[data-page="home"] .aq-tiles-in { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+}
+@media (max-width: 760px) {
+  body[data-page="home"] section.aq-hero { width: 96% !important; min-height: 260px !important; }
+  body[data-page="home"] .aq-tiles { width: 96% !important; }
+  body[data-page="home"] .hx-frame { width: 96% !important; padding: 9px !important; }
+  body[data-page="home"] .hx-cols { grid-template-columns: 1fr !important; }
+  body[data-page="home"] .fb { grid-template-columns: 82px minmax(0,1fr) !important; gap: 8px !important; }
+  body[data-page="home"] .fb-author-rail .fb-av { width: 62px !important; height: 62px !important; }
+}
+@media (max-width: 480px) {
+  body[data-page="home"] .aq-tiles-in { grid-template-columns: 1fr !important; }
+  body[data-page="home"] .aq-tile { aspect-ratio: 16 / 8 !important; }
+  body[data-page="home"] .fb { grid-template-columns: 1fr !important; }
+  body[data-page="home"] .fb-author-rail { grid-column: 1 !important; grid-row: auto !important; flex-direction: row !important; justify-content:flex-start !important; text-align:left !important; }
+  body[data-page="home"] .fb-author-rail .fb-av { width: 48px !important; height: 48px !important; }
+  body[data-page="home"] .fb-main { grid-column: 1 !important; }
+}
+
+/* Four reference-style navigation plaques in the right rail. */
+body[data-page="home"] .fold-side-plaque {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: 62px minmax(0,1fr) auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-height: 76px !important;
+  padding: 11px 16px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(216,179,105,.72) !important;
+  border-radius: 11px 7px 12px 8px !important;
+  background: linear-gradient(145deg,#292725 0%,#121213 52%,#050506 100%) !important;
+  color: #f5ead4 !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  box-shadow: 0 8px 17px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.11) !important;
+  clip-path: polygon(1% 2%,7% .4%,16% 1.2%,27% .4%,39% 1.2%,51% .4%,63% 1.2%,76% .4%,88% 1.2%,99% 2%,99.5% 94%,96% 99%,84% 98%,72% 99.5%,60% 98.5%,48% 100%,35% 98.7%,23% 99.7%,11% 98.6%,.5% 96%) !important;
+  cursor: pointer !important;
+}
+body[data-page="home"] .fold-side-plaque:hover { transform: translateY(-2px) !important; border-color: #f0cc75 !important; filter: brightness(1.08) !important; }
+body[data-page="home"] .fold-side-icon {
+  display: grid !important;
+  width: 54px !important;
+  height: 50px !important;
+  place-items: center !important;
+  color: #edc66f !important;
+  font: 900 2.35rem/1 "Cinzel", Georgia, serif !important;
+  text-shadow: 0 2px 0 #6b4615,0 0 12px rgba(229,178,76,.24) !important;
+  border-right: 1px solid rgba(222,184,111,.36) !important;
+}
+body[data-page="home"] .fold-side-icon.fold-discord { color:#f1eee7 !important; font:900 2.15rem/1 "Plus Jakarta Sans",sans-serif !important; }
+body[data-page="home"] .fold-side-plaque>span:nth-child(2) { display:grid !important; gap:4px !important; min-width:0 !important; }
+body[data-page="home"] .fold-side-plaque b { color:#f0cc75 !important; font:800 .96rem/1.15 "Cinzel",Georgia,serif !important; }
+body[data-page="home"] .fold-side-plaque small { color:#eee5d5 !important; font-size:.72rem !important; line-height:1.35 !important; }
+body[data-page="home"] .fold-side-plaque small strong { color:#62df91 !important; }
+body[data-page="home"] .fold-side-plaque small strong.is-offline { color:#f07878 !important; }
+body[data-page="home"] .fold-side-plaque>i { color:#f0cc75 !important; font:700 2rem/1 Georgia,serif !important; font-style:normal !important; }
+body[data-page="home"] button.fold-side-plaque { font:inherit !important; }
+
+/* Newsfeed readability + typography polish (dark ink on parchment). */
+body[data-page="home"] #feed,
+body[data-page="home"] #feed .fb,
+body[data-page="home"] #feed .fb-main,
+body[data-page="home"] #feed .fb-author-rail {
+  color: #17130e !important;
+  font-family: "Manrope", "Plus Jakarta Sans", Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body[data-page="home"] #feed .fb {
+  color: #17130e !important;
+}
+body[data-page="home"] #feed .fb-title {
+  color: #17120c !important;
+  font-family: "Plus Jakarta Sans", "Manrope", Arial, sans-serif !important;
+  font-size: clamp(1.12rem, 1.55vw, 1.42rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -.045em !important;
+  line-height: 1.22 !important;
+}
+body[data-page="home"] #feed .fb-subtitle {
+  color: #8d2118 !important;
+  font-family: "Manrope", Arial, sans-serif !important;
+  font-size: .91rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -.015em !important;
+  line-height: 1.4 !important;
+}
+body[data-page="home"] #feed .fb-t,
+body[data-page="home"] #feed .fb-t p,
+body[data-page="home"] #feed .fb-t span,
+body[data-page="home"] #feed .fb-t li {
+  color: #211a12 !important;
+  font-family: "Manrope", "Plus Jakarta Sans", Arial, sans-serif !important;
+  font-size: .9rem !important;
+  font-weight: 600 !important;
+  line-height: 1.68 !important;
+  letter-spacing: -.012em !important;
+}
+body[data-page="home"] #feed .fb-h,
+body[data-page="home"] #feed .fb-h .fb-date,
+body[data-page="home"] #feed .fb-author-rail b,
+body[data-page="home"] #feed .fb-author-rail .fb-name-link {
+  color: #342515 !important;
+  font-family: "Manrope", "Plus Jakarta Sans", Arial, sans-serif !important;
+  font-weight: 800 !important;
+}
+body[data-page="home"] #feed .fb-t a,
+body[data-page="home"] #feed .fb-cm a,
+body[data-page="home"] #feed .fb-name-link {
+  color: #7c2118 !important;
+  font-weight: 800 !important;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+body[data-page="home"] #feed .fb-stats,
+body[data-page="home"] #feed .fb-stats span,
+body[data-page="home"] #feed .fb-chips,
+body[data-page="home"] #feed .fb-actions,
+body[data-page="home"] #feed .fb-actions button,
+body[data-page="home"] #feed .fb-cm,
+body[data-page="home"] #feed .fb-cm p,
+body[data-page="home"] #feed .fb-cm b,
+body[data-page="home"] #feed .fb-cm small,
+body[data-page="home"] #feed .fb-cm button {
+  color: #302316 !important;
+  font-family: "Manrope", "Plus Jakarta Sans", Arial, sans-serif !important;
+}
+body[data-page="home"] #feed .fb-actions button {
+  font-size: .76rem !important;
+  font-weight: 800 !important;
+}
+body[data-page="home"] #feed .fb-cm .fb-c p {
+  color: #211a12 !important;
+  font-size: .82rem !important;
+  font-weight: 600 !important;
+  line-height: 1.55 !important;
+}
+body[data-page="home"] #feed textarea,
+body[data-page="home"] #feed input {
+  color: #17130e !important;
+  font-family: "Manrope", "Plus Jakarta Sans", Arial, sans-serif !important;
+  font-size: .86rem !important;
+  font-weight: 600 !important;
+}
+body[data-page="home"] #feed textarea::placeholder,
+body[data-page="home"] #feed input::placeholder {
+  color: #78664f !important;
+  opacity: 1 !important;
+}
+body[data-page="home"] #feed .fb-author-rank {
+  font-family: "Plus Jakarta Sans", "Manrope", Arial, sans-serif !important;
+  letter-spacing: .045em !important;
+}
