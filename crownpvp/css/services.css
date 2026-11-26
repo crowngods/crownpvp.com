@@ -138,3 +138,12 @@ body[data-page=services] img{max-width:100%}
 .sv{position:relative;z-index:1}
 .sv-foot{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;width:min(100% - 36px,1200px);margin:0 auto;padding:30px 0 40px;border-top:1px solid rgba(167,139,250,.18);color:#6f7390;font-size:.88rem}.sv-foot a{color:#a78bfa;text-decoration:none}
 .sv-card,.sv-p,.sv-a,.sv-info,.sv-faq details,.sv-tabs button,.sv-code{backdrop-filter:blur(12px)}
+
+.sv-rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:24px;max-width:860px;margin:0 auto}
+.ring{position:relative;display:grid;justify-items:center;gap:12px;padding:26px 10px;border:1px solid var(--ln);border-radius:16px;background:var(--pn);backdrop-filter:blur(12px)}
+.ring svg{width:112px;transform:rotate(-90deg);filter:drop-shadow(0 0 14px rgba(139,92,246,.5))}
+.ring circle{fill:none;stroke-width:5;stroke-linecap:round}.ring .t{stroke:rgba(167,139,250,.15)}
+.ring .f{stroke:url(#rg);stroke:#a78bfa;stroke-dasharray:214;stroke-dashoffset:214;transition:stroke-dashoffset 1.8s .2s var(--ez)}.ring.in .f{stroke-dashoffset:0}
+.ring b{position:absolute;top:26px;width:112px;height:112px;display:grid;place-items:center;font:800 1.8rem 'Sora',sans-serif;color:#f1eeff}
+.ring span{color:var(--mu);font-size:.9rem}
+.sv-card,.sv-p{transition:transform .2s ease-out,opacity .8s var(--ez)}

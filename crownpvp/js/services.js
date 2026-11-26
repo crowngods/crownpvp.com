@@ -113,6 +113,12 @@ if (!RM) addEventListener("pointermove", e => { document.body.style.setProperty(
 /* spotlight glow follows the pointer */
 document.addEventListener("pointermove", e => { const c = e.target.closest?.(".sv-card,.sv-p,.sv-a"); if (!c) return; const r = c.getBoundingClientRect(); c.style.setProperty("--x", e.clientX - r.left + "px"); c.style.setProperty("--y", e.clientY - r.top + "px"); });
 
+/* 3D tilt on cards, magnetic buttons */
+if (!RM && matchMedia("(hover:hover)").matches) {
+  $$(".sv-card,.sv-p").forEach(c => { c.addEventListener("pointermove", e => { if (!c.classList.contains("in")) return; const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; c.style.transform = `perspective(800px) rotateY(${x * 9}deg) rotateX(${-y * 9}deg) translateY(-4px)`; }); c.addEventListener("pointerleave", () => c.style.transform = ""); });
+  $$(".btn").forEach(b => { b.addEventListener("pointermove", e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .2}px,${(e.clientY - r.top - r.height / 2) * .3}px)`; }); b.addEventListener("pointerleave", () => b.style.transform = ""); });
+}
+
 /* count-up numbers */
 const count = el => { const n = +el.dataset.n, d = +(el.dataset.d || 0), s = el.dataset.s || "", t0 = performance.now(), D = 1400;
   const f = t => { const k = Math.min(1, (t - t0) / D), v = n * (1 - Math.pow(1 - k, 3)); el.textContent = v.toFixed(d) + s; if (k < 1) requestAnimationFrame(f); };
