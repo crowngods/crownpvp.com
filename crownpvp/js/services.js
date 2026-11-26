@@ -29,6 +29,25 @@ function stage(view, urlEl, opts) {
   go(0); return { go, stop: () => clearTimeout(timer), next: () => go(cur + 1) };
 }
 
+/* hero: images + typed code */
+const code = $("#hero-code"); let typing = 0;
+const type = lines => {
+  const id = ++typing; let l = 0, c = 0; code.textContent = "";
+  const tick = () => { if (id !== typing) return;
+    if (l >= lines.length) return;
+    c++; code.textContent = lines.slice(0, l).join("\n") + (l ? "\n" : "") + lines[l].slice(0, c);
+    if (c >= lines[l].length) { l++; c = 0; setTimeout(tick, 220); } else setTimeout(tick, RM ? 0 : 28); };
+  RM ? code.textContent = lines.join("\n") : tick();
+};
+stage($("#hero-view"), $("#hero-url"), { ms: 5200, onChange: (i, s) => type(s.code) });
+
+/* 3D tilt on the hero stage */
+const hs = $("#hero-show"), hf = $(".sv-frame", hs);
+if (!RM && matchMedia("(hover:hover)").matches) {
+  hs.addEventListener("pointermove", e => { const r = hs.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; hf.style.transform = `rotateY(${-7 + x * 14}deg) rotateX(${3 - y * 10}deg)`; });
+  hs.addEventListener("pointerleave", () => hf.style.transform = "");
+}
+
 /* showcase with tabs + progress */
 const ws = $("#work-show"), wt = $("#work-tabs");
 wt.innerHTML = SAMPLES.map((s, i) => `<button type="button" role="tab" data-i="${i}"><b>${esc(s.name)}</b><small>${esc(s.url)}</small></button>`).join("");
@@ -43,10 +62,10 @@ ws.addEventListener("pointerleave", () => { ws.classList.remove("pause"); W.next
 
 /* content */
 const CARDS = [
-  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`, "Frontend & UI Development", "Turning designs into fast, responsive, and accessible user interfaces that work seamlessly on every screen size."],
-  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5M3 17.5 12 22l9-4.5"/></svg>`, "Full-Stack Web Applications", "Building complete, scalable web apps from the front-end interface to back-end APIs and database architecture."],
-  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg>`, "API & Payment Integration", "Connecting your website with third-party tools, payment processors, and custom APIs to automate workflows."],
-  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>`, "Speed Optimization & Maintenance", "Fixing bugs, improving load speeds, and keeping your website secure, updated, and running smoothly."]
+  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`, "Frontend & UI Development", "A distinct, responsive interface designed around your brand, audience and goals.", "Website design & development", "01 / DIGITAL EXPERIENCE"],
+  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5M3 17.5 12 22l9-4.5"/></svg>`, "Full-Stack Web Applications", "A complete product build: polished front end, dependable APIs and structured data.", "Full-stack application", "02 / PRODUCT ENGINEERING"],
+  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg>`, "API & Payment Integration", "Connect checkout, payments and third-party services into a workflow that feels seamless.", "Full-stack application", "03 / CONNECTED SYSTEMS"],
+  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>`, "Optimization & Care", "Make an existing site faster, resolve issues and keep the experience reliable over time.", "Website maintenance", "04 / PERFORMANCE"]
 ];
 const CORE = [
   ["Custom Website Development", "Fast, modern websites built from scratch for your brand and goals."],
@@ -65,7 +84,7 @@ const FULL = [
   ["Deployment & Hosting Setup", "Launch on Vercel, Netlify, AWS, or DigitalOcean with a custom domain and SSL."]
 ];
 const rv = (h, i) => h.replace("<", `<`).replace(/^<(\w+)/, `<$1 style="--i:${i}"`);
-$("#svc-cards").innerHTML = CARDS.map((c, i) => `<article class="sv-card rv" style="--i:${i}"><div class="ic" aria-hidden="true">${c[0]}</div><h3>${esc(c[1])}</h3><p>${esc(c[2])}</p></article>`).join("");
+$("#svc-cards").innerHTML = CARDS.map((c, i) => `<article class="sv-card rv" style="--i:${i}"><div class="sv-card-head"><span class="sv-card-index">${c[4]}</span><span class="sv-card-orbit" aria-hidden="true"></span><div class="ic" aria-hidden="true">${c[0]}</div></div><div class="sv-card-copy"><h3>${esc(c[1])}</h3><p>${esc(c[2])}</p></div><a class="sv-card-link" href="${T(c[3])}">Discuss this build <span aria-hidden="true">↗</span></a></article>`).join("");
 const li = (a) => a.map((x, i) => `<li class="rv" style="--i:${i}"><b>${esc(x[0])}</b>${esc(x[1])}</li>`).join("");
 $("#core-list").innerHTML = li(CORE); $("#full-list").innerHTML = li(FULL);
 const TECH = ["REST", "GRAPHQL", "STRIPE", "PAYPAL", "POSTGRESQL", "MYSQL", "MONGODB", "VERCEL", "NETLIFY", "AWS", "DIGITALOCEAN", "SSL"];
@@ -97,10 +116,10 @@ if (projectForm) {
   const serviceSelect = $("#project-service");
   if (preset && serviceSelect) {
     const map = { "PvP Resource Packs":"Minecraft resource pack", "Custom Plugins":"Minecraft plugin", "Maps & Builds":"Minecraft map or build", "Website Customization":"Minecraft website", "Something Custom":"Something custom", "Game Store Theme":"Website design & development", "Landing Page":"Website design & development", "Business Website":"Website design & development", "Webshop":"Website design & development" };
-    const target = map[preset] || (serviceSelect.querySelector(`option[value="${CSS.escape(preset)}"]`) ? preset : "");
+    const target = map[preset] || (Array.from(serviceSelect.options).some(option => option.value === preset) ? preset : "");
     if (target) serviceSelect.value = target;
     const brief = projectForm.elements.brief;
-    if (brief && !brief.value) brief.placeholder = `Tell us what you have in mind for: ${preset}. Include features, goals and references…`;
+    if (brief && !brief.value) brief.placeholder = `Tell us what you have in mind for: ${preset}. Include features and goals…`;
   }
   projectForm.addEventListener("submit", async e => {
     e.preventDefault();
@@ -108,22 +127,14 @@ if (projectForm) {
     button.disabled = true; button.classList.add("is-loading"); button.innerHTML = '<span class="sv-spinner"></span> Sending brief…';
     status.textContent = "Submitting your project request securely…"; status.classList.remove("is-error","is-success");
     try {
-      if (data.website) { /* honeypot filled: pretend success */ data.reference = ""; }
-      const C = window.CROWN || {};
-      const response = await fetch(`${C.supabaseUrl}/rest/v1/rpc/submit_service_request`, { method:"POST", headers:{ "content-type":"application/json", apikey:C.supabaseKey }, body:JSON.stringify({ p_name:data.name, p_email:data.email, p_discord:data.discord || "", p_service:data.service, p_budget:data.budget || "", p_timeline:data.timeline || "", p_brief:data.brief, p_reference:data.reference || "" }) });
-      let out = null; try { out = await response.json(); } catch { /* not JSON */ }
-      if (!response.ok || out === null) {
-        if (out && out.message) throw new Error(out.message);
-        if (response.status === 404 || out === null) { offlineBrief(data, status, button); return; }
-        throw new Error("Your request could not be submitted.");
-      }
-      const result = { reference: String(out) };
+      const response = await fetch("/api/service-tickets", { method:"POST", headers:{"content-type":"application/json","x-requested-with":"crown"}, body:JSON.stringify(data) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Your request could not be submitted.");
       projectForm.reset();
       status.innerHTML = `Request received. Your project reference is <strong>${esc(result.reference || "received")}</strong>. Keep it for your records.`;
       status.classList.add("is-success");
       button.innerHTML = 'Brief submitted <span>✓</span>';
     } catch (err) {
-      if (err instanceof TypeError) { offlineBrief(data, status, button); return; }
       status.textContent = err.message || "Something went wrong. Please try again.";
       status.classList.add("is-error");
       button.disabled = false; button.innerHTML = 'Try submitting again <span>↗</span>';
@@ -131,23 +142,24 @@ if (projectForm) {
   });
 }
 
-/* Backend unreachable (static host / offline): hand the visitor a ready-to-send brief instead of an error. */
-function offlineBrief(data, status, button) {
-  const msg = ["New CrownPVP project request", `Name: ${data.name}`, `Email: ${data.email}`, `Discord: ${data.discord || "-"}`, `Service: ${data.service}`, `Budget: ${data.budget || "-"}`, `Timeline: ${data.timeline || "-"}`, data.reference ? `Reference: ${data.reference}` : "", "", data.brief].filter((x, i) => x || i > 6).join("\n");
-  try { localStorage.setItem("crown-pending-project", msg); } catch {}
-  const link = (window.CROWN && window.CROWN.discord) || "https://discord.gg/nFfnbw844";
-  status.classList.remove("is-error"); status.classList.add("is-success");
-  status.innerHTML = `Our form inbox is offline right now, so your brief was <strong>not sent yet</strong>. Copy it and send it on Discord:<textarea readonly rows="6" style="width:100%;margin:10px 0;padding:10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:inherit;font:13px/1.5 inherit">${esc(msg)}</textarea><button type="button" class="btn ghost" id="pj-copy">Copy brief</button> <a class="btn gold" href="${esc(link)}" target="_blank" rel="noopener">Open Discord ↗</a>`;
-  $("#pj-copy").onclick = async e => { try { await navigator.clipboard.writeText(msg); e.target.textContent = "Copied ✓"; } catch { $("textarea", status).select(); } };
-  button.disabled = false; button.classList.remove("is-loading"); button.innerHTML = 'Send project brief';
-}
+/* constellation background + cursor light */
+const cv = $("#bg"), cx = cv.getContext("2d"); let W2, H2, pts = [];
+const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); W2 = cv.width = innerWidth * d; H2 = cv.height = innerHeight * d; pts = Array.from({ length: Math.round(innerWidth / 22) }, () => ({ x: Math.random() * W2, y: Math.random() * H2, vx: (Math.random() - .5) * .35 * d, vy: (Math.random() - .5) * .35 * d })); };
+fit(); addEventListener("resize", fit);
+const draw = () => { cx.clearRect(0, 0, W2, H2); const L = 150 * (W2 / innerWidth);
+  for (const p of pts) { p.x = (p.x + p.vx + W2) % W2; p.y = (p.y + p.vy + H2) % H2; cx.fillStyle = "rgba(196,181,253,.7)"; cx.fillRect(p.x, p.y, 2, 2); }
+  for (let a = 0; a < pts.length; a++) for (let b = a + 1; b < pts.length; b++) { const dx = pts[a].x - pts[b].x, dy = pts[a].y - pts[b].y, d = dx * dx + dy * dy; if (d < L * L) { cx.strokeStyle = `rgba(139,92,246,${.22 * (1 - Math.sqrt(d) / L)})`; cx.beginPath(); cx.moveTo(pts[a].x, pts[a].y); cx.lineTo(pts[b].x, pts[b].y); cx.stroke(); } }
+  requestAnimationFrame(draw); };
+if (!RM) draw();
+if (!RM) addEventListener("pointermove", e => { document.body.style.setProperty("--mx", e.clientX + "px"); document.body.style.setProperty("--my", e.clientY + "px"); });
 
 /* spotlight glow follows the pointer */
 document.addEventListener("pointermove", e => { const c = e.target.closest?.(".sv-card,.sv-p,.sv-a"); if (!c) return; const r = c.getBoundingClientRect(); c.style.setProperty("--x", e.clientX - r.left + "px"); c.style.setProperty("--y", e.clientY - r.top + "px"); });
 
-/* subtle 3D tilt on cards */
+/* 3D tilt on cards, magnetic buttons */
 if (!RM && matchMedia("(hover:hover)").matches) {
-  $$(".sv-card,.sv-p").forEach(c => { c.addEventListener("pointermove", e => { if (!c.classList.contains("in")) return; const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; c.style.transform = `perspective(800px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg) translateY(-3px)`; }); c.addEventListener("pointerleave", () => c.style.transform = ""); });
+  $$(".sv-card,.sv-p").forEach(c => { c.addEventListener("pointermove", e => { if (!c.classList.contains("in")) return; const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; c.style.transform = `perspective(800px) rotateY(${x * 9}deg) rotateX(${-y * 9}deg) translateY(-4px)`; }); c.addEventListener("pointerleave", () => c.style.transform = ""); });
+  $$(".btn").forEach(b => { b.addEventListener("pointermove", e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .2}px,${(e.clientY - r.top - r.height / 2) * .3}px)`; }); b.addEventListener("pointerleave", () => b.style.transform = ""); });
 }
 
 /* count-up numbers */
@@ -159,4 +171,8 @@ $$("[data-n]").filter(e => e.closest(".sv-stats")).forEach(count);
 /* one scroll-reveal pass for every section */
 const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; e.target.classList.add("in"); $$("[data-n]", e.target).forEach(count); io.unobserve(e.target); }), { threshold: .15 });
 $$(".rv,.sv-steps").forEach(x => io.observe(x));
+
+/* decode effect on section headings */
+if (!RM) { const sc = el => { const t = el.textContent, ch = "01<>/{}[]#$%"; let f = 0; el.setAttribute("aria-label", t); const id = setInterval(() => { el.textContent = [...t].map((c, i) => c === " " || i < f / 1.2 ? c : ch[Math.random() * ch.length | 0]).join(""); if (++f > t.length * 1.2) { el.textContent = t; clearInterval(id); } }, 28); };
+  const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { sc(e.target); io2.unobserve(e.target); } }), { threshold: .6 }); $$(".sv-head h2").forEach(h => io2.observe(h)); }
 })();

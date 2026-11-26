@@ -45,7 +45,7 @@ ins.run("mute", "901", uuidOf("DevPlayer"), "DevPlayer", "StaffAlex", "Spamming 
 
 const st = sqlite.prepare("INSERT INTO player_stats(uuid,name,gold,kills,deaths,playtime,last_seen,updated) VALUES(?,?,?,?,?,?,?,?)");
 names.forEach((nm, i) => st.run(uuidOf(nm), nm, 250000 - i * 17300, 400 - i * 23, 90 + i * 4, 3600 * (300 - i * 17), i < 3 ? now - i * 60000 : now - (i + 1) * 5 * H, now));
-const env = { DB, SESSION_SECRET: "dev-secret", MS_CLIENT_ID: "dev", MS_CLIENT_SECRET: "dev", SYNC_TOKEN: "dev-sync", STAFF_UUIDS: uuidOf("StaffAlex"), TEBEX_PUBLIC_TOKEN: "dev", REPORT_OWNER_KEY: process.env.REPORT_OWNER_KEY || "crown-local-owner-key", REPORT_OWNER_NAME: "Rai (Local Preview)" };
+const env = { DB, SESSION_SECRET: "dev-secret", MS_CLIENT_ID: "dev", MS_CLIENT_SECRET: "dev", SYNC_TOKEN: "dev-sync", TRACE_FINGERPRINT_SECRET: "dev-trace-fingerprint", STAFF_UUIDS: uuidOf("StaffAlex"), TEBEX_PUBLIC_TOKEN: "dev", REPORT_OWNER_KEY: process.env.REPORT_OWNER_KEY || "crown-local-owner-key", REPORT_OWNER_NAME: "Rai (Local Preview)" };
 
 const realFetch = globalThis.fetch;
 globalThis.fetch = async (u, o) => String(u).startsWith("https://headless.tebex.io")

@@ -7,6 +7,7 @@
      MS_CLIENT_ID         Azure app registration (Microsoft sign-in)
      MS_CLIENT_SECRET     Azure app client secret
      SYNC_TOKEN           shared secret used by litebans-sync/sync-litebans.py
+     TRACE_FINGERPRINT_SECRET private key for trace-only HMAC fingerprints
      REPORT_OWNER_KEY     private secret for the owner-only reports/application inbox
      REPORT_OWNER_NAME    optional display name for saved owner replies
      STAFF_UUIDS          comma separated Minecraft UUIDs allowed to answer appeals
@@ -408,6 +409,185 @@ async function statsGet(env, url, parts) {
   return json({ ...row, rank: (above?.c || 0) + 1 });
 }
 
+/* ---------- private account trace ---------- */
+const validTraceUuid = value => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+const traceUuid = value => dash(text(value, 40));
+const normalizeTraceAddress = address => {
+  if (address.includes(":")) {
+    try { return new URL(`http://[${address}]/`).hostname.slice(1, -1).toLowerCase(); } catch { return null; }
+  }
+  const octets = address.split(".");
+  return octets.length === 4 && octets.every(part => /^(0|[1-9]\d{0,2})$/.test(part) && Number(part) <= 255)
+    ? octets.map(Number).join(".") : null;
+};
+
+async function traceSync(req, env) {
+  const given = req.headers.get("authorization") || "";
+  if (!env.SYNC_TOKEN || !safeEq(given, `Bearer ${env.SYNC_TOKEN}`)) return fail(401, "Unauthorized.");
+  if (!env.TRACE_FINGERPRINT_SECRET) return fail(503, "Trace fingerprinting is not configured.");
+  const data = await parseBody(req);
+  if (!data || !Array.isArray(data.records) || data.records.length > 500) return fail(400, "Provide up to 500 authorized player records.");
+  const now = Date.now(), records = data.records, ops = [];
+  let loginCount = 0;
+  for (const record of records) {
+    const uuid = traceUuid(record?.uuid), username = text(record?.name, 16);
+    if (!validTraceUuid(uuid) || !/^[A-Za-z0-9_]{3,16}$/.test(username)) return fail(400, "Every record needs a valid Minecraft UUID and username.");
+    const logins = Array.isArray(record.logins) ? record.logins : [];
+    if (logins.length > 100 || loginCount + logins.length > 2000) return fail(400, "A sync may contain at most 2,000 login events.");
+    loginCount += logins.length;
+    const times = logins.map(item => Number(item?.at));
+    if (times.some(at => !Number.isSafeInteger(at) || at < 0 || at > now + 300000)) return fail(400, "Login event timestamps must be Unix milliseconds and cannot be in the future.");
+    const first = times.length ? Math.min(...times) : 0, last = times.length ? Math.max(...times) : 0;
+    ops.push(env.DB.prepare(`INSERT INTO mc_trace_accounts(uuid,username,first_seen,last_seen,updated) VALUES(?,?,?,?,?)
+      ON CONFLICT(uuid) DO UPDATE SET username=excluded.username,
+      first_seen=CASE WHEN mc_trace_accounts.first_seen=0 THEN excluded.first_seen WHEN excluded.first_seen=0 THEN mc_trace_accounts.first_seen ELSE MIN(mc_trace_accounts.first_seen,excluded.first_seen) END,
+      last_seen=MAX(mc_trace_accounts.last_seen,excluded.last_seen),updated=excluded.updated`).bind(uuid, username, first, last, now));
+    for (const item of logins) {
+      let fingerprint = null;
+      if (item.ip !== undefined && item.ip !== null && String(item.ip).trim()) {
+        const address = String(item.ip).trim();
+        const normalizedAddress = address.length <= 64 ? normalizeTraceAddress(address) : null;
+        if (!normalizedAddress) return fail(400, "A login address is malformed.");
+        fingerprint = await hmac(env.TRACE_FINGERPRINT_SECRET, `trace-ip:${normalizedAddress}`);
+      }
+      const eventKey = await hmac(env.TRACE_FINGERPRINT_SECRET, `trace-event:${uuid}:${Number(item.at)}:${fingerprint || ""}`);
+      ops.push(env.DB.prepare("INSERT OR IGNORE INTO mc_trace_logins(event_key,uuid,occurred,ip_fingerprint) VALUES(?,?,?,?)")
+        .bind(eventKey, uuid, Number(item.at), fingerprint));
+    }
+  }
+  for (let i = 0; i < ops.length; i += 50) await env.DB.batch(ops.slice(i, i + 50));
+  return json({ ok: true, accounts: records.length, loginEvents: loginCount, ipStorage: "keyed fingerprints only" }, 200);
+}
+
+async function traceRoutes(req, env, parts, url) {
+  if (!ownerKeyOK(req, env)) return fail(403, "Owner access only.");
+  const method = req.method, now = Date.now();
+  if (parts.length === 0 && method === "GET") {
+    const [accounts, logins, conversations, notes, latest] = await Promise.all([
+      env.DB.prepare("SELECT COUNT(*) AS count FROM mc_trace_accounts").first(),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM mc_trace_logins").first(),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM mc_trace_conversations").first(),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM mc_trace_notes").first(),
+      env.DB.prepare("SELECT MAX(occurred) AS at FROM mc_trace_logins").first()
+    ]);
+    return json({ accounts: accounts?.count || 0, logins: logins?.count || 0, conversations: conversations?.count || 0,
+      notes: notes?.count || 0, latest: latest?.at || null, server: "play.pika-network.net" });
+  }
+  if (parts[0] === "search" && method === "GET") {
+    const query = text(url.searchParams.get("q"), 40);
+    if (!query || query.length < 3) return fail(400, "Enter a username or UUID.");
+    const uuidQuery = traceUuid(query), byUuid = validTraceUuid(uuidQuery);
+    if (!byUuid && !/^[A-Za-z0-9_]{3,16}$/.test(query)) return fail(400, "Enter a valid Minecraft username or UUID.");
+    let account = byUuid
+      ? await env.DB.prepare("SELECT uuid,username,first_seen,last_seen,updated FROM mc_trace_accounts WHERE uuid=?").bind(uuidQuery).first()
+      : await env.DB.prepare("SELECT uuid,username,first_seen,last_seen,updated FROM mc_trace_accounts WHERE username=? COLLATE NOCASE").bind(query).first();
+    if (!account) {
+      account = byUuid
+        ? await env.DB.prepare("SELECT uuid,name AS username,NULL AS first_seen,last_seen,updated FROM player_stats WHERE uuid=?").bind(uuidQuery).first()
+        : await env.DB.prepare("SELECT uuid,name AS username,NULL AS first_seen,last_seen,updated FROM player_stats WHERE name=? COLLATE NOCASE").bind(query).first();
+    }
+    if (!account) return fail(404, "No authorized record was found for this player.");
+    const uuid = traceUuid(account.uuid);
+    const [logins, notes, conversations] = await Promise.all([
+      env.DB.prepare("SELECT occurred,ip_fingerprint,source FROM mc_trace_logins WHERE uuid=? ORDER BY occurred DESC LIMIT 200").bind(uuid).all(),
+      env.DB.prepare("SELECT id,author,body,created FROM mc_trace_notes WHERE uuid=? ORDER BY created DESC LIMIT 100").bind(uuid).all(),
+      env.DB.prepare("SELECT id,author,body,evidence,created FROM mc_trace_conversations WHERE uuid=? ORDER BY created DESC LIMIT 100").bind(uuid).all()
+    ]);
+    const ownLogins = logins.results || [], fingerprints = [...new Set(ownLogins.map(row => row.ip_fingerprint).filter(Boolean))];
+    let possibleAlts = [];
+    if (fingerprints.length) {
+      const marks = fingerprints.map(() => "?").join(",");
+      const peers = (await env.DB.prepare(`SELECT a.uuid,a.username FROM mc_trace_accounts a
+        WHERE a.uuid<>? AND a.uuid IN (SELECT uuid FROM mc_trace_logins WHERE ip_fingerprint IN (${marks}) GROUP BY uuid)
+        ORDER BY a.username COLLATE NOCASE LIMIT 50`).bind(uuid, ...fingerprints).all()).results || [];
+      if (peers.length) {
+        const peerMarks = peers.map(() => "?").join(",");
+        const peerRows = (await env.DB.prepare(`SELECT uuid,occurred,ip_fingerprint FROM mc_trace_logins
+          WHERE uuid IN (${peerMarks}) AND occurred>=? ORDER BY occurred DESC LIMIT 3000`)
+          .bind(...peers.map(p => p.uuid), now - 90 * DAY).all()).results || [];
+        const rowsByPeer = new Map();
+        for (const row of peerRows) {
+          if (!rowsByPeer.has(row.uuid)) rowsByPeer.set(row.uuid, []);
+          rowsByPeer.get(row.uuid).push(row);
+        }
+        const ownRecent = ownLogins.filter(row => row.occurred >= now - 90 * DAY);
+        for (const peer of peers) {
+          const matches = new Set();
+          for (const a of ownRecent) for (const b of rowsByPeer.get(peer.uuid) || []) {
+            if (a.ip_fingerprint && a.ip_fingerprint === b.ip_fingerprint &&
+                Math.abs(a.occurred - b.occurred) <= 30 * 60 * 1000 &&
+                new Date(a.occurred).toISOString().slice(0, 10) === new Date(b.occurred).toISOString().slice(0, 10)) {
+              matches.add(new Date(a.occurred).toISOString().slice(0, 10));
+            }
+          }
+          if (matches.size >= 3) possibleAlts.push({ uuid: peer.uuid, username: peer.username,
+            confidence: matches.size >= 5 ? "MODERATE" : "LOW", matchingDays: matches.size,
+            evidence: ["Repeated shared-network fingerprint", `${matches.size} separate days with logins within 30 minutes`],
+            caution: "A possible lead only; household, campus, VPN, and shared-network use can explain overlap." });
+        }
+        possibleAlts.sort((a, b) => b.confidence - a.confidence);
+        possibleAlts = possibleAlts.slice(0, 10);
+      }
+    }
+    return json({ account: { uuid, username: account.username, firstSeen: account.first_seen || null,
+      lastSeen: account.last_seen || null, updated: account.updated || null, ipAddress: null },
+      logins: ownLogins.map(row => ({ occurred: row.occurred, networkFingerprint: row.ip_fingerprint ? "stored; address discarded" : null, source: row.source })),
+      notes: notes.results || [], conversations: conversations.results || [], possibleAlts });
+  }
+  if ((parts[0] === "notes" || parts[0] === "conversations") && method === "POST") {
+    const data = await parseBody(req), uuid = traceUuid(data?.uuid), body = text(data?.body, parts[0] === "notes" ? 3000 : 5000);
+    if (!validTraceUuid(uuid)) return fail(400, "A valid player UUID is required.");
+    if (!body) return fail(400, "Write a note or conversation record.");
+    let account = await env.DB.prepare("SELECT uuid FROM mc_trace_accounts WHERE uuid=?").bind(uuid).first();
+    if (!account) {
+      account = await env.DB.prepare("SELECT uuid,name,last_seen FROM player_stats WHERE uuid=?").bind(uuid).first();
+      if (account) {
+        await env.DB.prepare(`INSERT OR IGNORE INTO mc_trace_accounts(uuid,username,first_seen,last_seen,updated)
+          VALUES(?,?,0,?,?)`).bind(uuid, account.name, account.last_seen || 0, now).run();
+      }
+    }
+    if (!account) return fail(404, "Import an authorized player record before adding linked records.");
+    const author = text(data.author || env.REPORT_OWNER_NAME || "Administrator", 60);
+    const created = Number(data.created) || now;
+    if (!Number.isSafeInteger(created) || created > now + 300000) return fail(400, "The record timestamp is invalid.");
+    if (parts[0] === "notes") {
+      const result = await env.DB.prepare("INSERT INTO mc_trace_notes(uuid,author,body,created) VALUES(?,?,?,?)")
+        .bind(uuid, author, body, created).run();
+      return json({ ok: true, id: result.meta.last_row_id }, 201);
+    }
+    const evidence = text(data.evidence, 1000);
+    const result = await env.DB.prepare("INSERT INTO mc_trace_conversations(uuid,author,body,evidence,created) VALUES(?,?,?,?,?)")
+      .bind(uuid, author, body, evidence, created).run();
+    return json({ ok: true, id: result.meta.last_row_id }, 201);
+  }
+  return fail(404, "Not found.");
+}
+
+/* ---------- public Minecraft profile lookup ---------- */
+async function publicProfileGet(url) {
+  const username = text(url.searchParams.get("username"), 16);
+  if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) return fail(400, "Enter a valid Minecraft username.");
+  let response;
+  try {
+    response = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(username)}`, {
+      headers: { accept: "application/json", "user-agent": "CrownPVP public profile lookup" }
+    });
+  } catch {
+    return fail(502, "The public profile service could not be reached.");
+  }
+  if (response.status === 204 || response.status === 404) return fail(404, "No public Minecraft profile was found.");
+  if (response.status === 429) return fail(503, "The public profile service is rate-limiting requests. Try again later.");
+  if (!response.ok) return fail(502, "The public profile service returned an error.");
+  let profile;
+  try { profile = await response.json(); } catch { return fail(502, "The public profile service returned invalid data."); }
+  const id = String(profile?.id || "");
+  if (!/^[0-9a-f]{32}$/i.test(id) || !/^[A-Za-z0-9_]{3,16}$/.test(String(profile?.name || ""))) {
+    return fail(502, "The public profile service returned an invalid profile.");
+  }
+  const uuid = id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5").toLowerCase();
+  return json({ username: profile.name, uuid, source: "Mojang public profile API" });
+}
+
 /* ---------- Tebex checkout (headless API) ---------- */
 async function checkout(req, env, user) {
   if (!env.TEBEX_PUBLIC_TOKEN) return fail(503, "Checkout is not configured yet.", { code: "checkout_not_configured" });
@@ -434,12 +614,14 @@ export async function handle(request, env, ctx = {}) {
   const parts = url.pathname.replace(/^\/api\/?/, "").split("/").filter(Boolean), route = parts.shift() || "";
   const secure = url.protocol === "https:";
   try {
-    if (m !== "GET" && m !== "HEAD" && route !== "punishments" && route !== "stats") {
+    if (m !== "GET" && m !== "HEAD" && route !== "punishments" && route !== "stats" &&
+        !(route === "trace" && parts[0] === "sync")) {
       const origin = request.headers.get("origin");
       if ((origin && origin !== url.origin) || request.headers.get("x-requested-with") !== "crown") return fail(403, "Blocked request");
     }
     if (route === "punishments" && parts[0] === "sync" && m === "POST") { if (!env.DB) return fail(503, "Database not configured."); return syncPunishments(request, env); }
     if (route === "stats" && parts[0] === "sync" && m === "POST") { if (!env.DB) return fail(503, "Database not configured."); return syncStats(request, env); }
+    if (route === "trace" && parts[0] === "sync" && m === "POST") { if (!env.DB) return fail(503, "Database not configured."); return traceSync(request, env); }
     if (route === "auth") {
       const ready = env.MS_CLIENT_ID && env.MS_CLIENT_SECRET && env.SESSION_SECRET;
       if (parts[0] === "login" && m === "GET") {
@@ -475,9 +657,11 @@ export async function handle(request, env, ctx = {}) {
       return json({ ok: true, service: "crownpvp-api", database: db, forms, ownerKey: !!env.REPORT_OWNER_KEY, syncToken: !!env.SYNC_TOKEN, checkout: !!env.TEBEX_PUBLIC_TOKEN,
         hint: forms ? "Everything is ready." : db ? "Database is bound but schema.sql has not been applied." : "No D1 database is bound as DB. See README.md.", time: Date.now() });
     }
+    if (route === "public-profile" && m === "GET") return publicProfileGet(url);
     const user = await getUser(request, env);
     if (route === "me") return json({ user, login: !!(env.MS_CLIENT_ID && env.MS_CLIENT_SECRET && env.SESSION_SECRET), checkout: !!env.TEBEX_PUBLIC_TOKEN });
     if (!env.DB && route !== "checkout") return fail(503, "Database not configured.");
+    if (route === "trace") return traceRoutes(request, env, parts, url);
     if (route === "stats" && m === "GET") return statsGet(env, url, parts);
     if (route === "service-tickets") return serviceTicketsRoutes(request, env, parts);
     if (route === "reports") return reportsRoutes(request, env, parts);
