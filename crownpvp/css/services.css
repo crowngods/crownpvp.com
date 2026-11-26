@@ -147,3 +147,15 @@ body[data-page=services] img{max-width:100%}
 .ring b{position:absolute;top:26px;width:112px;height:112px;display:grid;place-items:center;font:800 1.8rem 'Sora',sans-serif;color:#f1eeff}
 .ring span{color:var(--mu);font-size:.9rem}
 .sv-card,.sv-p{transition:transform .2s ease-out,opacity .8s var(--ez)}
+
+/* HUD layout */
+.sv-stats{grid-template-columns:repeat(5,auto);gap:30px}
+.sv-cards{grid-template-columns:repeat(6,1fr)}.sv-cards .sv-card{grid-column:span 2}.sv-cards .sv-card:nth-child(1),.sv-cards .sv-card:nth-child(4){grid-column:span 4}
+.sv-card{padding:34px 30px;min-height:210px}.sv-card:nth-child(1),.sv-card:nth-child(4){display:grid;align-content:end;background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(34,211,238,.06)),var(--pn)}
+.sv-card .ic{color:#c4b5fd;width:58px;height:58px}
+.sv-card:after,.sv-a:after,.sv-p:after,.ring:after{content:"";position:absolute;inset:9px;pointer-events:none;opacity:.45;transition:opacity .3s;background:linear-gradient(#a78bfa,#a78bfa) top left/16px 1px no-repeat,linear-gradient(#a78bfa,#a78bfa) top left/1px 16px no-repeat,linear-gradient(#22d3ee,#22d3ee) bottom right/16px 1px no-repeat,linear-gradient(#22d3ee,#22d3ee) bottom right/1px 16px no-repeat}
+.sv-card:hover:after,.sv-a:hover:after,.sv-p:hover:after,.ring:hover:after{opacity:1}
+.sv-view:before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,.14) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+.sv-view img{image-rendering:auto}
+.sv-head h2{font-family:'JetBrains Mono','Sora',monospace;font-weight:700}
+@media(max-width:900px){.sv-cards{grid-template-columns:1fr}.sv-cards .sv-card,.sv-cards .sv-card:nth-child(1),.sv-cards .sv-card:nth-child(4){grid-column:auto}.sv-stats{grid-template-columns:repeat(2,auto)}}

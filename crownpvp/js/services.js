@@ -62,10 +62,10 @@ ws.addEventListener("pointerleave", () => { ws.classList.remove("pause"); W.next
 
 /* content */
 const CARDS = [
-  ["🖥️", "Frontend & UI Development", "Turning designs into fast, responsive, and accessible user interfaces that work seamlessly on every screen size."],
-  ["⚙️", "Full-Stack Web Applications", "Building complete, scalable web apps from the front-end interface to back-end APIs and database architecture."],
-  ["💳", "API & Payment Integration", "Connecting your website with third-party tools, payment processors, and custom APIs to automate workflows."],
-  ["🚀", "Speed Optimization & Maintenance", "Fixing bugs, improving load speeds, and keeping your website secure, updated, and running smoothly."]
+  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`, "Frontend & UI Development", "Turning designs into fast, responsive, and accessible user interfaces that work seamlessly on every screen size."],
+  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5M3 17.5 12 22l9-4.5"/></svg>`, "Full-Stack Web Applications", "Building complete, scalable web apps from the front-end interface to back-end APIs and database architecture."],
+  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg>`, "API & Payment Integration", "Connecting your website with third-party tools, payment processors, and custom APIs to automate workflows."],
+  [`<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>`, "Speed Optimization & Maintenance", "Fixing bugs, improving load speeds, and keeping your website secure, updated, and running smoothly."]
 ];
 const CORE = [
   ["Custom Website Development", "Fast, modern websites built from scratch for your brand and goals."],
@@ -128,4 +128,8 @@ $$("[data-n]").filter(e => e.closest(".sv-stats")).forEach(count);
 /* one scroll-reveal pass for every section */
 const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; e.target.classList.add("in"); $$("[data-n]", e.target).forEach(count); io.unobserve(e.target); }), { threshold: .15 });
 $$(".rv,.sv-steps").forEach(x => io.observe(x));
+
+/* decode effect on section headings */
+if (!RM) { const sc = el => { const t = el.textContent, ch = "01<>/{}[]#$%"; let f = 0; el.setAttribute("aria-label", t); const id = setInterval(() => { el.textContent = [...t].map((c, i) => c === " " || i < f / 1.2 ? c : ch[Math.random() * ch.length | 0]).join(""); if (++f > t.length * 1.2) { el.textContent = t; clearInterval(id); } }, 28); };
+  const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { sc(e.target); io2.unobserve(e.target); } }), { threshold: .6 }); $$(".sv-head h2").forEach(h => io2.observe(h)); }
 })();
