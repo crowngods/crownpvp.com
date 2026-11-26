@@ -60,7 +60,6 @@ In Cloudflare Pages → your project → Settings → Variables and Secrets, add
 
 - `REPORT_OWNER_KEY` — a long, random secret used to unlock `/owner`. Generate a new value for production and keep it private.
 - `SYNC_TOKEN` — shared secret for punishments/stats sync tools.
-- `TRACE_FINGERPRINT_SECRET` — dedicated random key for trace-only IP fingerprints; do not reuse other secrets.
 
 Optional:
 
@@ -69,7 +68,7 @@ Optional:
 - `SESSION_SECRET`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET` — only required if you re-enable the account / Microsoft sign-in features.
 - `TEBEX_PUBLIC_TOKEN` — public Tebex Headless API token for the backend checkout flow, if you use it.
 
-Do not put `REPORT_OWNER_KEY`, `SYNC_TOKEN`, `TRACE_FINGERPRINT_SECRET`, Microsoft client secrets or Tebex private API keys in `js/config.js` or any public HTML/JavaScript file.
+Do not put `REPORT_OWNER_KEY`, `SYNC_TOKEN`, Microsoft client secrets or Tebex private API keys in `js/config.js` or any public HTML/JavaScript file.
 
 ### 3. Public settings
 
@@ -176,42 +175,3 @@ The visual redesign is loaded from `css/realm-redesign.css` and `js/realm-polish
 The `/services` page uses `POST /api/service-tickets` and stores commissions in the dedicated Cloudflare D1 table `service_project_tickets`. It does not call the support-ticket page, the Supabase support-ticket tables, or the player support workflow.
 
 Before accepting live requests, apply `server/service-project-tickets.sql` to the Cloudflare D1 database bound as `DB` (the same Cloudflare D1 binding used by the site's API, but a separate table and route). Optional: set `SERVICE_TICKET_WEBHOOK` to a private Discord webhook URL to receive new project-request notifications. Owner-only retrieval is available at `GET /api/service-tickets` with the existing `x-owner-key` header (`REPORT_OWNER_KEY`). Never expose that key in browser code.
-
-## Private Minecraft account trace
-
-### Public username-to-UUID lookup (Python)
-
-For a standalone terminal lookup of public profile details only:
-
-```powershell
-cd .\crownpvp
-py .\mc_profile.py Notch
-```
-
-This calls Mojang's public profile endpoint and prints the current username and UUID. It does not query Pika Network, locate IP addresses, or discover alternate accounts. Python 3.8+ is required; there are no third-party packages.
-
-The browser version is available at `/public-profile.html`. It shows the same public name and UUID lookup and explicitly marks faction history and account links as unavailable from the public profile service.
-
-`/trace.html` is a private Pika Network investigation workspace backed by the existing Cloudflare Pages Functions + D1 database. It reuses `REPORT_OWNER_KEY` for administrator access and `SYNC_TOKEN` for trusted server-to-server ingestion. Configure a separate random `TRACE_FINGERPRINT_SECRET` Cloudflare secret for IP fingerprinting; do not reuse either of those keys. Apply the updated `schema.sql` to D1 before opening the page. The owner key is held in page memory only and must never be embedded in client code. Use HTTPS and share it only with administrators authorized to review private player records.
-
-This workspace does not connect directly to Pika Network logs in this repository. Configure a trusted bridge on a server you administer to submit only records it is authorized to process to `POST /api/trace/sync`:
-
-```json
-{
-  "records": [
-    {
-      "uuid": "069a79f4-44e9-4726-a5be-fca90e38aaf5",
-      "name": "ExamplePlayer",
-      "logins": [
-        { "at": 1760000000000, "ip": "ADDRESS_FROM_AUTHORIZED_LOG" }
-      ]
-    }
-  ]
-}
-```
-
-Send that JSON with `Authorization: Bearer $SYNC_TOKEN` and `Content-Type: application/json`. `at` is a Unix timestamp in milliseconds. Use real authorized records only; the example identity and timestamp are illustrative and are not dashboard data. Batches support up to 500 player records and 2,000 login events. The bridge must transmit over HTTPS and must not accept client-supplied log data as verified server evidence.
-
-For privacy, raw IP addresses are HMAC-fingerprinted with the server-side `TRACE_FINGERPRINT_SECRET` during ingestion and then discarded; they are never returned by the API or shown in the report. Rotating this key changes fingerprints, so previously imported records will no longer correlate with new ones. Correlation suggestions require both a repeated shared fingerprint and login overlaps within 30 minutes on at least three separate days in the last 90 days. A shared IP/network alone never generates a suspected alternate. Suggestions are investigative leads, not proof, and shared households, schools, VPNs, or public networks can explain overlaps.
-
-The dashboard's account, connection, and conversation totals reflect only data in D1. When no log bridge is configured, the connection history and correlations remain empty and IP information is clearly unavailable. Conversation records and private investigation notes are administrator-entered and linked to an imported trace record or existing synced player-stat profile; private messages are not read or extracted.
