@@ -103,3 +103,43 @@ CREATE TABLE IF NOT EXISTS report_contacts (
   report_id INTEGER PRIMARY KEY REFERENCES reports(id),
   contact TEXT NOT NULL
 );
+
+-- Private account-trace records. Raw IP addresses are never stored.
+CREATE TABLE IF NOT EXISTS mc_trace_accounts (
+  uuid TEXT PRIMARY KEY,
+  username TEXT NOT NULL,
+  first_seen INTEGER NOT NULL,
+  last_seen INTEGER NOT NULL,
+  updated INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_mc_trace_name ON mc_trace_accounts(username COLLATE NOCASE);
+
+CREATE TABLE IF NOT EXISTS mc_trace_logins (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  event_key TEXT NOT NULL UNIQUE,
+  uuid TEXT NOT NULL REFERENCES mc_trace_accounts(uuid),
+  occurred INTEGER NOT NULL,
+  ip_fingerprint TEXT,
+  source TEXT NOT NULL DEFAULT 'authorized-server-log'
+);
+CREATE INDEX IF NOT EXISTS idx_mc_trace_logins_uuid_time ON mc_trace_logins(uuid, occurred DESC);
+CREATE INDEX IF NOT EXISTS idx_mc_trace_logins_fingerprint ON mc_trace_logins(ip_fingerprint, occurred DESC);
+
+CREATE TABLE IF NOT EXISTS mc_trace_notes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uuid TEXT NOT NULL REFERENCES mc_trace_accounts(uuid),
+  author TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_mc_trace_notes_uuid ON mc_trace_notes(uuid, created DESC);
+
+CREATE TABLE IF NOT EXISTS mc_trace_conversations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uuid TEXT NOT NULL REFERENCES mc_trace_accounts(uuid),
+  author TEXT NOT NULL,
+  body TEXT NOT NULL,
+  evidence TEXT NOT NULL DEFAULT '',
+  created INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_mc_trace_conversations_uuid ON mc_trace_conversations(uuid, created DESC);

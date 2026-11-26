@@ -60,6 +60,7 @@ In Cloudflare Pages → your project → Settings → Variables and Secrets, add
 
 - `REPORT_OWNER_KEY` — a long, random secret used to unlock `/owner`. Generate a new value for production and keep it private.
 - `SYNC_TOKEN` — shared secret for punishments/stats sync tools.
+- `TRACE_FINGERPRINT_SECRET` — dedicated random key for trace-only IP fingerprints; do not reuse other secrets.
 
 Optional:
 
@@ -68,7 +69,7 @@ Optional:
 - `SESSION_SECRET`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET` — only required if you re-enable the account / Microsoft sign-in features.
 - `TEBEX_PUBLIC_TOKEN` — public Tebex Headless API token for the backend checkout flow, if you use it.
 
-Do not put `REPORT_OWNER_KEY`, `SYNC_TOKEN`, Microsoft client secrets or Tebex private API keys in `js/config.js` or any public HTML/JavaScript file.
+Do not put `REPORT_OWNER_KEY`, `SYNC_TOKEN`, `TRACE_FINGERPRINT_SECRET`, Microsoft client secrets or Tebex private API keys in `js/config.js` or any public HTML/JavaScript file.
 
 ### 3. Public settings
 
@@ -115,6 +116,21 @@ Set package IDs or public package URLs in the `tebex` map in `js/config.js`. If 
 
 Crown Client is presented as an upcoming project only. There is no download in this website. Java 1.8+ and 1.21+ are target compatibility ranges, not a verified release matrix. The Premium Raid Menu is a planned optional feature. No VPN service, ban bypass or anti-cheat bypass is advertised.
 
+## Staff page, Vote page and Support tickets (latest update)
+
+- **Staff page**: Owner (MedicalWeed), Co-owner (ksa_70007) and the Developer (Raizukennn, Discord `Rairai.32`) are set in `js/config.js` (`leadership`, `developer`). The "staff online" counter was removed. Other staff still come from the database.
+- **Players page** (`/player`): searching a username shows the 3D skin (walk / run / idle / still, download skin). Total playtime was removed. The old Player stats page now redirects here.
+- **Vote page** (`/vote`): the 4 voting links live in `js/config.js` (`voteSites`). The 24h tracker is a personal reminder stored in the visitor's browser and does not verify votes. A "Top voters" list needs vote data from your server (Votifier), so it is not included.
+- **Discord card** (home page): shows online and member counts from your invite, and member avatars from the Discord server widget. Turn the widget on in Discord > Server Settings > Widget > Enable Server Widget. The server ID is `discordGuildId` in `js/config.js`.
+- **Merchandise** (`/merch`): the product list is `merch` in `js/config.js`. Orders go through a ticket with the topic "Buy merchandise" (re-run `supabase/support-tickets.sql` once so the database accepts that topic).
+- **Ranks**: run `supabase/fix-ranks.sql` once to put MedicalWeed on Owner, ksa_70007 on Co-Owner and Raizukennn on Developer. The Staff page also has an "Add a player to a role" panel for ranks with the manage-staff permission.
+- **Theme**: `css/minecraft.css` is the Minecraft look (pixel buttons, bevelled panels, grass strips, welcome toast). Remove its `<link>` from a page to turn it off there.
+- **Home hub**: the news feed is `news` in `js/config.js` (newest first, add or edit entries there). The hero has a PLAY NOW button plus live player and Discord count pills.
+- **Join boosters**: a follow-along "Play now" bar, a "Claim the crown" call-to-action above every footer, and a Minecraft-style pop-up when someone copies the IP (all in `js/features.js` and `css/minecraft.css`).
+- **Partnership**: the top-bar link opens a ticket with the topic "Partnership". Re-run `supabase/support-tickets.sql` once so the database accepts that topic.
+- **Is the new version live?** Scroll to the footer. It should say "Site v8". If it does not, the new files are not published yet (check GitHub > Actions).
+- **Support tickets** (`/tickets`): topics are in `js/config.js` (`ticketTopics`). Run `supabase/support-tickets.sql` once in Supabase > SQL Editor, after `network-upgrade.sql`. Players must be signed in. Staff with report access see an "All tickets" tab and can reply or close tickets.
+
 ## Important launch checklist
 
 - [ ] Apply `schema.sql` to the production D1 database.
@@ -129,7 +145,7 @@ Crown Client is presented as an upcoming project only. There is no download in t
 
 ## Visual refresh and verification
 
-The supplied CrownPVP battle artwork is now the shared site background and homepage hero artwork (optimized WebP). The background has a slow, restrained cinematic drift rather than distracting flashing effects; devices using `prefers-reduced-motion` get a static background. The report form and private owner inbox also have a refreshed dark charcoal, muted gold and crimson interface.
+The supplied CrownPVP battle artwork remains in the homepage hero. Shared page backgrounds are now static charcoal/black while scrolling, without the former animated/parallax backdrop. The report form and private owner inbox also have a refreshed dark charcoal, muted gold and crimson interface.
 
 The updated project was smoke-tested locally on 21 November 2026:
 - Home and report pages returned HTTP 200.
@@ -138,3 +154,64 @@ The updated project was smoke-tested locally on 21 November 2026:
 - The local report API accepted a test report, returned it to the owner inbox, and accepted a status change and private reply.
 
 These local tests do not configure your live Cloudflare account. For live report delivery, deploy the `crownpvp/` folder to Cloudflare Pages, bind the D1 database as `DB`, apply `schema.sql`, and set the production `REPORT_OWNER_KEY` and `SYNC_TOKEN` secrets as described above. The local preview database is temporary and is not your live database.
+
+## 2026 v3 visual and responsive update
+The shared shell now loads `css/crown-v3.css` last, giving the pages a consistent dark-and-gold network theme and fixing the mobile navigation open/close behavior. The Social Hub keeps its floating friends/messages panel and homepage community card. The player profile page now includes a four-part profile stats strip and a persisted Like profile button; signed-in players can like another account once, unlike it later, and see the public total. Self-likes are blocked.
+
+## Social Hub (friends, private messages and live presence)
+Apply `supabase/social-hub.sql` after `setup.sql`, `network-upgrade.sql`, `news-social.sql` and `profiles-upgrade.sql`. It adds friend requests, accepted friendships, one-to-one private messages, friend online/offline status, the active website visitor count, and persisted profile likes. Each signed-in account can like another player's profile once and can remove that like; profile owners cannot like themselves. Re-run this same SQL file on an existing installation to add the likes migration safely. The floating Community control appears on every page; the homepage also has a Community Hub card in the right sidebar. Player names in news comments now open their public profiles, where visitors can send friend requests or message existing friends.
+
+The active count measures browser sessions with a recent heartbeat (three-minute window), not verified Minecraft server connections. Friend presence is for signed-in website accounts only. Direct messages are limited to accepted friends.
+
+## Network upgrade (reports, appeals, staff dashboard, team, player profiles, CrownClient)
+These pages run on GitHub Pages + Supabase (not the Cloudflare functions): `support.html` (reports), `appeals.html`, `dashboard.html` (staff only), `staff.html`, `player.html`, `client.html`. Setup: `supabase/network-upgrade.sql` (see `supabase/README.md`, section 7). CrownClient shows COMING SOON until you set `CROWN.client.status = "released"` and real https links in `js/config.js`. Theme: `css/kingdom.css`.
+
+
+## 2026 Realm UI redesign
+The visual redesign is loaded from `css/realm-redesign.css` and `js/realm-polish.js`. It is a progressive visual layer and does not change Supabase, SQL, authentication, API routes, or backend behavior.
+
+
+## CrownPVP Services project intake (separate from support tickets)
+
+The `/services` page uses `POST /api/service-tickets` and stores commissions in the dedicated Cloudflare D1 table `service_project_tickets`. It does not call the support-ticket page, the Supabase support-ticket tables, or the player support workflow.
+
+Before accepting live requests, apply `server/service-project-tickets.sql` to the Cloudflare D1 database bound as `DB` (the same Cloudflare D1 binding used by the site's API, but a separate table and route). Optional: set `SERVICE_TICKET_WEBHOOK` to a private Discord webhook URL to receive new project-request notifications. Owner-only retrieval is available at `GET /api/service-tickets` with the existing `x-owner-key` header (`REPORT_OWNER_KEY`). Never expose that key in browser code.
+
+## Private Minecraft account trace
+
+### Public username-to-UUID lookup (Python)
+
+For a standalone terminal lookup of public profile details only:
+
+```powershell
+cd .\crownpvp
+py .\mc_profile.py Notch
+```
+
+This calls Mojang's public profile endpoint and prints the current username and UUID. It does not query Pika Network, locate IP addresses, or discover alternate accounts. Python 3.8+ is required; there are no third-party packages.
+
+The browser version is available at `/public-profile.html`. It shows the same public name and UUID lookup and explicitly marks faction history and account links as unavailable from the public profile service.
+
+`/trace.html` is a private Pika Network investigation workspace backed by the existing Cloudflare Pages Functions + D1 database. It reuses `REPORT_OWNER_KEY` for administrator access and `SYNC_TOKEN` for trusted server-to-server ingestion. Configure a separate random `TRACE_FINGERPRINT_SECRET` Cloudflare secret for IP fingerprinting; do not reuse either of those keys. Apply the updated `schema.sql` to D1 before opening the page. The owner key is held in page memory only and must never be embedded in client code. Use HTTPS and share it only with administrators authorized to review private player records.
+
+This workspace does not connect directly to Pika Network logs in this repository. Configure a trusted bridge on a server you administer to submit only records it is authorized to process to `POST /api/trace/sync`:
+
+```json
+{
+  "records": [
+    {
+      "uuid": "069a79f4-44e9-4726-a5be-fca90e38aaf5",
+      "name": "ExamplePlayer",
+      "logins": [
+        { "at": 1760000000000, "ip": "ADDRESS_FROM_AUTHORIZED_LOG" }
+      ]
+    }
+  ]
+}
+```
+
+Send that JSON with `Authorization: Bearer $SYNC_TOKEN` and `Content-Type: application/json`. `at` is a Unix timestamp in milliseconds. Use real authorized records only; the example identity and timestamp are illustrative and are not dashboard data. Batches support up to 500 player records and 2,000 login events. The bridge must transmit over HTTPS and must not accept client-supplied log data as verified server evidence.
+
+For privacy, raw IP addresses are HMAC-fingerprinted with the server-side `TRACE_FINGERPRINT_SECRET` during ingestion and then discarded; they are never returned by the API or shown in the report. Rotating this key changes fingerprints, so previously imported records will no longer correlate with new ones. Correlation suggestions require both a repeated shared fingerprint and login overlaps within 30 minutes on at least three separate days in the last 90 days. A shared IP/network alone never generates a suspected alternate. Suggestions are investigative leads, not proof, and shared households, schools, VPNs, or public networks can explain overlaps.
+
+The dashboard's account, connection, and conversation totals reflect only data in D1. When no log bridge is configured, the connection history and correlations remain empty and IP information is clearly unavailable. Conversation records and private investigation notes are administrator-entered and linked to an imported trace record or existing synced player-stat profile; private messages are not read or extracted.

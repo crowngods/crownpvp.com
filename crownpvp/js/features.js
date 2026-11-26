@@ -47,6 +47,7 @@ function paintStatus() {
     chips.innerHTML = d?.online ? `${d.version ? `<span>Version <b>${esc(String(d.version).replace(/^[^\d]*/, "") || d.version)}</b></span>` : ""}<span>Updated <b>${new Date(state.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</b></span><span>Auto-refresh <b>60s</b></span>` : "";
   }
   $$("[data-online]").forEach(e => { e.textContent = !d ? "n/a" : d.online ? fmt(d.players?.online ?? 0) : "Offline"; });
+  $$(`[data-server-state]`).forEach(e => { e.textContent = !d ? "Unavailable" : d.online ? "Online" : "Offline"; e.classList.toggle("is-offline", !d?.online); });
   listeners.forEach(f => f());
 }
 CP.status.then(d => { state.data = d; state.at = Date.now(); paintStatus(); });
@@ -155,4 +156,33 @@ if (page === "stats") {
 
 /* ---------- staff: live openings count + deep link ---------- */
 if (location.hash === "#apply") setTimeout(() => $("#apply")?.scrollIntoView({ behavior: "smooth" }), 300);
+/* ---------- cursor spotlight on cards ---------- */
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches && matchMedia("(hover: hover)").matches) {
+  document.querySelectorAll(".mode-card,.cta-card,.tool,.feature,.merch-card,.vote-row,.lcard,.devcard,.link-grid a,.dc-card").forEach(c => {
+    if (getComputedStyle(c).position === "static") c.style.position = "relative";
+    const g = document.createElement("i"); g.className = "spot-glow"; g.setAttribute("aria-hidden", "true"); c.append(g);
+    c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect(); g.style.setProperty("--mx", (e.clientX - r.left) + "px"); g.style.setProperty("--my", (e.clientY - r.top) + "px"); }, { passive: true });
+  });
+}
+/* ---------- Minecraft-style welcome advancement (once per visit) ---------- */
+try {
+  if (!sessionStorage.getItem("crown_adv")) {
+    sessionStorage.setItem("crown_adv", "1");
+    setTimeout(() => { const t = document.createElement("div"); t.className = "adv"; t.setAttribute("role", "status"); t.innerHTML = '<img src="assets/favicon-48.png" alt=""><div><b>Advancement Made!</b><span>Welcome to the CrownPVP realm</span></div>'; document.body.append(t); setTimeout(() => t.remove(), 6000); }, 1400);
+  }
+} catch { /* storage blocked */ }
+/* ---------- conversion helpers: follow-along join bar, final call to action, copy toast ---------- */
+(() => {
+  const C = window.CROWN, esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const adv = (a, b) => { document.querySelector(".adv")?.remove(); const t = document.createElement("div"); t.className = "adv"; t.setAttribute("role", "status"); t.innerHTML = `<img src="assets/favicon-48.png" alt=""><div><b>${esc(a)}</b><span>${esc(b)}</span></div>`; document.body.append(t); setTimeout(() => t.remove(), 6000); };
+  document.addEventListener("click", e => { if (e.target.closest("[data-copy],[data-copy-server]")) setTimeout(() => adv("Advancement Made!", "Server IP copied: " + C.ip), 120); });
+  const foot = document.querySelector("footer");
+  if (foot && document.body.dataset.page !== "tickets") {
+    const s = document.createElement("section"); s.className = "final-cta";
+    s.innerHTML = `<div class="wrap"><div class="eyebrow">YOUR LEGACY STARTS HERE</div><h2>Claim the <span class="gold-t">crown</span></h2><p>Join CrownPVP on Java 1.8+ to 26+ and start building your base today.</p><div class="ip big"><code>${esc(C.ip)}</code><button type="button" data-copy>Copy IP</button></div><div class="row"><a class="btn gold" href="${esc(C.discord)}" target="_blank" rel="noopener">Join Discord</a><a class="btn ghost" href="vote.html">Vote</a><a class="btn ghost" href="services.html">Services</a></div></div>`;
+    foot.before(s);
+  }
+  const bar = document.createElement("div"); bar.className = "joinbar"; bar.innerHTML = `<span>Play now</span><code>${esc(C.ip)}</code><button type="button" class="btn gold sm" data-copy>Copy IP</button>`; document.body.append(bar);
+  const upd = () => bar.classList.toggle("show", scrollY > 700 && scrollY + innerHeight < document.body.scrollHeight - 160); addEventListener("scroll", upd, { passive: true }); upd();
+})();
 })();
