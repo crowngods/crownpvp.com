@@ -93,3 +93,9 @@ h2 span,.sv-exp-lead h2 span{color:#7b7b86}
 .sv-p .bd{color:#08080a}
 .sv-card .ic{background:rgba(185,171,255,.1);border-color:rgba(185,171,255,.25);color:#d6cfff}
 @media (prefers-reduced-motion:reduce){.gl-mini{transition:none}}
+
+/* dropdowns: dark popup instead of white-on-white */
+.sv-intake-form select{color-scheme:dark;background-color:#141418;color:var(--text)}
+.sv-intake-form select option,.sv-intake-form select optgroup{background-color:#141418;color:#ececf0}
+.sv-intake-form select option:checked,.sv-intake-form select option:hover{background-color:#3b3566;color:#fff}
+.sv-intake-form select option[disabled]{color:#8a8a96}

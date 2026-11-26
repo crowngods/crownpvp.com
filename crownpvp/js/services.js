@@ -109,18 +109,31 @@ if (projectForm) {
     status.textContent = "Submitting your project request securely…"; status.classList.remove("is-error","is-success");
     try {
       const response = await fetch("/api/service-tickets", { method:"POST", headers:{"content-type":"application/json","x-requested-with":"crown"}, body:JSON.stringify(data) });
-      const result = await response.json();
+      let result = null; try { result = await response.json(); } catch { /* HTML or empty body: the API is not deployed on this host */ }
+      if (!result) { offlineBrief(data, status, button); return; }
       if (!response.ok) throw new Error(result.error || "Your request could not be submitted.");
       projectForm.reset();
       status.innerHTML = `Request received. Your project reference is <strong>${esc(result.reference || "received")}</strong>. Keep it for your records.`;
       status.classList.add("is-success");
       button.innerHTML = 'Brief submitted <span>✓</span>';
     } catch (err) {
+      if (err instanceof TypeError) { offlineBrief(data, status, button); return; }
       status.textContent = err.message || "Something went wrong. Please try again.";
       status.classList.add("is-error");
       button.disabled = false; button.innerHTML = 'Try submitting again <span>↗</span>';
     }
   });
+}
+
+/* Backend unreachable (static host / offline): hand the visitor a ready-to-send brief instead of an error. */
+function offlineBrief(data, status, button) {
+  const msg = ["New CrownPVP project request", `Name: ${data.name}`, `Email: ${data.email}`, `Discord: ${data.discord || "-"}`, `Service: ${data.service}`, `Budget: ${data.budget || "-"}`, `Timeline: ${data.timeline || "-"}`, data.reference ? `Reference: ${data.reference}` : "", "", data.brief].filter((x, i) => x || i > 6).join("\n");
+  try { localStorage.setItem("crown-pending-project", msg); } catch {}
+  const link = (window.CROWN && window.CROWN.discord) || "https://discord.gg/nFfnbw844";
+  status.classList.remove("is-error"); status.classList.add("is-success");
+  status.innerHTML = `Our form inbox is offline right now, so your brief was <strong>not sent yet</strong>. Copy it and send it on Discord:<textarea readonly rows="6" style="width:100%;margin:10px 0;padding:10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:inherit;font:13px/1.5 inherit">${esc(msg)}</textarea><button type="button" class="btn ghost" id="pj-copy">Copy brief</button> <a class="btn gold" href="${esc(link)}" target="_blank" rel="noopener">Open Discord ↗</a>`;
+  $("#pj-copy").onclick = async e => { try { await navigator.clipboard.writeText(msg); e.target.textContent = "Copied ✓"; } catch { $("textarea", status).select(); } };
+  button.disabled = false; button.classList.remove("is-loading"); button.innerHTML = 'Send project brief';
 }
 
 /* spotlight glow follows the pointer */
