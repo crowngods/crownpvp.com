@@ -108,10 +108,16 @@ if (projectForm) {
     button.disabled = true; button.classList.add("is-loading"); button.innerHTML = '<span class="sv-spinner"></span> Sending brief…';
     status.textContent = "Submitting your project request securely…"; status.classList.remove("is-error","is-success");
     try {
-      const response = await fetch("/api/service-tickets", { method:"POST", headers:{"content-type":"application/json","x-requested-with":"crown"}, body:JSON.stringify(data) });
-      let result = null; try { result = await response.json(); } catch { /* HTML or empty body: the API is not deployed on this host */ }
-      if (!result) { offlineBrief(data, status, button); return; }
-      if (!response.ok) throw new Error(result.error || "Your request could not be submitted.");
+      if (data.website) { /* honeypot filled: pretend success */ data.reference = ""; }
+      const C = window.CROWN || {};
+      const response = await fetch(`${C.supabaseUrl}/rest/v1/rpc/submit_service_request`, { method:"POST", headers:{ "content-type":"application/json", apikey:C.supabaseKey }, body:JSON.stringify({ p_name:data.name, p_email:data.email, p_discord:data.discord || "", p_service:data.service, p_budget:data.budget || "", p_timeline:data.timeline || "", p_brief:data.brief, p_reference:data.reference || "" }) });
+      let out = null; try { out = await response.json(); } catch { /* not JSON */ }
+      if (!response.ok || out === null) {
+        if (out && out.message) throw new Error(out.message);
+        if (response.status === 404 || out === null) { offlineBrief(data, status, button); return; }
+        throw new Error("Your request could not be submitted.");
+      }
+      const result = { reference: String(out) };
       projectForm.reset();
       status.innerHTML = `Request received. Your project reference is <strong>${esc(result.reference || "received")}</strong>. Keep it for your records.`;
       status.classList.add("is-success");
