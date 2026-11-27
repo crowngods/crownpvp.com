@@ -188,13 +188,28 @@ cd .\crownpvp
 py .\mc_profile.py Notch
 ```
 
-This calls Mojang's public profile endpoint and prints the current username and UUID. It does not query CrownPVP, locate IP addresses, or discover alternate accounts. Python 3.8+ is required; there are no third-party packages.
+This calls Mojang's public profile endpoint and prints the current username and UUID. It does not query Pika Network, locate IP addresses, or discover alternate accounts. Python 3.8+ is required; there are no third-party packages.
 
 The browser version is available at `/public-profile.html`. It shows the same public name and UUID lookup and explicitly marks faction history and account links as unavailable from the public profile service.
 
-`/trace.html` is a private CrownPVP investigation workspace backed by the existing Cloudflare Pages Functions + D1 database. It reuses `REPORT_OWNER_KEY` for administrator access and `SYNC_TOKEN` for trusted server-to-server ingestion. Configure a separate random `TRACE_FINGERPRINT_SECRET` Cloudflare secret for IP fingerprinting; do not reuse either of those keys. Apply the updated `schema.sql` to D1 before opening the page. The owner key is held in page memory only and must never be embedded in client code. Use HTTPS and share it only with administrators authorized to review private player records.
+`/trace` is a private Pika Network investigation workspace. The page is static on GitHub Pages; its authenticated API runs as a Supabase Edge Function and reads the private `mc_trace_*` tables with the server-only service role. No Cloudflare Worker, D1 database, or Cloudflare authentication is needed for trace. `/trace.html` redirects to the clean route; the static fallback is used by GitHub Pages, while `.htaccess` provides an HTTP redirect on Apache hosting.
 
-This workspace does not connect directly to CrownPVP logs in this repository. Configure a trusted bridge on a server you administer to submit only records it is authorized to process to `POST /api/trace/sync`:
+To enable the trace backend:
+
+1. Apply `../supabase/trace-api.sql` in the Supabase SQL Editor. It creates missing tables and service-only helper functions without deleting existing rows.
+2. Link this repository to the same Supabase project used by `js/config.js`, then deploy the Edge Function:
+
+   ```sh
+   supabase link --project-ref YOUR_PROJECT_REF
+   supabase functions deploy trace-api --no-verify-jwt
+   ```
+
+3. In Supabase Edge Function secrets, set `TRACE_OWNER_KEY` to the owner password, `TRACE_SESSION_SECRET` to a random secret of at least 32 characters, `TRACE_SYNC_TOKEN` to a separate ingestion secret, and `TRACE_FINGERPRINT_SECRET` to a separate random fingerprint key. `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are provided by Supabase. Never place any of these secrets in GitHub files or browser configuration.
+4. Publish the site through the existing GitHub Pages workflow and open `https://crownpvp.com/trace`. The browser sends the password only to the HTTPS Edge Function during login; the function returns a short-lived signed session, never the password. Sessions are held in memory and expire after 30 minutes. Five failed attempts from one address are rate-limited for 15 minutes.
+
+The existing trace tables in Supabase are reused. The SQL does not delete or overwrite existing trace rows. If the only copy of prior records is in the old D1 database, export and import those records into Supabase before retiring that database; this project cannot migrate remote D1 data without database credentials.
+
+This workspace does not connect directly to Pika Network logs in this repository. Configure a trusted bridge on a server you administer to submit only records it is authorized to process to `POST /functions/v1/trace-api/sync` on your Supabase project:
 
 ```json
 {
@@ -210,7 +225,7 @@ This workspace does not connect directly to CrownPVP logs in this repository. Co
 }
 ```
 
-Send that JSON with `Authorization: Bearer $SYNC_TOKEN` and `Content-Type: application/json`. `at` is a Unix timestamp in milliseconds. Use real authorized records only; the example identity and timestamp are illustrative and are not dashboard data. Batches support up to 500 player records and 2,000 login events. The bridge must transmit over HTTPS and must not accept client-supplied log data as verified server evidence.
+Send that JSON with `Authorization: Bearer $TRACE_SYNC_TOKEN` and `Content-Type: application/json` to `https://YOUR_PROJECT_REF.supabase.co/functions/v1/trace-api/sync`. `at` is a Unix timestamp in milliseconds. Use real authorized records only; the example identity and timestamp are illustrative and are not dashboard data. Batches support up to 500 player records and 2,000 login events. The bridge must transmit over HTTPS and must not accept client-supplied log data as verified server evidence.
 
 For privacy, raw IP addresses are HMAC-fingerprinted with the server-side `TRACE_FINGERPRINT_SECRET` during ingestion and then discarded; they are never returned by the API or shown in the report. Rotating this key changes fingerprints, so previously imported records will no longer correlate with new ones. Correlation suggestions require both a repeated shared fingerprint and login overlaps within 30 minutes on at least three separate days in the last 90 days. A shared IP/network alone never generates a suspected alternate. Suggestions are investigative leads, not proof, and shared households, schools, VPNs, or public networks can explain overlaps.
 

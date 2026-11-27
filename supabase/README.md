@@ -58,7 +58,7 @@ Optional: **Authentication** > **Sign In / Providers** > **Email**: turn **Confi
 The GitHub Action already runs `sync-litebans.py --export`. It now also writes `players.json` (first join, last seen, latest name; never IPs). LiteBans does not track playtime, so the profile says "Not tracked" unless you set `PLAYTIME_TABLE` in the sync `.env`.
 
 ## News comments and reactions
-Run `supabase/news-social.sql` once in the SQL Editor. Players must be signed in to comment or react.
+Run `supabase/news-social.sql` in the SQL Editor to enable the public news feed, comments and reactions. Players must be signed in to comment or react; news publishing remains limited to the configured staff ranks. The script is safe to rerun: it restores any missing starter news posts without replacing posts that already exist. If the homepage reports that there are no posts, check `public.news_posts` in Supabase or rerun this script.
 
 ## Profiles
 After news-social.sql, run `supabase/profiles-upgrade.sql` once (profile picture, bio, one-time username change).
@@ -85,3 +85,9 @@ Run `supabase/comment-avatars.sql` once (after `profiles-upgrade.sql`). It adds 
 ## Staff application "You do not have permission" fix (v2)
 
 Run `supabase/fix-staff-applications.sql` once in the Supabase SQL Editor (the whole file; safe to re-run). It is a complete replacement for `staff-applications.sql`, so you do not need to run that one first. It: fixes statuses so staff see every application, adds a 24-hour apply cooldown, makes leftover required columns (like mic_status) optional, lets the decision history accept applications, lets any signed-in player file their own application (function and direct-insert backup), moves the history log and staff alerts into a trigger that can never block an application, removes old copies of the submit function, and ends with a self-check that must show OK on all three rows.
+
+## Private trace dashboard
+
+The static `/trace` page uses a Supabase Edge Function; it does not depend on Cloudflare. Apply `trace-api.sql` in the SQL Editor, then from the repository root run `supabase link --project-ref YOUR_PROJECT_REF` and `supabase functions deploy trace-api --no-verify-jwt`. In Edge Function secrets, set `TRACE_OWNER_KEY` to the owner password and set separate random values for `TRACE_SESSION_SECRET` (at least 32 characters), `TRACE_SYNC_TOKEN`, and `TRACE_FINGERPRINT_SECRET`. Supabase supplies `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; never copy the service-role key into the website.
+
+The function validates the owner password server-side, rate-limits repeated failures, and issues a 30-minute signed session. Player trace tables are private to the Edge Function service role. `trace-api.sql` is safe to rerun and does not delete existing records. See the trace section in `crownpvp/README.md` for the data-ingestion endpoint and the GitHub Pages route behavior.

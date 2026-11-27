@@ -32,3 +32,5 @@
 /help /help.html 200
 /gamemodes /gamemodes.html 200
 /opfactions /opfactions.html 200
+/trace.html /trace 301
+/trace /trace/index.html 200

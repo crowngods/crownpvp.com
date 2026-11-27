@@ -83,6 +83,10 @@ const darkPaperStyles = document.createElement("link");
 darkPaperStyles.rel = "stylesheet";
 darkPaperStyles.href = "css/crown-darkpaper.css?v=20261130-tile-art";
 document.head.append(darkPaperStyles);
+const cinematicStyles = document.createElement("link");
+cinematicStyles.rel = "stylesheet";
+cinematicStyles.href = "css/realm-cinematic.css?v=20261127-3";
+document.head.append(cinematicStyles);
 const addPaperLayers = () => { if (document.querySelector(".cp-paper")) return;
   for (const c of ["cp-embers", "cp-vignette", "cp-paper"]) { const d = document.createElement("div"); d.className = c; d.setAttribute("aria-hidden", "true"); document.body.prepend(d); } };
 if (document.body) addPaperLayers(); else document.addEventListener("DOMContentLoaded", addPaperLayers);
@@ -172,7 +176,8 @@ if (page === "home") {
   strip.className = "aq-tiles";
   strip.setAttribute("aria-label", "Featured");
   strip.innerHTML = `<div class="aq-tiles-in">${tiles.map(t => `<a class="aq-tile aq-${t[5]}" href="${t[0]}" ><span class="aq-tile-art" style="background-image:url('${t[1]}');background-position:${t[2]}"></span><span class="aq-tile-txt"><b>${t[3]}</b><small>${t[4]}</small></span></a>`).join("")}</div>`;
-  main.prepend(strip);
+  const hero = main.querySelector(".hx-hero");
+  if (hero) hero.after(strip); else main.prepend(strip);
 }
 
 document.addEventListener("click", async e => {

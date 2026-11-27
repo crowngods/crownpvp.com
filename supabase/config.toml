@@ -1,0 +1,4 @@
+project_id = "crownpvp"
+
+[functions.trace-api]
+verify_jwt = false
