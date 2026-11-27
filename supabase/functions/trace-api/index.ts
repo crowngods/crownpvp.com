@@ -403,7 +403,7 @@ async function summary(supabase: ReturnType<typeof createTraceClient>) {
     conversations: conversations.count || 0,
     notes: notes.count || 0,
     latest: latest.data?.occurred || null,
-    server: "play.pika-network.net",
+    server: "play.crownpvp.com",
   };
 }
 
@@ -748,7 +748,11 @@ Deno.serve(async (request) => {
 
   const supabase = createTraceClient(supabaseUrl, serviceRoleKey);
   const url = new URL(request.url);
-  const suffix = url.pathname.split("/functions/v1/trace-api")[1] || "";
+  const marker = "/trace-api";
+  const markerAt = url.pathname.indexOf(marker);
+  const suffix = markerAt >= 0
+    ? url.pathname.slice(markerAt + marker.length)
+    : "";
   const path = suffix.replace(/\/+$/, "") || "/";
 
   try {

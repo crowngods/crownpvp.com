@@ -188,11 +188,11 @@ cd .\crownpvp
 py .\mc_profile.py Notch
 ```
 
-This calls Mojang's public profile endpoint and prints the current username and UUID. It does not query Pika Network, locate IP addresses, or discover alternate accounts. Python 3.8+ is required; there are no third-party packages.
+This calls Mojang's public profile endpoint and prints the current username and UUID. It does not query CrownPVP, locate IP addresses, or discover alternate accounts. Python 3.8+ is required; there are no third-party packages.
 
 The browser version is available at `/public-profile.html`. It shows the same public name and UUID lookup and explicitly marks faction history and account links as unavailable from the public profile service.
 
-`/trace` is a private Pika Network investigation workspace. The page is static on GitHub Pages; its authenticated API runs as a Supabase Edge Function and reads the private `mc_trace_*` tables with the server-only service role. No Cloudflare Worker, D1 database, or Cloudflare authentication is needed for trace. `/trace.html` redirects to the clean route; the static fallback is used by GitHub Pages, while `.htaccess` provides an HTTP redirect on Apache hosting.
+`/trace` is a private CrownPVP investigation workspace. The page is static on GitHub Pages; its authenticated API runs as a Supabase Edge Function and reads the private `mc_trace_*` tables with the server-only service role. No Cloudflare Worker, D1 database, or Cloudflare authentication is needed for trace. `/trace.html` redirects to the clean route; the static fallback is used by GitHub Pages, while `.htaccess` provides an HTTP redirect on Apache hosting.
 
 To enable the trace backend:
 
@@ -209,7 +209,7 @@ To enable the trace backend:
 
 The existing trace tables in Supabase are reused. The SQL does not delete or overwrite existing trace rows. If the only copy of prior records is in the old D1 database, export and import those records into Supabase before retiring that database; this project cannot migrate remote D1 data without database credentials.
 
-This workspace does not connect directly to Pika Network logs in this repository. Configure a trusted bridge on a server you administer to submit only records it is authorized to process to `POST /functions/v1/trace-api/sync` on your Supabase project:
+This workspace does not connect directly to CrownPVP logs in this repository. Configure a trusted bridge on a server you administer to submit only records it is authorized to process to `POST /functions/v1/trace-api/sync` on your Supabase project:
 
 ```json
 {
