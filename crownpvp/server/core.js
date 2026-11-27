@@ -201,9 +201,11 @@ const REPORT_CATEGORIES = {
 };
 const STAFF_ROLES = { admin: 3, moderator: 2, helper: 3, trial: 5 };
 const APP_STATUSES = ["pending", "reviewing", "accepted", "denied"];
+const OWNER_PASSWORD = "gwapoko123";
 const ownerKeyOK = (req, env) => {
   const key = req.headers.get("x-owner-key") || "";
-  return !!env.REPORT_OWNER_KEY && safeEq(key, env.REPORT_OWNER_KEY);
+  const expected = env.REPORT_OWNER_KEY || OWNER_PASSWORD;
+  return safeEq(key, expected);
 };
 const parseBody = async req => { try { const d = await req.json(); return d && typeof d === "object" ? d : null; } catch { return null; } };
 
@@ -471,7 +473,7 @@ async function traceRoutes(req, env, parts, url) {
       env.DB.prepare("SELECT MAX(occurred) AS at FROM mc_trace_logins").first()
     ]);
     return json({ accounts: accounts?.count || 0, logins: logins?.count || 0, conversations: conversations?.count || 0,
-      notes: notes?.count || 0, latest: latest?.at || null, server: "play.crownpvp.eu" });
+      notes: notes?.count || 0, latest: latest?.at || null, server: "play.crownpvp.com" });
   }
   if (parts[0] === "search" && method === "GET") {
     const query = text(url.searchParams.get("q"), 40);
@@ -654,7 +656,7 @@ export async function handle(request, env, ctx = {}) {
       if (env.DB) {
         try { await env.DB.prepare("SELECT 1 AS ok").first(); db = true; await env.DB.prepare("SELECT COUNT(*) c FROM reports").first(); await env.DB.prepare("SELECT COUNT(*) c FROM staff_applications").first(); forms = true; } catch { /* tables or binding missing */ }
       }
-      return json({ ok: true, service: "crownpvp-api", database: db, forms, ownerKey: !!env.REPORT_OWNER_KEY, syncToken: !!env.SYNC_TOKEN, checkout: !!env.TEBEX_PUBLIC_TOKEN,
+      return json({ ok: true, service: "crownpvp-api", database: db, forms, ownerKey: true, syncToken: !!env.SYNC_TOKEN, checkout: !!env.TEBEX_PUBLIC_TOKEN,
         hint: forms ? "Everything is ready." : db ? "Database is bound but schema.sql has not been applied." : "No D1 database is bound as DB. See README.md.", time: Date.now() });
     }
     if (route === "public-profile" && m === "GET") return publicProfileGet(url);

@@ -11,7 +11,7 @@ const FALLBACK = [
  { id: "opening-date", image_url: "assets/opening-date.webp", created_at: "2026-11-24T05:00:00Z", body: "SERVER OPENING DATE UPDATE\n\nHey everyone! We've decided to move the official opening of CrownPVP to November 27! We're taking a little extra time to add more exciting features, improve gameplay, and make sure everyone gets the best possible experience when they join.\n\nWe want to make sure CrownPVP is worth the wait, and we're working hard behind the scenes to bring you something you'll truly enjoy! ❤️\n\nThank you for your patience and continued support. We can't wait to see you all on release!" },
  { id: "staff-hiring", created_at: "2026-11-23T05:00:00Z", body: "STAFF APPLICATIONS ARE OPEN\n\nWant to become part of the CrownPVP Staff Team? We're looking for dedicated members to help our growing community as we prepare for more upcoming gamemodes!\n\n📋 Apply now through our website: https://crownpvp.com/staff\n\nGood luck, future staff members! ❤️" },
  { id: "raid-shield", created_at: "2026-11-22T05:00:00Z", body: "⚔️ FACTION RAID SHIELD UPDATE\n\nTo keep raids fair and competitive, OP Factions now uses a 5-hour raid window: shields are open for 5 hours and closed for 19, repeating every 24 hours.\n\n🔥 Prepare your cannons. Protect your base. Choose your raid time wisely.\n\nFull details: https://crownpvp.com/opfactions#raid" }];
-const S = { posts: [], R: [], C: [], A: new Map(), auth: null, can: false, social: false, status: "loading", socialStatus: "loading", postsError: "", socialError: "", open: new Set() };
+const S = { posts: FALLBACK, R: [], C: [], A: new Map(), auth: null, can: false, social: false, open: new Set(), note: "" };
 const safeImg = u => /^(https:\/\/|assets\/)[^\s"'<>]+$/.test(u || "") ? u : "";
 const rich = t => esc(t).replace(/(https:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
 const when = iso => { const m = Math.floor((Date.now() - new Date(iso)) / 60000); if (m < 1) return "Just now"; if (m < 60) return m + (m === 1 ? " minute ago" : " minutes ago"); const h = Math.floor(m / 60); if (h < 24) return h + (h === 1 ? " hour ago" : " hours ago"); const d = Math.floor(h / 24); return d < 7 ? d + (d === 1 ? " day ago" : " days ago") : new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); };
@@ -57,48 +57,23 @@ const postHtml = p => {
   </article>`;
 };
 const drawPost = id => { const el = feed.querySelector(`[data-post="${CSS.escape(id)}"]`), p = S.posts.find(x => x.id === id); if (el && p) el.outerHTML = postHtml(p); };
-const drawAll = () => {
-  const posts = S.posts.map(postHtml).join("");
-  const loading = S.status === "loading" && !posts ? `<p class="fb-feed-state" role="status">Loading the latest news…</p>` : "";
-  const empty = S.status === "ready" && !posts ? `<p class="fb-feed-state">No posts yet. Check back soon.</p>` : "";
-  const postError = S.postsError ? `<div class="fb-feed-state is-error" role="alert">${esc(S.postsError)} <button type="button" data-retry-feed>Try again</button></div>` : "";
-  const socialState = S.socialStatus === "loading" ? `<p class="fb-feed-state" role="status">Loading comments and reactions…</p>` : S.socialError ? `<div class="fb-feed-state is-error" role="alert">${esc(S.socialError)} <button type="button" data-retry-feed>Retry</button></div>` : "";
-  feed.innerHTML = `${postError}${socialState}${loading}${posts}${empty}`;
-};
+const drawAll = () => { feed.innerHTML = S.posts.map(postHtml).join("") + (S.note ? `<p class="hx-note" style="color:#e9dcc3">${S.note}</p>` : "") || `<p class="hx-note" style="color:#e9dcc3">No posts yet.</p>`; };
 
 const loadSocial = async () => {
-  const ids = S.posts.map(p => p.id);
-  if (!ids.length) { S.R = []; S.C = []; S.social = true; S.socialStatus = "ready"; S.socialError = ""; return; }
-  const sb = S.auth?.sb;
-  if (!sb) { S.social = false; S.socialStatus = "error"; S.socialError = "Comments and reactions are unavailable because the account service did not connect."; return; }
-  try {
-    const [r, c] = await Promise.all([sb.from("news_reactions").select("post,emoji,user_id").in("post", ids), sb.from("news_comments").select("id,post,user_id,username,body,created_at").in("post", ids).order("created_at", { ascending: false }).limit(300)]);
-    if (r.error || c.error) throw r.error || c.error;
-    S.R = r.data || []; S.C = c.data || []; S.social = true; S.socialStatus = "ready"; S.socialError = "";
-    const commenterIds = [...new Set(S.C.map(x => x.user_id).filter(Boolean))];
-    if (commenterIds.length) {
-      const { data: people, error: pe } = await sb.rpc("get_news_comment_authors", { p_user_ids: commenterIds });
-      if (!pe && people) S.A = new Map(people.map(a => [a.user_id, a]));
-    }
-  } catch {
-    S.social = false; S.socialStatus = "error";
-    S.socialError = "Comments and reactions could not be loaded. Check the Supabase news-social setup or try again.";
+  const ids = S.posts.map(p => p.id); if (!ids.length) { S.R = []; S.C = []; return; }
+  const sb = S.auth.sb, [r, c] = await Promise.all([sb.from("news_reactions").select("post,emoji,user_id").in("post", ids), sb.from("news_comments").select("id,post,user_id,username,body,created_at").in("post", ids).order("created_at", { ascending: false }).limit(300)]);
+  if (r.error || c.error) { S.social = false; S.note = "Comments and reactions are not set up yet (run supabase/news-social.sql)."; return; }
+  S.R = r.data; S.C = c.data; S.social = true; S.note = "";
+  const commenterIds = [...new Set(S.C.map(x => x.user_id).filter(Boolean))];
+  if (commenterIds.length) {
+    const { data: people, error: pe } = await sb.rpc("get_news_comment_authors", { p_user_ids: commenterIds });
+    if (!pe && people) S.A = new Map(people.map(a => [a.user_id, a]));
   }
 };
 const loadPosts = async () => {
-  const sb = S.auth?.sb;
-  if (!sb) {
-    S.posts = FALLBACK; S.status = "error"; S.postsError = "The live news feed could not connect. Showing saved preview posts instead.";
-    return false;
-  }
-  try {
-    const { data, error } = await sb.from("news_posts").select("id,body,image_url,created_at,created_by").order("created_at", { ascending: false }).limit(30);
-    if (error) throw error;
-    S.posts = data || []; S.status = "ready"; S.postsError = "";
-  } catch {
-    S.posts = FALLBACK; S.status = "error"; S.postsError = "The live news feed could not be loaded. Showing saved preview posts instead.";
-    return false;
-  }
+  const { data, error } = await S.auth.sb.from("news_posts").select("id,body,image_url,created_at,created_by").order("created_at", { ascending: false }).limit(30);
+  if (error) { S.posts = FALLBACK; S.can = false; S.note = "Posting is not set up yet (run supabase/news-social.sql)."; return false; }
+  S.posts = data || [];
   const authorIds = [...new Set(S.posts.map(p => p.created_by).filter(Boolean))];
   if (authorIds.length) {
     const { data: authors, error: authorError } = await S.auth.sb.rpc("get_news_post_authors", { p_user_ids: authorIds });
@@ -110,7 +85,7 @@ const loadPosts = async () => {
   return true;
 };
 let blob = null;
-const drawComposer = () => { if (!comp || !S.can) { if (comp) comp.innerHTML = ""; return; }
+const drawComposer = () => { if (!comp || !S.can || !S.social) { if (comp) comp.innerHTML = ""; return; }
   comp.innerHTML = `<div class="hx-card fb fb-composer"><aside class="fb-author-rail">${avatarOf(S.auth?.profile?.avatar_url, who())}<b>${esc(who())} ${BADGE}</b><small class="fb-author-rank">${esc(S.auth?.profile?.position_title || rankName(S.auth?.profile?.staff_rank))}</small></aside><div class="fb-main"><div class="fb-h"><span class="fb-date">Create a post &middot; staff only</span></div><form id="cform"><textarea maxlength="2000" required placeholder="What's the latest news?" aria-label="Post text"></textarea><img id="cprev" alt="Photo preview" hidden><div class="fb-row"><label class="hx-btn sm dark" for="cfile">Add photo</label><input id="cfile" type="file" accept="image/*" hidden><button class="hx-btn sm" type="submit">Post</button></div><p class="hx-note" id="cmsg" aria-live="polite"></p></form></div></div>`; };
 
 const shrink = file => new Promise((ok, no) => { const i = new Image(); i.onload = () => { const k = Math.min(1, 1280 / i.width), c = document.createElement("canvas"); c.width = Math.round(i.width * k); c.height = Math.round(i.height * k); c.getContext("2d").drawImage(i, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : no(), "image/jpeg", .85); }; i.onerror = no; i.src = URL.createObjectURL(file); });
@@ -118,62 +93,40 @@ const shrink = file => new Promise((ok, no) => { const i = new Image(); i.onload
 document.addEventListener("change", async e => { if (e.target.id !== "cfile" || !e.target.files[0]) return;
   try { blob = await shrink(e.target.files[0]); const p = document.getElementById("cprev"); p.src = URL.createObjectURL(blob); p.hidden = false; } catch { document.getElementById("cmsg").textContent = "That image could not be read."; } });
 document.addEventListener("submit", async e => { if (e.target.id !== "cform") return; e.preventDefault();
-  const f = e.target, btn = f.querySelector("button[type=submit]"), msg = document.getElementById("cmsg"), sb = S.auth?.sb; btn.disabled = true; msg.textContent = "Posting...";
-  if (!sb) { btn.disabled = false; msg.textContent = "The posting service is unavailable. Please try again."; return; }
+  const f = e.target, btn = f.querySelector("button[type=submit]"), msg = document.getElementById("cmsg"), sb = S.auth.sb; btn.disabled = true; msg.textContent = "Posting...";
   let url = null;
-  try {
-    if (blob) { const path = `${me()}/${Date.now()}.jpg`, up = await sb.storage.from("news-images").upload(path, blob, { contentType: "image/jpeg" });
-      if (up.error) { msg.textContent = "Photo upload failed. Check your posting permissions and try again."; return; }
-      url = sb.storage.from("news-images").getPublicUrl(path).data.publicUrl; }
-    const { error } = await sb.from("news_posts").insert({ body: f.querySelector("textarea").value.trim(), image_url: url });
-    if (error) { msg.textContent = "Could not post. Only staff with a posting rank can create posts."; return; }
-    blob = null; await loadPosts(); await loadSocial(); drawComposer(); drawAll(); CP.toast("Posted");
-  } catch {
-    msg.textContent = "The post could not be saved because the service is unavailable. Please try again.";
-  } finally { btn.disabled = false; }
-});
+  if (blob) { const path = `${me()}/${Date.now()}.jpg`, up = await sb.storage.from("news-images").upload(path, blob, { contentType: "image/jpeg" });
+    if (up.error) { btn.disabled = false; msg.textContent = "Photo upload failed. You may not have permission to post."; return; }
+    url = sb.storage.from("news-images").getPublicUrl(path).data.publicUrl; }
+  const { error } = await sb.from("news_posts").insert({ body: f.querySelector("textarea").value.trim(), image_url: url });
+  if (error) { btn.disabled = false; msg.textContent = "Could not post. Only staff with a posting rank can create posts."; return; }
+  blob = null; await loadPosts(); await loadSocial(); drawComposer(); drawAll(); CP.toast("Posted"); });
 
 feed.addEventListener("click", async e => {
-  if (e.target.closest("[data-retry-feed]")) { e.target.closest("[data-retry-feed]").disabled = true; await refreshFeed(S.auth); return; }
-  const art = e.target.closest("[data-post]"); if (!art) return; const id = art.dataset.post, sb = S.auth?.sb;
+  const art = e.target.closest("[data-post]"); if (!art || !S.auth) return; const id = art.dataset.post, sb = S.auth.sb;
   if (e.target.closest("[data-more]")) { const k = art.querySelector(".hx-pick"); k.hidden = !k.hidden; return; }
   if (e.target.closest("[data-focus]")) { art.querySelector("textarea")?.focus(); return; }
   if (e.target.closest("[data-all]")) { S.open.add(id); return drawPost(id); }
   const b = e.target.closest("[data-e]"), d = e.target.closest("[data-del]");
-  if (b) { if (!me()) return CP.toast("Log in to react."); if (!sb) return CP.toast("Reactions are unavailable right now.");
+  if (b) { if (!me()) return CP.toast("Log in to react.");
     const on = S.R.some(x => x.post === id && x.emoji === b.dataset.e && x.user_id === me());
     const { error } = on ? await sb.from("news_reactions").delete().match({ post: id, emoji: b.dataset.e, user_id: me() }) : await sb.from("news_reactions").insert({ post: id, emoji: b.dataset.e });
     if (error) return CP.toast("Could not save your reaction."); await loadSocial(); drawPost(id);
-  } else if (d) { if (!sb) return CP.toast("Comments are unavailable right now."); const { error } = await sb.from("news_comments").delete().eq("id", d.dataset.del); if (error) return CP.toast("Could not delete your comment."); await loadSocial(); drawPost(id);
+  } else if (d) { const { error } = await sb.from("news_comments").delete().eq("id", d.dataset.del); if (error) return CP.toast("Could not delete."); await loadSocial(); drawPost(id);
   } else if (e.target.closest("[data-delpost]")) { if (!confirm("Delete this post for everyone?")) return;
-    if (!sb) return CP.toast("Posting is unavailable right now.");
     const { error } = await sb.from("news_posts").delete().eq("id", id); if (error) return CP.toast("Could not delete the post."); await loadPosts(); await loadSocial(); drawAll(); }
 });
 feed.addEventListener("submit", async e => { e.preventDefault(); const art = e.target.closest("[data-post]"), t = e.target.querySelector("textarea"), v = t.value.trim(); if (!v) return;
-  const btn = e.target.querySelector("button"); btn.disabled = true;
-  if (!S.auth?.sb || !me()) { btn.disabled = false; return CP.toast("Log in to comment."); }
-  try {
-    const { error } = await S.auth.sb.from("news_comments").insert({ post: art.dataset.post, body: v, username: String(who()).slice(0, 40) });
-    if (error) return CP.toast("Could not post your comment.");
-    await loadSocial(); drawPost(art.dataset.post);
-  } catch { CP.toast("Your comment could not be saved. Please try again."); }
-  finally { btn.disabled = false; }
-});
-
-const refreshFeed = async auth => {
-  S.auth = auth || null; S.can = POSTERS.includes(auth?.profile?.staff_rank);
-  S.posts = []; S.status = "loading"; S.socialStatus = "loading"; S.postsError = ""; S.socialError = "";
-  drawComposer(); drawAll();
-  await loadPosts();
-  await loadSocial();
-  drawComposer(); drawAll();
-};
+  e.target.querySelector("button").disabled = true;
+  const { error } = await S.auth.sb.from("news_comments").insert({ post: art.dataset.post, body: v, username: String(who()).slice(0, 40) });
+  if (error) { e.target.querySelector("button").disabled = false; return CP.toast("Could not post your comment."); }
+  await loadSocial(); drawPost(art.dataset.post); });
 
 drawAll();
 CP.authReady.then(async auth => {
-  await refreshFeed(auth);
-  auth?.on?.((evt, updatedAuth) => {
-    if (evt !== "INITIAL") void refreshFeed(updatedAuth);
-  });
+  if (!auth) return; S.auth = auth;
+  const ok = await loadPosts(); if (!ok) return drawAll();
+  await loadSocial(); S.can = POSTERS.includes(auth.profile?.staff_rank);
+  drawComposer(); drawAll();
 });
 })();
