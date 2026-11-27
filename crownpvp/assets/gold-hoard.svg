@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>Gold Hoard package</title>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2a4"/><stop offset=".34" stop-color="#e8b63d"/><stop offset=".73" stop-color="#92540e"/><stop offset="1" stop-color="#f5d567"/></linearGradient>
+    <linearGradient id="chest" x2="0" y2="1"><stop stop-color="#e8b43b"/><stop offset="1" stop-color="#75410a"/></linearGradient>
+  </defs>
+  <ellipse cx="128" cy="221" rx="99" ry="15" fill="#050505" opacity=".38"/>
+  <path d="M58 91q0-43 35-56l35-13 35 13q35 13 35 56l-17 30H75z" fill="url(#gold)" stroke="#fff0a0" stroke-width="4"/>
+  <path d="m78 84 50-19 50 19" fill="none" stroke="#fff0a0" stroke-width="4"/>
+  <path d="M49 112h158v68q-2 18-20 20H69q-18-2-20-20z" fill="url(#chest)" stroke="#ffe58a" stroke-width="4"/>
+  <path d="M68 118v72m120-72v72M49 140h158m-158 27h158" stroke="#ffe58a" stroke-width="4"/>
+  <rect x="111" y="119" width="34" height="54" rx="7" fill="#74410a" stroke="#fff0a0" stroke-width="4"/>
+  <circle cx="128" cy="142" r="9" fill="#f5d467"/><path d="M128 151v12" stroke="#f5d467" stroke-width="4"/>
+  <g fill="url(#gold)" stroke="#fff0a0" stroke-width="3">
+    <ellipse cx="55" cy="199" rx="22" ry="10"/><ellipse cx="86" cy="207" rx="24" ry="10"/><ellipse cx="172" cy="206" rx="26" ry="10"/><ellipse cx="207" cy="194" rx="20" ry="10"/>
+    <circle cx="49" cy="178" r="14"/><circle cx="78" cy="190" r="13"/><circle cx="188" cy="184" r="14"/><circle cx="215" cy="174" r="12"/>
+  </g>
+  <path d="M42 199h26m31 8h26m34 0h27m29-13h20" stroke="#8f570e" stroke-width="3"/>
+</svg>

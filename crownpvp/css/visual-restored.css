@@ -1,0 +1,454 @@
+/* CrownPVP visual restoration — loaded after crown-v3.css.
+   Restores the original realm backdrop, uses the supplied battle artwork as
+   the homepage header, and fixes dark-theme contrast in the news feed. */
+
+:root {
+  color-scheme: dark;
+  --crv-gold: #f0d49a;
+  --crv-muted: #aeb8c5;
+  --crv-line: rgba(224, 188, 116, .22);
+}
+
+html, body {
+  background: #080b11 !important;
+}
+
+body {
+  position: relative !important;
+  isolation: isolate;
+  background: #080b11 !important;
+  background-attachment: scroll !important;
+}
+
+/* Bring back the previous CrownPVP scenery as a fixed, darkened backdrop.
+   It stays still while the player scrolls, and the solid cards stay readable. */
+body::before {
+  content: "" !important;
+  display: block !important;
+  position: fixed !important;
+  inset: -1.5% !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(180deg, rgba(5, 8, 13, .70), rgba(5, 8, 13, .84)),
+    url("../assets/crown-voxel-battle.webp") center 38% / cover no-repeat !important;
+  filter: blur(3px) saturate(.78) brightness(.72) !important;
+  opacity: .9 !important;
+  transform: scale(1.015);
+  animation: none !important;
+}
+
+body::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Main header: supplied CrownPVP battle artwork with the logo built into it. */
+body .hx-hero {
+  position: relative !important;
+  display: flex !important;
+  align-items: stretch !important;
+  min-height: clamp(440px, 42vw, 660px) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  isolation: isolate;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(230, 193, 122, .34) !important;
+  background-color: #090c13 !important;
+  background-image:
+    linear-gradient(90deg, rgba(5, 7, 12, .08), transparent 45%, rgba(5, 7, 12, .10)),
+    linear-gradient(0deg, rgba(5, 7, 12, .88) 0%, rgba(5, 7, 12, .14) 34%, rgba(5, 7, 12, .04) 100%),
+    url("../assets/crownpvp-header.webp") !important;
+  background-position: center, center, center 48% !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 22px 65px rgba(0, 0, 0, .28);
+}
+
+body .hx-hero::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background: radial-gradient(ellipse at 50% 42%, transparent 22%, rgba(5, 7, 12, .16) 100%) !important;
+}
+
+body .hx-hero .hx-wrap {
+  width: min(1280px, 92%) !important;
+  min-height: inherit !important;
+  margin: 0 auto !important;
+  padding: 28px 0 clamp(24px, 4vw, 46px) !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  box-sizing: border-box !important;
+}
+
+/* Keep an actual semantic H1 for accessibility while avoiding a second logo
+   over the artwork, which already contains the CrownPVP wordmark. */
+body .hx-hero .hx-wrap > div:first-child h1 {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+body .hx-hero .hx-wrap > div:first-child p {
+  max-width: 330px !important;
+  margin: 0 !important;
+  padding: 13px 16px !important;
+  border-left: 3px solid #e1bb72 !important;
+  border-radius: 0 12px 12px 0 !important;
+  background: rgba(7, 10, 16, .78) !important;
+  color: #f5f0e6 !important;
+  font: 600 .92rem/1.6 "Manrope", "Plus Jakarta Sans", sans-serif !important;
+  text-shadow: 0 2px 12px #000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+  backdrop-filter: blur(12px);
+}
+
+body .hx-hero .hx-play {
+  width: min(320px, 100%) !important;
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  margin: 0 !important;
+  padding: 16px !important;
+  border: 1px solid rgba(230, 193, 122, .48) !important;
+  border-radius: 16px !important;
+  background: rgba(7, 10, 16, .86) !important;
+  color: #f0e7d6 !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .44) !important;
+  backdrop-filter: blur(16px) saturate(1.1);
+}
+
+body .hx-hero .hx-play small {
+  display: block !important;
+  margin: 0 !important;
+  color: #d9c9a9 !important;
+  font-size: .8rem !important;
+  text-align: center;
+}
+
+body .hx-hero .hx-play small a {
+  color: #f2d18b !important;
+  font-weight: 800;
+}
+
+body .hx-hero .hx-play .hx-btn {
+  width: 100% !important;
+  min-height: 52px !important;
+  font-size: .9rem !important;
+}
+
+body .hx-hero .hx-ip {
+  margin: 0 !important;
+  padding: 11px 12px !important;
+  border: 1px dashed rgba(230, 193, 122, .34) !important;
+  border-radius: 10px !important;
+  background: rgba(1, 3, 7, .55) !important;
+  color: #c4cbd4 !important;
+}
+
+body .hx-hero .hx-ip b {
+  color: #f5d99d !important;
+}
+
+/* Premium but dark cards around the homepage feed. */
+body .hx-frame {
+  width: min(1240px, 94%) !important;
+  margin: 30px auto 58px !important;
+}
+
+body .hx-cols {
+  grid-template-columns: minmax(0, 1fr) 320px !important;
+  gap: 22px !important;
+}
+
+body .hx-side .hx-card > h3 {
+  padding: 13px 17px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(224, 188, 116, .2) !important;
+  background: linear-gradient(110deg, rgba(224, 188, 116, .12), rgba(255, 255, 255, .025)) !important;
+  color: #f0d49a !important;
+  font: 700 .98rem/1.25 "Cinzel", Georgia, serif !important;
+  letter-spacing: .035em !important;
+}
+
+body .hx-side #join .hx-body {
+  color: #e7eaf0 !important;
+  padding: 15px 18px !important;
+}
+
+body .hx-side #join .hx-body a {
+  color: #f0d49a !important;
+  line-height: 1.9 !important;
+  text-decoration: none;
+}
+
+body .hx-side #join .hx-body a:hover {
+  color: #fff0c7 !important;
+  text-decoration: underline;
+}
+
+/* Correct the original light-mode news-post styles so all post text is legible
+   on the dark CrownPVP cards (including staff composer and comments). */
+body .fb {
+  color: #edf1f6 !important;
+  background: linear-gradient(155deg, #19212c 0%, #111720 100%) !important;
+  border: 1px solid rgba(224, 188, 116, .24) !important;
+  border-radius: 17px !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .34) !important;
+}
+
+body .fb-h {
+  padding: 15px 17px 7px !important;
+}
+
+body .fb-h b {
+  color: #f5f0e6 !important;
+  font-size: .9rem !important;
+  font-weight: 800 !important;
+}
+
+body .fb-h span {
+  color: #9eabb9 !important;
+  font-size: .73rem !important;
+}
+
+body .fb-x {
+  color: #9ba8b6 !important;
+  border-radius: 9px !important;
+}
+
+body .fb-x:hover {
+  color: #ffe1a8 !important;
+  background: rgba(255, 255, 255, .07) !important;
+}
+
+body .fb-t {
+  padding: 7px 17px 14px !important;
+  color: #edf1f6 !important;
+  font-size: .94rem !important;
+  line-height: 1.72 !important;
+}
+
+body .fb-t a {
+  color: #f0d49a !important;
+}
+
+body .fb-img {
+  max-height: 680px !important;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+body .fb-stats {
+  color: #aeb8c5 !important;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+body .fb-chip {
+  color: #edf1f6 !important;
+  background: #273240 !important;
+  border: 1px solid rgba(255, 255, 255, .08) !important;
+}
+
+body .fb-chip.me {
+  color: #ffe2a8 !important;
+  background: rgba(216, 180, 108, .17) !important;
+  border-color: rgba(216, 180, 108, .42) !important;
+}
+
+body .fb-actions {
+  border-top: 1px solid rgba(255, 255, 255, .09) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .09) !important;
+}
+
+body .fb-actions > button {
+  color: #c0c9d4 !important;
+  background: transparent !important;
+  font-weight: 800 !important;
+}
+
+body .fb-actions > button:hover {
+  color: #ffe2a8 !important;
+  background: rgba(255, 255, 255, .055) !important;
+}
+
+body .fb-actions > button.me {
+  color: #f0d49a !important;
+}
+
+body .fb-c > div {
+  color: #edf1f6 !important;
+  background: #202a36 !important;
+  border: 1px solid rgba(255, 255, 255, .055);
+  border-radius: 13px !important;
+}
+
+body .fb-c b {
+  color: #f3e4c5 !important;
+}
+
+body .fb-name-link,
+body .fb-c-profile + div .fb-name-link {
+  color: #f0d49a !important;
+}
+
+body .fb-name-link:hover {
+  color: #fff0c7 !important;
+}
+
+body .fb-c p {
+  color: #e2e8ef !important;
+}
+
+body .fb-c small,
+body .fb-cm .more {
+  color: #9eabb9 !important;
+}
+
+body .fb-cm .more:hover {
+  color: #f0d49a !important;
+}
+
+body .fb-c button {
+  color: #e9a3a8 !important;
+}
+
+body .fb-cf textarea,
+body #cform textarea {
+  min-height: 44px !important;
+  padding: 11px 14px !important;
+  border: 1px solid rgba(255, 255, 255, .14) !important;
+  border-radius: 12px !important;
+  background: #0b1119 !important;
+  color: #f2f4f7 !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .28) !important;
+}
+
+body #cform textarea {
+  min-height: 92px !important;
+  border-radius: 11px !important;
+}
+
+body .fb-cf textarea::placeholder,
+body #cform textarea::placeholder {
+  color: #8c99a8 !important;
+}
+
+body #cform {
+  padding: 9px 17px 17px !important;
+}
+
+body #cform .hx-btn.dark {
+  color: #f1d59a !important;
+  background: #252d38 !important;
+  border: 1px solid rgba(224, 188, 116, .34) !important;
+  box-shadow: none !important;
+}
+
+body .hx-pick {
+  padding: 9px !important;
+  border: 1px solid rgba(224, 188, 116, .24) !important;
+  border-radius: 11px !important;
+  background: #121a24 !important;
+}
+
+body .hx-pick button:hover {
+  background: rgba(224, 188, 116, .12) !important;
+}
+
+body .hx-note {
+  color: #aeb8c5 !important;
+}
+
+@media (max-width: 960px) {
+  body .hx-cols {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  body .hx-side {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  body .hx-side #join {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  body .hx-hero {
+    min-height: 570px !important;
+    background-position: center, center, 51% center !important;
+  }
+  body .hx-hero .hx-wrap {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-end !important;
+    padding-bottom: 20px !important;
+    gap: 12px !important;
+  }
+  body .hx-hero .hx-wrap > div:first-child p {
+    max-width: 100% !important;
+    font-size: .82rem !important;
+    padding: 10px 12px !important;
+  }
+  body .hx-hero .hx-play {
+    width: 100% !important;
+    padding: 13px !important;
+  }
+  body .hx-side {
+    display: flex !important;
+  }
+  body .hx-frame {
+    width: min(100% - 24px, 600px) !important;
+    margin-top: 18px !important;
+  }
+  body .fb-h {
+    padding: 13px 13px 6px !important;
+  }
+  body .fb-t {
+    padding-inline: 13px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { transform: none !important; }
+}
+
+/* Network banner + navigation now live in css/network-header.css */
+
+/* Keep the application form intact and make the route unmistakable. */
+body .quick-apply-link {
+  display: grid !important;
+  grid-template-columns: 27px 1fr !important;
+  align-items: center !important;
+  gap: 2px 9px !important;
+  margin: 0 0 14px !important;
+  padding: 12px 13px !important;
+  border: 1px solid rgba(229, 185, 99, .58) !important;
+  border-left: 4px solid #e8bc69 !important;
+  border-radius: 8px !important;
+  background: linear-gradient(110deg, rgba(211, 158, 70, .2), rgba(13, 17, 24, .76)) !important;
+  color: #ffe1a3 !important;
+  text-decoration: none !important;
+  box-shadow: 0 7px 18px rgba(0,0,0,.18) !important;
+}
+body .quick-apply-link > span { grid-row: 1 / span 2 !important; color: #f7d48e !important; font-size: 1.35rem !important; }
+body .quick-apply-link > b { color: #ffe5b2 !important; font-size: .78rem !important; font-weight: 900 !important; }
+body .quick-apply-link > small { color: #c8b99e !important; font-size: .62rem !important; }
+body .quick-apply-link:hover { border-color: rgba(255, 224, 159, .9) !important; filter: brightness(1.12) !important; }
+
+/* The network masthead is the home hero; avoid stacking a second giant hero. */
+body[data-page="home"] .hx-hero { display: none !important; }
+body[data-page="home"] .hx-frame { margin-top: 24px !important; }

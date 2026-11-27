@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>Gold Royal Treasury package</title>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff5b4"/><stop offset=".3" stop-color="#f1c34c"/><stop offset=".68" stop-color="#9b5a11"/><stop offset="1" stop-color="#ffdf70"/></linearGradient>
+    <linearGradient id="red" x2="0" y2="1"><stop stop-color="#a9382a"/><stop offset="1" stop-color="#551512"/></linearGradient>
+  </defs>
+  <ellipse cx="128" cy="224" rx="103" ry="15" fill="#050505" opacity=".4"/>
+  <path d="m73 74 10-39 27 25 18-43 18 43 27-25 10 39-60 15z" fill="url(#gold)" stroke="#fff3b1" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="84" cy="38" r="7" fill="#b72f25"/><circle cx="128" cy="18" r="9" fill="#bb372a"/><circle cx="172" cy="38" r="7" fill="#b72f25"/>
+  <path d="M48 98h160v94q-1 20-21 22H69q-20-2-21-22z" fill="url(#gold)" stroke="#fff0a0" stroke-width="5"/>
+  <path d="M62 111h132v71q-1 14-15 15H77q-14-1-15-15z" fill="url(#red)" stroke="#ffe58a" stroke-width="4"/>
+  <path d="M74 119v68m108-68v68M62 142h132m-132 24h132" stroke="#f6d665" stroke-width="4"/>
+  <path d="M108 117h40v58h-40z" fill="#7b2118" stroke="#fff0a0" stroke-width="4"/>
+  <path d="m128 124 8 12 14 2-11 10 3 14-14-7-14 7 3-14-11-10 14-2z" fill="#f5d365" stroke="#fff0a0" stroke-width="2"/>
+  <path d="M37 200h182" stroke="#fff0a0" stroke-width="7" stroke-linecap="round"/>
+  <path d="M54 91h148" stroke="#fff0a0" stroke-width="5"/>
+  <circle cx="55" cy="202" r="8" fill="#f4d15d"/><circle cx="201" cy="202" r="8" fill="#f4d15d"/>
+</svg>
