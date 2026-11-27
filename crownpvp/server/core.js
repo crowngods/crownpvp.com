@@ -471,7 +471,7 @@ async function traceRoutes(req, env, parts, url) {
       env.DB.prepare("SELECT MAX(occurred) AS at FROM mc_trace_logins").first()
     ]);
     return json({ accounts: accounts?.count || 0, logins: logins?.count || 0, conversations: conversations?.count || 0,
-      notes: notes?.count || 0, latest: latest?.at || null, server: "play.pika-network.net" });
+      notes: notes?.count || 0, latest: latest?.at || null, server: "play.crownpvp.eu" });
   }
   if (parts[0] === "search" && method === "GET") {
     const query = text(url.searchParams.get("q"), 40);

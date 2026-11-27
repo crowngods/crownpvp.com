@@ -57,7 +57,7 @@
     $("#conversationForm").hidden = false;
     $("#resultArea").innerHTML = `<section class="profile-report glass">
       <div class="section-head"><div><span class="section-kicker">INVESTIGATION REPORT · PRIVATE</span><div class="profile-head"><div class="avatar">${esc(player.username.slice(0, 1).toUpperCase())}</div><div class="profile-title"><h2>${esc(player.username)}</h2><p>UUID ${esc(player.uuid)}</p></div><span class="case-status">RECORDS FOUND</span></div></div><span class="source-tag"><i></i> REPORT <b>PRIVATE</b></span></div>
-      <div class="profile-meta"><div class="meta-cell"><span>SERVER</span><b>play.pika-network.net</b></div><div class="meta-cell"><span>FIRST SEEN</span><b>${esc(date(player.firstSeen))}</b></div><div class="meta-cell"><span>LAST SEEN</span><b>${esc(date(player.lastSeen))}</b></div></div>
+      <div class="profile-meta"><div class="meta-cell"><span>SERVER</span><b>play.crownpvp.eu</b></div><div class="meta-cell"><span>FIRST SEEN</span><b>${esc(date(player.firstSeen))}</b></div><div class="meta-cell"><span>LAST SEEN</span><b>${esc(date(player.lastSeen))}</b></div></div>
       <div class="report-grid">
         <article class="report-block"><div class="block-head"><h3>Network information</h3><small>PRIVACY RESTRICTED</small></div><div class="ip-unavailable"><span class="ip-icon">⌁</span><div><b>IP address unavailable</b><small>Raw addresses are not retained. Authorized logs may contribute keyed fingerprints only.</small></div></div>
           <div class="block-head" style="margin-top:20px"><h3>Possible account correlations</h3><small>${profile.possibleAlts.length} QUALIFIED</small></div>${renderAlts(profile.possibleAlts)}
@@ -102,7 +102,7 @@
   });
   $("#exportButton").addEventListener("click", () => {
     if (!state.profile) return;
-    const report = { title: "TRACE MINECRAFT ACCOUNT", server: "play.pika-network.net", exportedAt: new Date().toISOString(),
+    const report = { title: "TRACE MINECRAFT ACCOUNT", server: "play.crownpvp.eu", exportedAt: new Date().toISOString(),
       account: state.profile.account, ipAddress: "Unavailable — raw addresses are not retained",
       possibleAlternateAccounts: state.profile.possibleAlts, connectionHistory: state.profile.logins,
       investigationNotes: state.profile.notes, conversations: state.profile.conversations };

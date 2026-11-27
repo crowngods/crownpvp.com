@@ -188,13 +188,13 @@ cd .\crownpvp
 py .\mc_profile.py Notch
 ```
 
-This calls Mojang's public profile endpoint and prints the current username and UUID. It does not query Pika Network, locate IP addresses, or discover alternate accounts. Python 3.8+ is required; there are no third-party packages.
+This calls Mojang's public profile endpoint and prints the current username and UUID. It does not query CrownPVP player records, locate IP addresses, or discover alternate accounts. Python 3.8+ is required; there are no third-party packages.
 
 The browser version is available at `/public-profile.html`. It shows the same public name and UUID lookup and explicitly marks faction history and account links as unavailable from the public profile service.
 
-`/trace.html` is a private Pika Network investigation workspace backed by the existing Cloudflare Pages Functions + D1 database. It reuses `REPORT_OWNER_KEY` for administrator access and `SYNC_TOKEN` for trusted server-to-server ingestion. Configure a separate random `TRACE_FINGERPRINT_SECRET` Cloudflare secret for IP fingerprinting; do not reuse either of those keys. Apply the updated `schema.sql` to D1 before opening the page. The owner key is held in page memory only and must never be embedded in client code. Use HTTPS and share it only with administrators authorized to review private player records.
+`/trace.html` is a private CrownPVP investigation workspace backed by the existing Cloudflare Pages Functions + D1 database. It reuses `REPORT_OWNER_KEY` for administrator access and `SYNC_TOKEN` for trusted server-to-server ingestion. Configure a separate random `TRACE_FINGERPRINT_SECRET` Cloudflare secret for IP fingerprinting; do not reuse either of those keys. Apply the updated `schema.sql` to D1 before opening the page. The owner key is held in page memory only and must never be embedded in client code. Use HTTPS and share it only with administrators authorized to review private player records. The workspace must not ingest or store player passwords or authentication tokens; direct account-recovery requests to Microsoft's official recovery process.
 
-This workspace does not connect directly to Pika Network logs in this repository. Configure a trusted bridge on a server you administer to submit only records it is authorized to process to `POST /api/trace/sync`:
+This workspace does not connect directly to CrownPVP logs in this repository. Configure a trusted bridge on a server you administer to submit only records it is authorized to process to `POST /api/trace/sync`:
 
 ```json
 {
